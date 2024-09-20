@@ -18,6 +18,10 @@ Objeto2D::~Objeto2D(){
     }
 }
 
+bool Objeto2D::HayLineas(){
+    return this->inicio != nullptr && this->final != nullptr;
+}
+
 Objeto2D *Objeto2D::copia() {
     Objeto2D *objeto2d = new Objeto2D();
     Linea *linea = inicio; while(linea!=nullptr)
@@ -85,7 +89,7 @@ tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
     Linea* pointer = inicio;
     while (pointer != nullptr){
         //2. Llamar al método de la línea. Retorna <bool, Punto*>: True si dio click allí y el punto más cercano
-        auto tuple = inicio->esSeleccionada(x,y);
+        auto tuple = pointer->esSeleccionada(x,y);
         if (std::get<0>(tuple)){
             return std::make_tuple(pointer, std::get<1>(tuple));
         }

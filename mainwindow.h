@@ -2,16 +2,27 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "objeto2d.h"
 
-QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
 }
 QT_END_NAMESPACE
 
+enum Mode {
+    Normal,
+    Edit
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    Ui::MainWindow *ui;
+    Objeto2D *objeto2D;
+    Linea *actualLine = nullptr;
+    Linea *lastLine = nullptr;
+    Punto* pointToMove = nullptr;
+    Mode actualMode = Normal;
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -27,8 +38,6 @@ private slots:
     void on_actionLeer_triggered();
     void on_actionGuardar_2_triggered();
 
-private:
-    Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H
 

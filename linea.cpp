@@ -47,19 +47,19 @@ Linea* Linea::copia()
     return linea;
 }
 
-std::tuple<bool, Punto*> Linea::esSeleccionada(int px, int py){
-    double distancia = Utils::distanciaPuntoALinea(px,py, this->p1->x, this->p1->y, this->p2->x, this->p2->y);
+std::tuple<bool, Punto*> Linea::esSeleccionada(int px, int py) {
+    double distancia = Utils::distanciaPuntoALinea(px, py, this->p1->x, this->p1->y, this->p2->x, this->p2->y);
     bool estaSeleccionado =  distancia <= 10;
 
-    Punto* click = new Punto(px, py);
-    double distanciaAP1 = Utils::distancia2Puntos(click, this->p1);
-    double distanciaAP2 = Utils::distancia2Puntos(click, this->p2);
-    Punto* closestPoint =  distanciaAP1 <= distanciaAP2 ? this->p1 :  this->p2;
+    // Find the closest point (p1 or p2) based on distance to the clicked point
+    double distanciaAP1 = Utils::distancia2Puntos(px, py, this->p1->x, this->p1->y);
+    double distanciaAP2 = Utils::distancia2Puntos(px, py, this->p2->x, this->p2->y);
 
-    delete click;
-    click = nullptr;
+    Punto* closestPoint = (distanciaAP1 <= distanciaAP2) ? this->p1 : this->p2;
+
     return std::make_tuple(estaSeleccionado, closestPoint);
 }
+
 
 
 

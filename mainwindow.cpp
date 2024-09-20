@@ -4,25 +4,18 @@
 #include <qfiledialog.h>
 #include <QMouseEvent>
 #include "objeto2d.h"
-#include "QPixmap"
 #include <iostream>
 #include <tuple>
 using namespace std;
 
-Objeto2D *objeto2D;
-Linea *actualLine = nullptr;
-Linea *lastLine = nullptr;
-bool lineWasDeleted = false;
-bool editMode = false;
-Punto* pointToMove = nullptr;
-
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    actualLine=nullptr;
+    lastLine=nullptr;
+    pointToMove=nullptr;
     objeto2D=new Objeto2D();
-    this->setStyleSheet(
+    setStyleSheet(
     "QMenu {"
     "	background-color: white;"
     "	color: black;"
@@ -40,58 +33,74 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete objeto2D;
+    if(actualLine)delete actualLine;
+    if(lastLine)delete lastLine;
+    if(pointToMove)delete pointToMove;
+    actualLine = nullptr;
+    lastLine = nullptr;
+    pointToMove = nullptr;
     delete ui;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
-    int px = e->position().x();
-    int py = e->position().y();
+    Punto click(e->position().x(), e->position().y());
     if (e->button() == Qt::RightButton) {
-        if (!objeto2D->inicio){return;}
-        //Tuple
-        auto line_ClosestPoint = objeto2D->seleccionada(px, py);
+        if (!objeto2D->HayLineas())return;
+        auto line_ClosestPoint = objeto2D->seleccionada(click.x, click.y);
         actualLine = std::get<0>(line_ClosestPoint);
         pointToMove = std::get<1>(line_ClosestPoint);
-        if (actualLine != nullptr) editMode = true; else editMode = false;
+        //If theres a selected line, is Edit Mode, otherwise Normal Mode
+        if (actualLine != nullptr) actualMode = Edit; else actualMode = Normal;
     } else if (e->button() == Qt::LeftButton) {
-        editMode = false;
-        actualLine = new Linea(px, py, px, py);
+        actualMode = Normal;
+        actualLine = new Linea(click.x, click.y, click.x, click.y);
     }
     repaint();
+    //Call original parent event
     QMainWindow::mousePressEvent(e);
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e) {
-    if (actualLine){
+    if (!actualLine)return;
+
+    if(actualMode == Normal) goto DisplayChangingLine;
+    if(actualMode == Edit){
         if (pointToMove == actualLine->p1){
             actualLine->p1 = actualLine->p2;
             actualLine->p2 = pointToMove;
-        } else{
-            actualLine->p2->x=e->position().x();
-            actualLine->p2->y=e->position().y();
         }
-        repaint();
+        goto DisplayChangingLine;
     }
+
+    DisplayChangingLine:
+        actualLine->p2->x=e->position().x();
+        actualLine->p2->y=e->position().y();
+
+    repaint();
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *_) {
-    if (actualLine == nullptr) {return;}
+void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
+    if (!actualLine) return;
 
-    if (not editMode)
+    if (actualMode == Normal) {
         objeto2D->agregar(actualLine);
+        goto UpdateLastLine;
+    }
+    if (actualMode == Edit) goto UpdateLastLine;
 
-    lastLine = actualLine;
-    actualLine = nullptr;
+    UpdateLastLine:
+        lastLine = actualLine;
+        actualLine = nullptr;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e){
-    if(lastLine == nullptr){return;}
+    if(!objeto2D->HayLineas())return;
 
     if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier) {
         objeto2D->eliminar(lastLine);
         lastLine = objeto2D->final;
-        editMode = false;
+        actualMode = Normal;
         repaint();
     } else {
         QMainWindow::keyPressEvent(e);
@@ -102,20 +111,14 @@ void MainWindow::paintEvent(QPaintEvent *) {
     QPainter *painter=new QPainter(this);
     painter->setRenderHint(QPainter::Antialiasing,true);
     painter->fillRect(this->rect(), Qt::white);
+
     QPen pen;
     pen.setColor(QColor(0,0,255));
     painter->setPen(pen);
     if (actualLine!=nullptr)
         actualLine->desplegar(painter);
     objeto2D->desplegar(painter);
-
-
     delete painter;
-}
-
-void MainWindow::on_actionGuardar_triggered()
-{
-
 }
 
 void MainWindow::on_actionLeer_triggered()
@@ -190,5 +193,10 @@ void MainWindow::on_actionGuardar_2_triggered()
     QTextStream archivo(&sFile);
     archivo<<document.toString();
     sFile.close();
+}
+
+void MainWindow::on_actionGuardar_triggered()
+{
+
 }
 

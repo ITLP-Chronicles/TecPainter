@@ -14,6 +14,7 @@ public:
     void agregar(Linea *);
     void eliminar(Linea *);
     void desplegar(QPainter *);
+    bool HayLineas();
     Objeto2D *copia();
     std::tuple<Linea*, Punto*> seleccionada(int, int);
 };
