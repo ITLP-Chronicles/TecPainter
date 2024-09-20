@@ -1,5 +1,6 @@
 #include "objeto2d.h"
 #include <iostream>
+#include <tuple>
 using namespace std;
 
 Objeto2D::Objeto2D() {
@@ -79,15 +80,19 @@ void Objeto2D::eliminar(Linea *linea) {
 }
 
 
-Linea* Objeto2D::seleccionada(int x, int y){
+tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
+    //1. Posicionar puntero inicial para recorrer cada línea y revisar su cercanía con el click
     Linea* pointer = inicio;
     while (pointer != nullptr){
-        if (pointer->esSeleccionada(x,y)){
-            return pointer;
+        //2. Llamar al método de la línea. Retorna <bool, Punto*>: True si dio click allí y el punto más cercano
+        auto tuple = inicio->esSeleccionada(x,y);
+        if (std::get<0>(tuple)){
+            return std::make_tuple(pointer, std::get<1>(tuple));
         }
         pointer = pointer->sig;
     }
-    return nullptr;
+    //3. Retorna una tupla por defecto
+    return std::make_tuple(nullptr, nullptr);
 }
 
 

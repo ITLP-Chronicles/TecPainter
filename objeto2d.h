@@ -2,6 +2,7 @@
 #define OBJETO2D_H
 
 #include "linea.h"
+#include <tuple>
 
 class Objeto2D
 {
@@ -14,7 +15,7 @@ public:
     void eliminar(Linea *);
     void desplegar(QPainter *);
     Objeto2D *copia();
-    Linea* seleccionada(int, int);
+    std::tuple<Linea*, Punto*> seleccionada(int, int);
 };
 
 #endif // OBJETO2D_H

@@ -2,6 +2,7 @@
 #define LINEA_H
 
 #include "punto.h"
+#include <tuple>
 
 class Linea
 {
@@ -11,11 +12,11 @@ public:
     Linea *sig;
     Linea();
     ~Linea();
+    Linea *copia();
     Linea(Punto *,Punto *);
     Linea(float,float,float,float);
     void desplegar(QPainter *);
-    Linea *copia();
-    bool esSeleccionada(int, int);
+    std::tuple<bool, Punto*> esSeleccionada(int, int);
 };
 
 #endif // LINEA_H

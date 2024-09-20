@@ -6,6 +6,7 @@
 #include "objeto2d.h"
 #include "QPixmap"
 #include <iostream>
+#include <tuple>
 using namespace std;
 
 Objeto2D *objeto2D;
@@ -13,6 +14,7 @@ Linea *actualLine = nullptr;
 Linea *lastLine = nullptr;
 bool lineWasDeleted = false;
 bool editMode = false;
+Punto* pointToMove = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -47,7 +49,10 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     int py = e->position().y();
     if (e->button() == Qt::RightButton) {
         if (!objeto2D->inicio){return;}
-        actualLine = objeto2D->seleccionada(px, py);
+        //Tuple
+        auto line_ClosestPoint = objeto2D->seleccionada(px, py);
+        actualLine = std::get<0>(line_ClosestPoint);
+        pointToMove = std::get<1>(line_ClosestPoint);
         if (actualLine != nullptr) editMode = true; else editMode = false;
     } else if (e->button() == Qt::LeftButton) {
         editMode = false;
@@ -59,8 +64,13 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e) {
     if (actualLine){
-        actualLine->p2->x=e->position().x();
-        actualLine->p2->y=e->position().y();
+        if (pointToMove == actualLine->p1){
+            actualLine->p1 = actualLine->p2;
+            actualLine->p2 = pointToMove;
+        } else{
+            actualLine->p2->x=e->position().x();
+            actualLine->p2->y=e->position().y();
+        }
         repaint();
     }
 }

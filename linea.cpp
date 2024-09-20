@@ -47,9 +47,18 @@ Linea* Linea::copia()
     return linea;
 }
 
-bool Linea::esSeleccionada(int px, int py){
+std::tuple<bool, Punto*> Linea::esSeleccionada(int px, int py){
     double distancia = Utils::distanciaPuntoALinea(px,py, this->p1->x, this->p1->y, this->p2->x, this->p2->y);
-    return distancia <= 10;
+    bool estaSeleccionado =  distancia <= 10;
+
+    Punto* click = new Punto(px, py);
+    double distanciaAP1 = Utils::distancia2Puntos(click, this->p1);
+    double distanciaAP2 = Utils::distancia2Puntos(click, this->p2);
+    Punto* closestPoint =  distanciaAP1 <= distanciaAP2 ? this->p1 :  this->p2;
+
+    delete click;
+    click = nullptr;
+    return std::make_tuple(estaSeleccionado, closestPoint);
 }
 
 
