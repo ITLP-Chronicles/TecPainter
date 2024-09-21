@@ -3,6 +3,7 @@
 
 #include "linea.h"
 #include <tuple>
+#include <QtXml>
 
 class Objeto2D
 {
@@ -14,6 +15,8 @@ public:
     void agregar(Linea *);
     void eliminar(Linea *);
     void desplegar(QPainter *);
+    void leer(QDomElement, QDomElement);
+    void guardar(QDomDocument,QDomElement);
     bool HayLineas();
     Objeto2D *copia();
     std::tuple<Linea*, Punto*> seleccionada(int, int);

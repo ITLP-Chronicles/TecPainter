@@ -134,28 +134,8 @@ void MainWindow::on_actionLeer_triggered()
     QDomElement lineaXML = objeto2DXML.firstChildElement();
     QDomElement puntoXML=lineaXML.firstChildElement();
 
-    objeto2D = new Objeto2D();
-    while (!lineaXML.isNull()) {
-        Linea* linea = new Linea();
-
-        QDomElement puntoXML = lineaXML.firstChildElement();
-        if (!puntoXML.isNull()) {
-            float x = puntoXML.attribute("X").toFloat();
-            float y = puntoXML.attribute("Y").toFloat();
-            linea->p1 = new Punto(x, y);
-            std::cout << "Punto X=" << x << " Y=" << y << std::endl;
-
-            puntoXML = puntoXML.nextSiblingElement();
-            if (!puntoXML.isNull()) {
-                x = puntoXML.attribute("X").toFloat();
-                y = puntoXML.attribute("Y").toFloat();
-                linea->p2 = new Punto(x, y);
-                std::cout << "Punto X=" << x << " Y=" << y << std::endl;
-            }
-        }
-        objeto2D->agregar(linea);
-        lineaXML = lineaXML.nextSiblingElement();
-    }
+    objeto2D = new Objeto2D;
+    objeto2D->leer(lineaXML,puntoXML);
     repaint();
 }
 
@@ -168,25 +148,7 @@ void MainWindow::on_actionGuardar_2_triggered()
     QDomElement objeto2DXML=document.createElement("Objeto2D");
     document.appendChild(objeto2DXML);
 
-    Linea* pointer = objeto2D->inicio;
-    while (pointer != nullptr)
-    {
-        QDomElement linea=document.createElement("Linea");
-        objeto2DXML.appendChild(linea);
-
-        QDomElement punto=document.createElement("Punto");
-        punto.setAttribute("X",pointer->p1->x);
-        punto.setAttribute("Y",pointer->p1->y);
-        linea.appendChild(punto);
-
-        punto=document.createElement("Punto");
-        punto.setAttribute("X",pointer->p2->x);
-        punto.setAttribute("Y",pointer->p2->y);
-        linea.appendChild(punto);
-
-        pointer = pointer->sig;
-    }
-    pointer = nullptr;
+    objeto2D->guardar(document,objeto2DXML);
 
     QFile sFile(file);
     sFile.open(QIODevice::WriteOnly | QIODevice::Text);

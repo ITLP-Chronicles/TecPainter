@@ -99,8 +99,51 @@ tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
     return std::make_tuple(nullptr, nullptr);
 }
 
+void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
+    while (!lineaXML.isNull()) {
+        Linea* linea = new Linea();
 
+        QDomElement puntoXML = lineaXML.firstChildElement();
+        if (!puntoXML.isNull()) {
+            float x = puntoXML.attribute("X").toFloat();
+            float y = puntoXML.attribute("Y").toFloat();
+            linea->p1 = new Punto(x, y);
+            std::cout << "Punto X=" << x << " Y=" << y << std::endl;
 
+            puntoXML = puntoXML.nextSiblingElement();
+            if (!puntoXML.isNull()) {
+                x = puntoXML.attribute("X").toFloat();
+                y = puntoXML.attribute("Y").toFloat();
+                linea->p2 = new Punto(x, y);
+                std::cout << "Punto X=" << x << " Y=" << y << std::endl;
+            }
+        }
+        this->agregar(linea);
+        lineaXML = lineaXML.nextSiblingElement();
+    }
+}
+
+void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
+    Linea* pointer = this->inicio;
+    while (pointer != nullptr)
+    {
+        QDomElement linea=document.createElement("Linea");
+        objeto2DXML.appendChild(linea);
+
+        QDomElement punto=document.createElement("Punto");
+        punto.setAttribute("X",pointer->p1->x);
+        punto.setAttribute("Y",pointer->p1->y);
+        linea.appendChild(punto);
+
+        punto=document.createElement("Punto");
+        punto.setAttribute("X",pointer->p2->x);
+        punto.setAttribute("Y",pointer->p2->y);
+        linea.appendChild(punto);
+
+        pointer = pointer->sig;
+    }
+    pointer = nullptr;
+}
 
 
 
