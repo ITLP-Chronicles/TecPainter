@@ -139,7 +139,7 @@ void MainWindow::on_actionLeer_triggered()
     repaint();
 }
 
-void MainWindow::on_actionGuardar_2_triggered()
+void MainWindow::on_actionGuardar_triggered()
 {
     QString file= QFileDialog::getSaveFileName
         (this,"Guardar Dibujo","*.xml");
@@ -155,10 +155,5 @@ void MainWindow::on_actionGuardar_2_triggered()
     QTextStream archivo(&sFile);
     archivo<<document.toString();
     sFile.close();
-}
-
-void MainWindow::on_actionGuardar_triggered()
-{
-
 }
 

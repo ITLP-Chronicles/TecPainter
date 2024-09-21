@@ -63,20 +63,23 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMen">
     <property name="title">
      <string>Menú</string>
     </property>
-    <addaction name="actionGuardar_2"/>
     <addaction name="actionLeer"/>
+    <addaction name="actionGuardar"/>
    </widget>
    <addaction name="menuMen"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionGuardar">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::DocumentSave"/>
+   </property>
    <property name="text">
     <string>Guardar</string>
    </property>
@@ -86,12 +89,10 @@
     <string>Cargar</string>
    </property>
   </action>
-  <action name="actionGuardar_2">
-   <property name="text">
-    <string>Guardar</string>
-   </property>
-  </action>
   <action name="actionLeer">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::EditFind"/>
+   </property>
    <property name="text">
     <string>Leer</string>
    </property>

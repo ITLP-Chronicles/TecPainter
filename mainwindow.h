@@ -36,8 +36,6 @@ public:
 private slots:
     void on_actionGuardar_triggered();
     void on_actionLeer_triggered();
-    void on_actionGuardar_2_triggered();
-
 };
 #endif // MAINWINDOW_H
 
