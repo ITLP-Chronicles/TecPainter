@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>✨ Función: Puede deshacer cambios con ctrl + z</string>
+     <string>✨ Función: Puede deshacer cambios con ctrl + z, y rehacerlos con ctrl + y</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">

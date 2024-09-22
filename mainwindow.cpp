@@ -106,15 +106,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e){
-    if (!objeto2D->HayLineas()) return;
 
-    if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier) {
-        if (!objectStack.empty()){
-            deletedObjectStack.push(objeto2D->copia());
-            delete objeto2D;
-            objeto2D = objectStack.top()->copia();
-            objectStack.pop();
-        }
+    if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier && objeto2D->HayLineas()) {
+        deletedObjectStack.push(objeto2D->copia());
+        delete objeto2D;
+        objeto2D = objectStack.top()->copia();
+        objectStack.pop();
         actualMode = Normal;
         repaint();
     } else if (e->key() == Qt::Key_Y && e->modifiers() & Qt::ControlModifier){
