@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "objeto2d.h"
+#include <stack>
 
 namespace Ui {
 class MainWindow;
@@ -23,6 +24,8 @@ class MainWindow : public QMainWindow
     Linea *lastLine = nullptr;
     Punto* pointToMove = nullptr;
     Mode actualMode = Normal;
+    std::stack<Objeto2D*> objectStack;
+    std::stack<Objeto2D*> deletedObjectStack;
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -36,6 +39,7 @@ public:
 private slots:
     void on_actionGuardar_triggered();
     void on_actionLeer_triggered();
+    void resetDeletedObjectStack();
 };
 #endif // MAINWINDOW_H
 

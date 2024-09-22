@@ -6,6 +6,8 @@
 #include "objeto2d.h"
 #include <iostream>
 #include <tuple>
+#include <stack>
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
@@ -15,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     lastLine=nullptr;
     pointToMove=nullptr;
     objeto2D=new Objeto2D();
+
     setStyleSheet(
     "QMenu {"
     "	background-color: white;"
@@ -32,6 +35,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 MainWindow::~MainWindow()
 {
+    while (!objectStack.empty()) {
+        delete &objectStack.top();
+        objectStack.pop();
+    }
+    resetDeletedObjectStack();
     delete objeto2D;
     if(actualLine)delete actualLine;
     if(lastLine)delete lastLine;
@@ -50,9 +58,11 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         auto line_ClosestPoint = objeto2D->seleccionada(click.x, click.y);
         actualLine = std::get<0>(line_ClosestPoint);
         pointToMove = std::get<1>(line_ClosestPoint);
+        if (std::get<1>(line_ClosestPoint)) objectStack.push(objeto2D->copia());
         //If theres a selected line, is Edit Mode, otherwise Normal Mode
         if (actualLine != nullptr) actualMode = Edit; else actualMode = Normal;
     } else if (e->button() == Qt::LeftButton) {
+        resetDeletedObjectStack();
         actualMode = Normal;
         actualLine = new Linea(click.x, click.y, click.x, click.y);
     }
@@ -84,6 +94,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
     if (!actualLine) return;
 
     if (actualMode == Normal) {
+        objectStack.push(objeto2D->copia());
         objeto2D->agregar(actualLine);
         goto UpdateLastLine;
     }
@@ -95,14 +106,27 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e){
-    if(!objeto2D->HayLineas())return;
+    if (!objeto2D->HayLineas()) return;
 
     if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier) {
-        objeto2D->eliminar(lastLine);
-        lastLine = objeto2D->final;
+        if (!objectStack.empty()){
+            deletedObjectStack.push(objeto2D->copia());
+            delete objeto2D;
+            objeto2D = objectStack.top()->copia();
+            objectStack.pop();
+        }
         actualMode = Normal;
         repaint();
-    } else {
+    } else if (e->key() == Qt::Key_Y && e->modifiers() & Qt::ControlModifier){
+        if (!deletedObjectStack.empty()){
+            objectStack.push(objeto2D->copia());
+            delete objeto2D;
+            objeto2D = deletedObjectStack.top()->copia();
+            deletedObjectStack.pop();
+        }
+        repaint();
+    }
+    else {
         QMainWindow::keyPressEvent(e);
     }
 };
@@ -157,3 +181,9 @@ void MainWindow::on_actionGuardar_triggered()
     sFile.close();
 }
 
+void MainWindow::resetDeletedObjectStack(){
+    while (!deletedObjectStack.empty()) {
+        delete deletedObjectStack.top();
+        deletedObjectStack.pop();
+    }
+}
