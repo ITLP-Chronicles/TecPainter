@@ -35,12 +35,12 @@
      <rect>
       <x>10</x>
       <y>520</y>
-      <width>211</width>
+      <width>361</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Hecho Por Kristan Ruíz Limón</string>
+     <string>Hecho Por Kristan Ruíz Limón y Raúl Armando</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">

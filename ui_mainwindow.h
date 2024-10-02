@@ -29,6 +29,10 @@ public:
     QAction *actionLeer;
     QAction *actionNormal;
     QAction *actionInterlineado;
+    QAction *actionDibujar;
+    QAction *actionTrasladar;
+    QAction *actionRotar;
+    QAction *actionEscalar;
     QWidget *centralwidget;
     QLabel *label;
     QLabel *label_2;
@@ -36,6 +40,7 @@ public:
     QMenuBar *menubar;
     QMenu *menuMen;
     QMenu *menuL_nea;
+    QMenu *menuHerramienta;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -58,6 +63,14 @@ public:
         actionNormal->setObjectName("actionNormal");
         actionInterlineado = new QAction(MainWindow);
         actionInterlineado->setObjectName("actionInterlineado");
+        actionDibujar = new QAction(MainWindow);
+        actionDibujar->setObjectName("actionDibujar");
+        actionTrasladar = new QAction(MainWindow);
+        actionTrasladar->setObjectName("actionTrasladar");
+        actionRotar = new QAction(MainWindow);
+        actionRotar->setObjectName("actionRotar");
+        actionEscalar = new QAction(MainWindow);
+        actionEscalar->setObjectName("actionEscalar");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         label = new QLabel(centralwidget);
@@ -65,7 +78,7 @@ public:
         label->setGeometry(QRect(10, 490, 501, 20));
         label_2 = new QLabel(centralwidget);
         label_2->setObjectName("label_2");
-        label_2->setGeometry(QRect(10, 520, 211, 20));
+        label_2->setGeometry(QRect(10, 520, 361, 20));
         label_3 = new QLabel(centralwidget);
         label_3->setObjectName("label_3");
         label_3->setGeometry(QRect(370, 10, 51, 21));
@@ -77,6 +90,8 @@ public:
         menuMen->setObjectName("menuMen");
         menuL_nea = new QMenu(menubar);
         menuL_nea->setObjectName("menuL_nea");
+        menuHerramienta = new QMenu(menubar);
+        menuHerramienta->setObjectName("menuHerramienta");
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
@@ -84,10 +99,15 @@ public:
 
         menubar->addAction(menuMen->menuAction());
         menubar->addAction(menuL_nea->menuAction());
+        menubar->addAction(menuHerramienta->menuAction());
         menuMen->addAction(actionLeer);
         menuMen->addAction(actionGuardar);
         menuL_nea->addAction(actionNormal);
         menuL_nea->addAction(actionInterlineado);
+        menuHerramienta->addAction(actionDibujar);
+        menuHerramienta->addAction(actionTrasladar);
+        menuHerramienta->addAction(actionRotar);
+        menuHerramienta->addAction(actionEscalar);
 
         retranslateUi(MainWindow);
 
@@ -102,11 +122,16 @@ public:
         actionLeer->setText(QCoreApplication::translate("MainWindow", "Leer", nullptr));
         actionNormal->setText(QCoreApplication::translate("MainWindow", "Normal", nullptr));
         actionInterlineado->setText(QCoreApplication::translate("MainWindow", "Interlineado", nullptr));
+        actionDibujar->setText(QCoreApplication::translate("MainWindow", "Ninguno", nullptr));
+        actionTrasladar->setText(QCoreApplication::translate("MainWindow", "Trasladar", nullptr));
+        actionRotar->setText(QCoreApplication::translate("MainWindow", "Rotar", nullptr));
+        actionEscalar->setText(QCoreApplication::translate("MainWindow", "Escalar", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "\342\234\250 Funci\303\263n: Puede deshacer cambios con ctrl + z con las l\303\255neas", nullptr));
-        label_2->setText(QCoreApplication::translate("MainWindow", "Hecho Por Kristan Ru\303\255z Lim\303\263n", nullptr));
+        label_2->setText(QCoreApplication::translate("MainWindow", "Hecho Por Kristan Ru\303\255z Lim\303\263n y Ra\303\272l Armando", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Examen", nullptr));
         menuMen->setTitle(QCoreApplication::translate("MainWindow", "Men\303\272", nullptr));
         menuL_nea->setTitle(QCoreApplication::translate("MainWindow", "L\303\255nea", nullptr));
+        menuHerramienta->setTitle(QCoreApplication::translate("MainWindow", "Herramienta", nullptr));
     } // retranslateUi
 
 };

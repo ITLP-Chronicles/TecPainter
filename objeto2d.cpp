@@ -55,11 +55,7 @@ void Objeto2D::agregar(Linea *linea) {
 }
 
 void Objeto2D::desplegar(QPainter* painter){
-    Linea* pointer = inicio;
-    while (pointer != nullptr){
-        pointer->desplegar(painter);
-        pointer = pointer->sig;
-    }
+    ForEachLine([painter](Linea* linea){linea->desplegar(painter);});
 }
 
 void Objeto2D::eliminar(Linea *linea) {
@@ -158,34 +154,27 @@ void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
     }
     pointer = nullptr;
 }
-void trasladar(float newX, float newY);
-void rotar(float xr, float yr, float ang);
-void escalar(float factorX, float factorY, float centerX, float centerY);
 
 void Objeto2D::trasladar(float newX, float newY){
-    Linea *temp = inicio;
-    while (temp != nullptr){
-        temp->trasladar(newX, newY);
-        temp = temp->sig;
-    }
-
-    //ForEachLine([newX, newY](Linea* linea){ });
+    ForEachLine([newX, newY](Linea* current){
+        current->trasladar(newX, newY);
+    });
 }
 
 void Objeto2D::rotar(float xr, float yr, float ang){
-    Linea *temp = inicio;
-    while (temp != nullptr){
-        temp->rotar(xr, yr, ang);
-        temp = temp->sig;
-    }
+    ForEachLine([xr, yr, ang](Linea *current){
+        current->rotar(xr, yr, ang);
+    });
 }
 
 void Objeto2D::escalar(float factorX, float factorY, float centerX, float centerY){
-    Linea *temp = inicio;
-    while (temp != nullptr){
-        temp->escalar(factorX, factorY, centerX, centerY);
-        temp = temp->sig;
-    }
-
+    ForEachLine([factorX, factorY, centerX, centerY](Linea *current){
+        current->escalar(factorX, factorY, centerX, centerY);
+    });
 }
 
+void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
+    ForEachLine([newStyle](Linea *current){
+        current->tipoLinea = newStyle;
+    });
+}

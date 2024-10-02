@@ -46,6 +46,9 @@ private slots:
     void on_actionNormal_triggered();
     void on_actionInterlineado_triggered();
     void on_actionDibujar_triggered();
+    void on_actionTrasladar_triggered();
+    void on_actionRotar_triggered();
+    void on_actionEscalar_triggered();
 };
 #endif // MAINWINDOW_H
 

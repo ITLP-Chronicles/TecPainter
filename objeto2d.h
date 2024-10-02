@@ -10,6 +10,7 @@ class Objeto2D
 public:
     Linea *inicio;
     Linea *final;
+    TipoLinea defaultLineStyle;
     Objeto2D();
     ~Objeto2D();
     void agregar(Linea *);
@@ -23,6 +24,7 @@ public:
     void trasladar(float newX, float newY);
     void rotar(float xr, float yr, float ang);
     void escalar(float factorX, float factorY, float centerX, float centerY);
+    void updateLineStyleToAll(TipoLinea newStyle);
 
 private:
     void ForEachLine(std::function<void(Linea*)> callBack);
