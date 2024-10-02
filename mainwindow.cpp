@@ -9,7 +9,6 @@
 using namespace std;
 TipoLinea tipoLineaSeleccionada = LineaNormal;
 Objeto2D *preview2D = nullptr;
-QPoint lastMousePos;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -59,7 +58,6 @@ MainWindow::~MainWindow()
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     Punto click(e->position().x(), e->position().y());
-    lastMousePos = e->pos();
 
     if (e->button() == Qt::RightButton) {
         if (!objeto2D->HayLineas())return;
@@ -105,14 +103,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
     }
     if(actualMode == Trasladar){
         // Calculate the translation delta
-        int deltaX = e->position().x() - lastMousePos.x();
-        int deltaY = e->position().y() - lastMousePos.y();
+        int deltaX = e->position().x() - actualLine->p2->x;
+        int deltaY = e->position().y() - actualLine->p2->y;
 
         // Apply the translation to preview2D
         preview2D->trasladar(deltaX, deltaY);
 
         // Update lastMousePos for the next move event
-        lastMousePos = e->pos();
     }
 
     DisplayChangingLine:
@@ -133,8 +130,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
     }
 
     if (actualMode == Trasladar){
-        int deltaX = lastMousePos.x() - actualLine->p1->x;
-        int deltaY = lastMousePos.y() - actualLine->p1->y;
+        int deltaX = actualLine->p2->x - actualLine->p1->x;
+        int deltaY = actualLine->p2->y - actualLine->p1->y;
         objeto2D->trasladar(deltaX, deltaY);
         delete preview2D;
         preview2D = nullptr;
