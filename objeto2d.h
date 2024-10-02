@@ -20,6 +20,12 @@ public:
     bool HayLineas();
     Objeto2D *copia();
     std::tuple<Linea*, Punto*> seleccionada(int, int);
+    void trasladar(float newX, float newY);
+    void rotar(float xr, float yr, float ang);
+    void escalar(float factorX, float factorY, float centerX, float centerY);
+
+private:
+    void ForEachLine(std::function<void(Linea*)> callBack);
 };
 
 #endif // OBJETO2D_H

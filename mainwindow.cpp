@@ -4,11 +4,11 @@
 #include <qfiledialog.h>
 #include <QMouseEvent>
 #include "objeto2d.h"
-#include <iostream>
-#include <tuple>
 #include <stack>
 
 using namespace std;
+TipoLinea tipoLineaSeleccionada = LineaNormal;
+Objeto2D *previewDraw = nullptr;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     lastLine=nullptr;
     pointToMove=nullptr;
     objeto2D=new Objeto2D();
+    //copia2D = new Objeto2D();
 
     setStyleSheet(
     "QMenu {"
@@ -32,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     "}"
     );
 }
+
+
 
 MainWindow::~MainWindow()
 {
@@ -65,6 +68,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         resetDeletedObjectStack();
         actualMode = Normal;
         actualLine = new Linea(click.x, click.y, click.x, click.y);
+        actualLine->tipoLinea = tipoLineaSeleccionada;
     }
     repaint();
     //Call original parent event
@@ -96,8 +100,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
     if (actualMode == Normal) {
         objectStack.push(objeto2D->copia());
         objeto2D->agregar(actualLine);
+        //copia2D->agregar(actualLine->copia());
         goto UpdateLastLine;
     }
+
     if (actualMode == Edit) goto UpdateLastLine;
 
     UpdateLastLine:
@@ -139,6 +145,12 @@ void MainWindow::paintEvent(QPaintEvent *) {
     if (actualLine!=nullptr)
         actualLine->desplegar(painter);
     objeto2D->desplegar(painter);
+
+    //copia2D->trasladar(150,150);
+    //pen.setColor(QColor(255,0,0));
+    //painter->setPen(pen);
+    //copia2D->desplegar(painter);
+
     delete painter;
 }
 
@@ -184,3 +196,19 @@ void MainWindow::resetDeletedObjectStack(){
         deletedObjectStack.pop();
     }
 }
+
+void MainWindow::on_actionNormal_triggered()
+{
+    tipoLineaSeleccionada = LineaNormal;
+}
+
+void MainWindow::on_actionInterlineado_triggered()
+{
+    tipoLineaSeleccionada = LineaInterlineada;
+}
+
+void MainWindow::on_actionDibujar_triggered()
+{
+    actualMode = Edit;
+}
+

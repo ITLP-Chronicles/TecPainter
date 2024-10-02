@@ -3,6 +3,8 @@
 #include <tuple>
 using namespace std;
 
+
+
 Objeto2D::Objeto2D() {
     inicio=nullptr;
     final=nullptr;
@@ -15,6 +17,14 @@ Objeto2D::~Objeto2D(){
         delete temp;
         cout << "Se libero una linea" << endl;
         temp = nextOne;
+    }
+}
+
+void Objeto2D::ForEachLine(std::function<void(Linea*)> callBack){
+    Linea* temp = inicio;
+    while(temp != nullptr){
+        callBack(temp);
+        temp = temp->sig;
     }
 }
 
@@ -117,6 +127,9 @@ void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
                 linea->p2 = new Punto(x, y);
                 std::cout << "Punto X=" << x << " Y=" << y << std::endl;
             }
+
+            QString lineMode = lineaXML.attribute("estilo");
+            linea->tipoLinea = lineMode == "N" ? LineaNormal:LineaInterlineada;
         }
         this->agregar(linea);
         lineaXML = lineaXML.nextSiblingElement();
@@ -128,6 +141,7 @@ void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
     while (pointer != nullptr)
     {
         QDomElement linea=document.createElement("Linea");
+        linea.setAttribute("estilo", pointer->tipoLinea == LineaNormal ? "N":"I");
         objeto2DXML.appendChild(linea);
 
         QDomElement punto=document.createElement("Punto");
@@ -144,9 +158,34 @@ void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
     }
     pointer = nullptr;
 }
+void trasladar(float newX, float newY);
+void rotar(float xr, float yr, float ang);
+void escalar(float factorX, float factorY, float centerX, float centerY);
 
+void Objeto2D::trasladar(float newX, float newY){
+    Linea *temp = inicio;
+    while (temp != nullptr){
+        temp->trasladar(newX, newY);
+        temp = temp->sig;
+    }
 
+    //ForEachLine([newX, newY](Linea* linea){ });
+}
 
+void Objeto2D::rotar(float xr, float yr, float ang){
+    Linea *temp = inicio;
+    while (temp != nullptr){
+        temp->rotar(xr, yr, ang);
+        temp = temp->sig;
+    }
+}
 
+void Objeto2D::escalar(float factorX, float factorY, float centerX, float centerY){
+    Linea *temp = inicio;
+    while (temp != nullptr){
+        temp->escalar(factorX, factorY, centerX, centerY);
+        temp = temp->sig;
+    }
 
+}
 

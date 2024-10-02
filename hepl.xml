@@ -1,0 +1,86 @@
+<Objeto2D>
+ <Linea estilo="N">
+  <Punto X="182" Y="250"/>
+  <Punto X="394" Y="307"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="384" Y="299"/>
+  <Punto X="284" Y="377"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="242" Y="379"/>
+  <Punto X="490" Y="344"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="486" Y="271"/>
+  <Punto X="391" Y="211"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="356" Y="182"/>
+  <Punto X="513" Y="282"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="572" Y="305"/>
+  <Punto X="444" Y="291"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="316" Y="260"/>
+  <Punto X="400" Y="271"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="562" Y="309"/>
+  <Punto X="522" Y="304"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="326" Y="260"/>
+  <Punto X="393" Y="271"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="526" Y="289"/>
+  <Punto X="446" Y="281"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="388" Y="270"/>
+  <Punto X="450" Y="278"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="471" Y="278"/>
+  <Punto X="406" Y="275"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="406" Y="266"/>
+  <Punto X="441" Y="322"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="436" Y="275"/>
+  <Punto X="422" Y="329"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="528" Y="350"/>
+  <Punto X="530" Y="330"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="410" Y="338"/>
+  <Punto X="339" Y="366"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="358" Y="341"/>
+  <Punto X="403" Y="303"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="298" Y="146"/>
+  <Punto X="122" Y="243"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="185" Y="238"/>
+  <Punto X="127" Y="354"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="254" Y="434"/>
+  <Punto X="477" Y="474"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="554" Y="410"/>
+  <Punto X="399" Y="437"/>
+ </Linea>
+</Objeto2D>

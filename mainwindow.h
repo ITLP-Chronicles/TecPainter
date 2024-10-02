@@ -12,7 +12,10 @@ QT_END_NAMESPACE
 
 enum Mode {
     Normal,
-    Edit
+    Edit,
+    Trasladar,
+    Rotar,
+    Escalar
 };
 
 class MainWindow : public QMainWindow
@@ -40,6 +43,9 @@ private slots:
     void on_actionGuardar_triggered();
     void on_actionLeer_triggered();
     void resetDeletedObjectStack();
+    void on_actionNormal_triggered();
+    void on_actionInterlineado_triggered();
+    void on_actionDibujar_triggered();
 };
 #endif // MAINWINDOW_H
 

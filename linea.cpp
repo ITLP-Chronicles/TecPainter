@@ -4,24 +4,32 @@
 Linea::Linea() {
     p1 = new Punto();
     p2 = new Punto();
+    tipoLinea = LineaNormal;
+    anchoInterlineado = 5;
     sig=nullptr;
 }
 
 Linea::~Linea() {
     delete p1;
     delete p2;
+    tipoLinea = LineaNormal;
+    anchoInterlineado = 5;
     sig=nullptr;
 }
 
 Linea::Linea(Punto *p1, Punto *p2) {
     this->p1 = p1;
     this->p2 = p2;
+    tipoLinea = LineaNormal;
+    anchoInterlineado = 5;
     sig=nullptr;
 }
 
 Linea::Linea(float x1,float y1,float x2,float y2) {
     p1 = new Punto(x1,y1);
     p2 = new Punto(x2,y2);
+    tipoLinea = LineaNormal;
+    anchoInterlineado = 5;
     sig=nullptr;
 }
 
@@ -32,8 +40,20 @@ void Linea::desplegar(QPainter *painter) {
     float xIncrement = dx /pixelsToTravel;
     float yIncrement = dy /pixelsToTravel;
     Punto *p = p1->copia();
+
+    bool canDisplay = false;
     for(int i = 0; i <= pixelsToTravel; i++){
-        p->desplegar(painter);
+        if (i % anchoInterlineado == 0){
+            canDisplay = !canDisplay;
+        }
+        if (tipoLinea == LineaNormal){
+            p->desplegar(painter);
+        } else {
+            if (canDisplay){
+                p->desplegar(painter);
+            }
+        }
+
         p->x += xIncrement;
         p->y += yIncrement;
     }
@@ -60,8 +80,20 @@ std::tuple<bool, Punto*> Linea::esSeleccionada(int px, int py) {
     return std::make_tuple(estaSeleccionado, closestPoint);
 }
 
+void Linea::trasladar(float tx, float ty){
+    p1->trasladar(tx,ty);
+    p2->trasladar(tx,ty);
+}
 
+void Linea::rotar(float xr, float yr, float ang){
+    p1->rotar(xr, yr, ang);
+    p2->rotar(xr, yr, ang);
+}
 
+void Linea::escalar(float sx, float sy, float xf, float yf) {
+    p1->escalar(sx, sy, xf, yf);
+    p2->escalar(sx, sy, xf, yf);
+}
 
 
 

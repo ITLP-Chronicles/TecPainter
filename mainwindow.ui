@@ -20,40 +20,40 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>530</y>
+      <x>10</x>
+      <y>490</y>
       <width>501</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>✨ Función: Puede deshacer cambios con ctrl + z, y rehacerlos con ctrl + y</string>
+     <string>✨ Función: Puede deshacer cambios con ctrl + z con las líneas</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>530</y>
-      <width>171</width>
+      <x>10</x>
+      <y>520</y>
+      <width>211</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Hecho por: Raúl y Kristan</string>
+     <string>Hecho Por Kristan Ruíz Limón</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>0</y>
-      <width>71</width>
+      <x>370</x>
+      <y>10</y>
+      <width>51</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>TecPainter</string>
+     <string>Examen</string>
     </property>
    </widget>
   </widget>
@@ -73,7 +73,25 @@
     <addaction name="actionLeer"/>
     <addaction name="actionGuardar"/>
    </widget>
+   <widget class="QMenu" name="menuL_nea">
+    <property name="title">
+     <string>Línea</string>
+    </property>
+    <addaction name="actionNormal"/>
+    <addaction name="actionInterlineado"/>
+   </widget>
+   <widget class="QMenu" name="menuHerramienta">
+    <property name="title">
+     <string>Herramienta</string>
+    </property>
+    <addaction name="actionDibujar"/>
+    <addaction name="actionTrasladar"/>
+    <addaction name="actionRotar"/>
+    <addaction name="actionEscalar"/>
+   </widget>
    <addaction name="menuMen"/>
+   <addaction name="menuL_nea"/>
+   <addaction name="menuHerramienta"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionGuardar">
@@ -95,6 +113,36 @@
    </property>
    <property name="text">
     <string>Leer</string>
+   </property>
+  </action>
+  <action name="actionNormal">
+   <property name="text">
+    <string>Normal</string>
+   </property>
+  </action>
+  <action name="actionInterlineado">
+   <property name="text">
+    <string>Interlineado</string>
+   </property>
+  </action>
+  <action name="actionDibujar">
+   <property name="text">
+    <string>Ninguno</string>
+   </property>
+  </action>
+  <action name="actionTrasladar">
+   <property name="text">
+    <string>Trasladar</string>
+   </property>
+  </action>
+  <action name="actionRotar">
+   <property name="text">
+    <string>Rotar</string>
+   </property>
+  </action>
+  <action name="actionEscalar">
+   <property name="text">
+    <string>Escalar</string>
    </property>
   </action>
  </widget>

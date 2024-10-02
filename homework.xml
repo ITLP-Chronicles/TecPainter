@@ -1,0 +1,26 @@
+<Objeto2D>
+ <Linea estilo="N">
+  <Punto X="214" Y="385"/>
+  <Punto X="426" Y="197"/>
+ </Linea>
+ <Linea estilo="N">
+  <Punto X="345" Y="194"/>
+  <Punto X="91" Y="226"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="208" Y="109"/>
+  <Punto X="414" Y="160"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="491" Y="309"/>
+  <Punto X="452" Y="170"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="533" Y="309"/>
+  <Punto X="469" Y="385"/>
+ </Linea>
+ <Linea estilo="I">
+  <Punto X="598" Y="396"/>
+  <Punto X="416" Y="444"/>
+ </Linea>
+</Objeto2D>
