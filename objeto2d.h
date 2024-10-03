@@ -26,6 +26,8 @@ public:
     void escalar(float factorX, float factorY, float centerX, float centerY);
     void updateLineStyleToAll(TipoLinea newStyle);
 
+    Punto *centro();
+
 private:
     void ForEachLine(std::function<void(Linea*)> callBack);
 };

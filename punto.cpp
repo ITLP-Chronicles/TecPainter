@@ -31,11 +31,9 @@ void Punto::trasladar(float tx, float ty){
 }
 
 void Punto::rotar(float xr, float yr, float angulo) {
-    //int _x = x, _y = y; //Keeping original coords before translation
-    //trasladar(-xr, -yr);
-    x =  (x-xr) * cos(angulo) - (y-yr) * sin(angulo) ; //help it is incomplete
-    y = 0; //help
-    //trasladar(xr, yr);
+    int ox = x;
+    x = (ox - xr) * cos(angulo) - (y - yr) * sin(angulo) + xr;
+    y = (y - yr) * cos(angulo) + (ox - xr) * sin(angulo) + yr;
 }
 
 void Punto::escalar(float sx, float sy, float xf, float yf) {

@@ -178,3 +178,22 @@ void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
         current->tipoLinea = newStyle;
     });
 }
+
+Punto *Objeto2D::centro(){
+    int minX = inicio->p1->x, maxX = inicio->p1->x,
+        minY = inicio->p1->y, maxY = inicio->p1->y;
+
+    ForEachLine([&](Linea* linea) {
+        for (int i = 0; i < 2; ++i) {
+            Punto* p = (i == 0) ? linea->p1 : linea->p2;
+
+            if (p->x < minX) minX = p->x;
+            if (p->x > maxX) maxX = p->x;
+
+            if (p->y < minY) minY = p->y;
+            if (p->y > maxY) maxY = p->y;
+        }
+    });
+
+    return new Punto ((minX+maxX)/2, (minY+maxY)/2);
+}

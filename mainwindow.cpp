@@ -78,11 +78,15 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             preview2D->updateLineStyleToAll(LineaInterlineada);
             goto StoreActualLine;
         }
+        else if (actualMode == Rotar){
+            preview2D = objeto2D->copia();
+            preview2D->updateLineStyleToAll(LineaInterlineada);
+            goto StoreActualLine;
+        }
 
         StoreActualLine:
             actualLine = new Linea(click.x, click.y, click.x, click.y);
             actualLine->tipoLinea = tipoLineaSeleccionada;
-
     }
     repaint();
     //Call original parent event
@@ -111,7 +115,17 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
 
         // Update lastMousePos for the next move event
     }
+    if (actualMode == Rotar){
+        Punto *centro = objeto2D->centro();
+        int deltaX = e->position().x() - centro->x;
+        int deltaY = e->position().y() - centro->y;
+        float angle = atan2(deltaY, deltaX);
 
+        preview2D = objeto2D->copia();
+        preview2D->updateLineStyleToAll(LineaInterlineada);
+        preview2D->rotar(centro->x, centro->y, angle);
+        delete centro;
+    }
     DisplayChangingLine:
         actualLine->p2->x=e->position().x();
         actualLine->p2->y=e->position().y();
@@ -136,6 +150,22 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
         delete preview2D;
         preview2D = nullptr;
     }
+
+    if (actualMode == Rotar){
+        Punto *centro = objeto2D->centro();
+        int deltaX = _->position().x() - centro->x;
+        int deltaY = _->position().y() - centro->y;
+        float angle = atan2(deltaY, deltaX);
+
+        objeto2D->rotar(centro->x, centro->y, angle);
+        delete centro;
+
+        if (preview2D) {
+            delete preview2D;
+            preview2D = nullptr;
+        }
+    }
+
 
     if (actualMode == Edit) goto UpdateLastLine;
 
@@ -188,6 +218,11 @@ void MainWindow::paintEvent(QPaintEvent *) {
     objeto2D->desplegar(painter);
 
     if (actualMode == Trasladar){
+        if (preview2D!=nullptr)
+            preview2D->desplegar(painter);
+    }
+
+    if (actualMode == Rotar){
         if (preview2D!=nullptr)
             preview2D->desplegar(painter);
     }
