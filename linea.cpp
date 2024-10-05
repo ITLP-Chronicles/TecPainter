@@ -63,6 +63,7 @@ void Linea::desplegar(QPainter *painter) {
 Linea* Linea::copia()
 {
     Linea *linea = new Linea(p1->copia(),p2->copia());
+    linea->tipoLinea = tipoLinea;
     linea->sig=nullptr;
     return linea;
 }

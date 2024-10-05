@@ -125,7 +125,7 @@ void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
             }
 
             QString lineMode = lineaXML.attribute("estilo");
-            linea->tipoLinea = lineMode == "N" ? LineaNormal:LineaInterlineada;
+            linea->tipoLinea = lineMode == "I" ? LineaInterlineada:LineaNormal;
         }
         this->agregar(linea);
         lineaXML = lineaXML.nextSiblingElement();

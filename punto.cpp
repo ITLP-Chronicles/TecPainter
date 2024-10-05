@@ -37,8 +37,6 @@ void Punto::rotar(float xr, float yr, float angulo) {
 }
 
 void Punto::escalar(float sx, float sy, float xf, float yf) {
-    trasladar(-xf, -yf);
-    x = sx*(x);
-    y = sy*(y);
-    trasladar(xf, yf);
+    x = sx*(x-xf) + xf;
+    y = sy*(y-yf) + yf;
 }
