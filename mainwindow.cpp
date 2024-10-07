@@ -42,7 +42,6 @@ MainWindow::~MainWindow()
         delete &objectStack.top();
         objectStack.pop();
     }
-    resetDeletedObjectStack();
     delete objeto2D;
     if(actualLine)delete actualLine;
     if(lastLine)delete lastLine;
@@ -69,7 +68,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         if (actualLine != nullptr) actualMode = Edit; else actualMode = Normal;
 
     } else if (e->button() == Qt::LeftButton) {
-        resetDeletedObjectStack();
+        deletedObjectStack = *new std::stack<Objeto2D*>();
 
         if (actualMode == Normal) goto StoreActualLine;
         else if (actualMode == Trasladar){
@@ -187,7 +186,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
         int delta2X = actualLine->p1->x - centro->x;
         int delta2Y = actualLine->p1->y - centro->y;
         float angle = atan2(delta1Y, delta1X) - atan2(delta2Y, delta2X);
-        //float angle = atan2(delta1Y - delta2Y, delta1X - delta2X);
 
         objeto2D->rotar(centro->x, centro->y, angle);
         delete centro;
@@ -284,11 +282,6 @@ void MainWindow::paintEvent(QPaintEvent *) {
         if (preview2D!=nullptr)
             preview2D->desplegar(painter);
     }
-    //copia2D->trasladar(150,150);
-    //pen.setColor(QColor(255,0,0));
-    //painter->setPen(pen);
-    //copia2D->desplegar(painter);
-
     delete painter;
 }
 
@@ -307,6 +300,11 @@ void MainWindow::on_actionLeer_triggered()
 
     objeto2D = new Objeto2D;
     objeto2D->leer(lineaXML,puntoXML);
+
+    objectStack = *new std::stack<Objeto2D*>();
+    deletedObjectStack = *new std::stack<Objeto2D*>();
+    objectStack.push(new Objeto2D);
+
     repaint();
 }
 
@@ -326,13 +324,6 @@ void MainWindow::on_actionGuardar_triggered()
     QTextStream archivo(&sFile);
     archivo<<document.toString();
     sFile.close();
-}
-
-void MainWindow::resetDeletedObjectStack(){
-    while (!deletedObjectStack.empty()) {
-        delete deletedObjectStack.top();
-        deletedObjectStack.pop();
-    }
 }
 
 void MainWindow::on_actionNormal_triggered()

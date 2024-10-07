@@ -42,7 +42,6 @@ public:
 private slots:
     void on_actionGuardar_triggered();
     void on_actionLeer_triggered();
-    void resetDeletedObjectStack();
     void on_actionNormal_triggered();
     void on_actionInterlineado_triggered();
     void on_actionDibujar_triggered();
