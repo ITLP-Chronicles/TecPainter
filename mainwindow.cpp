@@ -124,15 +124,18 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
     }
     if (actualMode == Rotar) {
         Punto *centro = objeto2D->centro();
-        int delta1X = actualLine->p2->x - centro->x;
-        int delta1Y = actualLine->p2->y - centro->y;
+        //int delta1X = actualLine->p2->x - centro->x;
+        //int delta1Y = actualLine->p2->y - centro->y;
         int delta2X = actualLine->p1->x - centro->x;
         int delta2Y = actualLine->p1->y - centro->y;
+        int delta1X = actualLine->p2->x - actualLine->p1->x;
+        int delta1Y = actualLine->p2->y - actualLine->p1->y;
         float angle = atan2(delta1Y, delta1X) - atan2(delta2Y, delta2X);
+        //float angle = atan2(delta1Y, delta1X);
 
         preview2D = objeto2D->copia();
         preview2D->updateLineStyleToAll(LineaInterlineada);
-        preview2D->rotar(centro->x, centro->y, angle);
+        preview2D->rotar(actualLine->p1->x, actualLine->p1->y, angle);
         delete centro;
     }
     if (actualMode == Escalar) {
@@ -148,12 +151,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
             delete centro;
             return;
         }
+
         float factorX = 1 + ((float) deltaX / distanciaInicialX);
         float factorY = 1 + ((float) deltaY / distanciaInicialY);
 
         preview2D = objeto2D->copia();
         preview2D->updateLineStyleToAll(LineaInterlineada);
-        preview2D->escalar(factorX, factorY, centro->x, centro->y);
+        preview2D->escalar(factorX, factorY, actualLine->p1->x, actualLine->p1->y);
 
         delete centro;
     }
@@ -181,13 +185,16 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 
     if (actualMode == Rotar) {
         Punto *centro = objeto2D->centro();
-        int delta1X = actualLine->p2->x - centro->x;
-        int delta1Y = actualLine->p2->y - centro->y;
+        //int delta1X = actualLine->p2->x - centro->x;
+        //int delta1Y = actualLine->p2->y - centro->y;
+        int delta1X = actualLine->p2->x - actualLine->p1->x;
+        int delta1Y = actualLine->p2->y - actualLine->p1->y;
         int delta2X = actualLine->p1->x - centro->x;
         int delta2Y = actualLine->p1->y - centro->y;
         float angle = atan2(delta1Y, delta1X) - atan2(delta2Y, delta2X);
+        //float angle = atan2(delta1Y, delta1X);
 
-        objeto2D->rotar(centro->x, centro->y, angle);
+        objeto2D->rotar(actualLine->p1->x, actualLine->p1->y, angle);
         delete centro;
     }
     if (actualMode == Escalar) {
@@ -207,7 +214,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
         float factorX = 1 + ((float) deltaX / distanciaInicialX);
         float factorY = 1 + ((float) deltaY / distanciaInicialY);
 
-        objeto2D->escalar(factorX, factorY, centro->x, centro->y);
+        objeto2D->escalar(factorX, factorY, actualLine->p1->x, actualLine->p1->y);
 
         delete centro;
         if (preview2D) {
@@ -224,6 +231,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
         lastLine = actualLine;
         actualLine = nullptr;
 
+    preview2D = new Objeto2D;
     repaint();
 }
 
@@ -305,6 +313,7 @@ void MainWindow::on_actionLeer_triggered()
     deletedObjectStack = *new std::stack<Objeto2D*>();
     objectStack.push(new Objeto2D);
 
+    preview2D = new Objeto2D;
     repaint();
 }
 

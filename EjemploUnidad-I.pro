@@ -13,6 +13,7 @@ SOURCES += \
     linea.cpp \
     main.cpp \
     mainwindow.cpp \
+    matriz2d.cpp \
     objeto2d.cpp \
     punto.cpp \
     utils.cpp
@@ -20,6 +21,7 @@ SOURCES += \
 HEADERS += \
     linea.h \
     mainwindow.h \
+    matriz2d.h \
     objeto2d.h \
     punto.h \
     utils.h
