@@ -16,6 +16,7 @@ public:
     void trasladar(float newX, float newY);
     void rotar(float xr, float yr, float ang);
     void escalar(float factorX, float factorY, float centerX, float centerY);
+    void reemplazar(Punto*);
 };
 
 #endif // PUNTO_H
