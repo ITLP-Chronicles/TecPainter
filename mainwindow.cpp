@@ -236,13 +236,17 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e){
+    if (e->key() == Qt::Key_A) actualMode = Normal;
+    if (e->key() == Qt::Key_E) actualMode = Escalar;
+    if (e->key() == Qt::Key_R) actualMode = Rotar;
+    if (e->key() == Qt::Key_T) actualMode = Trasladar;
+
 
     if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier && objeto2D->HayLineas()) {
         deletedObjectStack.push(objeto2D->copia());
         delete objeto2D;
         objeto2D = objectStack.top()->copia();
         objectStack.pop();
-        actualMode = Normal;
         repaint();
     } else if (e->key() == Qt::Key_Y && e->modifiers() & Qt::ControlModifier){
         if (!deletedObjectStack.empty()){
