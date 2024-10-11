@@ -17,6 +17,9 @@
    <string notr="true">color: black;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
@@ -117,6 +120,12 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+      <kerning>false</kerning>
+     </font>
+    </property>
     <property name="styleSheet">
      <string notr="true">color: black;
 z-index: 100;</string>
@@ -145,7 +154,7 @@ z-index: 100;</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMen">
@@ -211,20 +220,38 @@ z-index: 100;</string>
    <property name="text">
     <string>Ninguno</string>
    </property>
+   <property name="toolTip">
+    <string>A</string>
+   </property>
+   <property name="shortcut">
+    <string>A</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::AboutQtRole</enum>
+   </property>
   </action>
   <action name="actionTrasladar">
    <property name="text">
     <string>Trasladar</string>
+   </property>
+   <property name="shortcut">
+    <string>T</string>
    </property>
   </action>
   <action name="actionRotar">
    <property name="text">
     <string>Rotar</string>
    </property>
+   <property name="shortcut">
+    <string>R</string>
+   </property>
   </action>
   <action name="actionEscalar">
    <property name="text">
     <string>Escalar</string>
+   </property>
+   <property name="shortcut">
+    <string>E</string>
    </property>
   </action>
  </widget>
