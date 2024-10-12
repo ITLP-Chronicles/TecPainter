@@ -197,3 +197,9 @@ Punto *Objeto2D::centro(){
 
     return new Punto ((minX+maxX)/2, (minY+maxY)/2);
 }
+
+void Objeto2D::transformar(Matriz2D* MTransform){
+    ForEachLine([MTransform](Linea *current){
+        current->transformar(MTransform);
+    });
+}

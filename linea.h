@@ -2,6 +2,7 @@
 #define LINEA_H
 
 #include "punto.h"
+#include "matriz2d.h"
 #include <tuple>
 
 enum TipoLinea {
@@ -27,6 +28,7 @@ public:
     void trasladar(float newX, float newY);
     void rotar(float xr, float yr, float ang);
     void escalar(float factorX, float factorY, float centerX, float centerY);
+    void transformar(Matriz2D*);
 };
 
 #endif // LINEA_H

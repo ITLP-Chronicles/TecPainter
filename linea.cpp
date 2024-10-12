@@ -96,6 +96,11 @@ void Linea::escalar(float sx, float sy, float xf, float yf) {
     p2->escalar(sx, sy, xf, yf);
 }
 
+void Linea::transformar(Matriz2D* MTransform){
+    p1->transformar(MTransform);
+    p2->transformar(MTransform);
+}
+
 
 
 

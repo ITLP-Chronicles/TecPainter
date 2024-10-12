@@ -1,4 +1,5 @@
 #include "matriz2d.h"
+#include <math.h>
 
 // Identity matrix constructor (default)
 Matriz2D::Matriz2D() {
@@ -14,6 +15,13 @@ Matriz2D::Matriz2D(float A) {
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
             datos[i][j] = A;
+        }
+    }
+}
+Matriz2D::Matriz2D(Matriz2D* M) {
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            datos[i][j] = M->datos[i][j];
         }
     }
 }
@@ -40,28 +48,12 @@ Matriz2D::Matriz2D(float A, float B, float C, float D, float E, float F) {
     datos[2][1] = 0;
     datos[2][2] = 1;
 }
-// Point matrix
-Matriz2D::Matriz2D(Punto * p) {
-    datos[0][0] = 0;
-    datos[0][1] = 0;
-    datos[0][2] = p->x;
-    datos[1][0] = 0;
-    datos[1][1] = 0;
-    datos[1][2] = p->y;
-    datos[2][0] = 0;
-    datos[2][1] = 0;
-    datos[2][2] = 1;
-}
-Punto* Matriz2D::matrizAPunto(){
-    return new Punto(datos[0][2],datos[1][2]);
-}
-// Matrix multiplication
 Matriz2D* Matriz2D::mult(Matriz2D* M){
     Matriz2D *Mres = new Matriz2D((float)0);
     for (int i = 0; i < 3; i++){
         for (int j = 0; j < 3; j++){
             for (int k = 0; k < 3; k++){
-                Mres->datos[i][j] += M->datos[i][k] * datos[k][j];
+                Mres->datos[i][j] +=  datos[i][k] * M->datos[k][j];
             }
         }
     }
@@ -71,7 +63,7 @@ Matriz2D* Matriz2D::mult(Matriz2D* M){
 void Matriz2D::trasladar(float tx, float ty){
     Matriz2D *T = new Matriz2D(1,0,tx,0,1,ty);
 
-    thisEquals(this->mult(T));
+    this->equals(T->mult(this));
 
     delete T;
     T = nullptr;
@@ -83,7 +75,7 @@ void Matriz2D::rotar(float tx, float ty, float a){
         sin(a),  cos(a), ty-ty*cos(a)-tx*sin(a)
     );
 
-    thisEquals(this->mult(R));
+    this->equals(R->mult(this));
 
     delete R;
     R = nullptr;
@@ -95,16 +87,20 @@ void Matriz2D::escalar(float sx, float sy, float tx, float ty){
         0, sy, ty-ty*sy
     );
 
-    thisEquals(this->mult(E));
+    this->equals(E->mult(this));
 
     delete E;
     E = nullptr;
 }
 
-void Matriz2D::thisEquals(Matriz2D* M){
+void Matriz2D::equals(Matriz2D* M){
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
             datos[i][j] = M->datos[i][j];
         }
     }
+}
+
+Matriz2D* Matriz2D::copia(){
+    return new Matriz2D(this);
 }

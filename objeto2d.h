@@ -25,6 +25,7 @@ public:
     void rotar(float xr, float yr, float ang);
     void escalar(float factorX, float factorY, float centerX, float centerY);
     void updateLineStyleToAll(TipoLinea newStyle);
+    void transformar(Matriz2D*);
 
     Punto *centro();
 
