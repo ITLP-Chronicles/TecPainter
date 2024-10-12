@@ -10,11 +10,11 @@ Linea::Linea() {
 }
 
 Linea::~Linea() {
-    delete p1;
-    delete p2;
-    tipoLinea = LineaNormal;
-    anchoInterlineado = 5;
-    sig=nullptr;
+    //delete p1;
+    //delete p2;
+    p1 = nullptr;
+    p2 = nullptr;
+    sig = nullptr;
 }
 
 Linea::Linea(Punto *p1, Punto *p2) {

@@ -39,13 +39,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 MainWindow::~MainWindow()
 {
     while (!objectStack.empty()) {
-        delete &objectStack.top();
+        delete objectStack.top();
         objectStack.pop();
     }
     delete objeto2D;
-    if(actualLine)delete actualLine;
-    if(lastLine)delete lastLine;
-    if(pointToMove)delete pointToMove;
+    //if(actualLine)delete actualLine;
+    //if(lastLine)delete lastLine;
+    //if(pointToMove)delete pointToMove;
     actualLine = nullptr;
     lastLine = nullptr;
     pointToMove = nullptr;

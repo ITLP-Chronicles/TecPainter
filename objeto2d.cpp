@@ -11,12 +11,11 @@ Objeto2D::Objeto2D() {
 }
 
 Objeto2D::~Objeto2D(){
-    Linea* temp = inicio;
-    while(temp != nullptr){
-        Linea* nextOne = temp->sig;
+    while(inicio != nullptr){
+        Linea* temp = inicio;
+        inicio = inicio->sig;
         delete temp;
         cout << "Se libero una linea" << endl;
-        temp = nextOne;
     }
 }
 
