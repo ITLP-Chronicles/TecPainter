@@ -26,6 +26,7 @@ public:
     void escalar(float factorX, float factorY, float centerX, float centerY);
     void updateLineStyleToAll(TipoLinea newStyle);
     void transformar(Matriz2D*);
+    void eliminarTodasLineas();
 
     Punto *centro();
 

@@ -5,10 +5,14 @@
 #include <QMouseEvent>
 #include "objeto2d.h"
 #include <stack>
+#include <QLabel>
 
 using namespace std;
 TipoLinea tipoLineaSeleccionada = LineaNormal;
 Objeto2D *preview2D = nullptr;
+QLabel *label_ActualMode = nullptr;
+QLabel *label_CommandsCheatSheet = nullptr;
+
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -18,6 +22,23 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     objeto2D=new Objeto2D();
     preview2D = new Objeto2D();
     actualMode = Normal;
+
+    label_ActualMode = new QLabel("Modo actual: Normal", this);
+    label_ActualMode->setGeometry(10,40, 300,30);
+    label_ActualMode->show();
+
+    label_CommandsCheatSheet = new QLabel(
+R"(
+Comandos Modos:
+- Normal: A
+- Editar: E
+- Trasladar: T ó V
+- Rotar: R
+- Borrar: D
+)"
+    , this);
+    label_CommandsCheatSheet->setGeometry(660,360, 300,300);
+    label_CommandsCheatSheet->show();
 
     setStyleSheet(
     "QMenu {"
@@ -34,7 +55,27 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     );
 }
 
+QString GetActualModeMsg(std::string msg){
+    std::string beginning = "Modo actual: ";
+    QString algo = QString((beginning + msg).data());
+    return algo;
+}
 
+std::string ModeToString(Mode mode){
+    switch(mode){
+        case Normal: return "Normal";
+        case Edit: return "Edición";
+        case Escalar: return "Escalar";
+        case Rotar: return "Rotar";
+        case Trasladar: return "Trasladar";
+        default: "----";
+    }
+}
+
+void MainWindow::setActualMode(Mode newMode){
+    this->actualMode = newMode;
+    label_ActualMode->setText(GetActualModeMsg(ModeToString(newMode)));
+}
 
 MainWindow::~MainWindow()
 {
@@ -65,7 +106,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         if (std::get<1>(line_ClosestPoint)) objectStack.push(objeto2D->copia());
 
         //If theres a selected line, is Edit Mode, otherwise Normal Mode
-        if (actualLine != nullptr) actualMode = Edit; else actualMode = Normal;
+        if (actualLine != nullptr) setActualMode(Edit); else setActualMode(Normal);
 
     } else if (e->button() == Qt::LeftButton) {
         deletedObjectStack = *new std::stack<Objeto2D*>();
@@ -162,6 +203,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
 
             delete centro;
         }
+        if (actualMode == Reflejar){
+            //TODO: Calcular el ángulo de la línea que se hace
+            //- Permitir que la línea se dibujo (Primera fase del reflejar)
+            //- Cuando se suelte la línea, realizar el algoritmo del reflejo
+        }
     }
 
     DisplayChangingLine:
@@ -238,10 +284,17 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e){
-    if (e->key() == Qt::Key_A) actualMode = Normal;
-    if (e->key() == Qt::Key_E) actualMode = Escalar;
-    if (e->key() == Qt::Key_R) actualMode = Rotar;
-    if (e->key() == Qt::Key_T) actualMode = Trasladar;
+    if (e->key() == Qt::Key_A) setActualMode(Normal);
+    if (e->key() == Qt::Key_E) setActualMode(Escalar);
+    if (e->key() == Qt::Key_R) setActualMode(Rotar);
+    if (e->key() == Qt::Key_T) setActualMode(Trasladar);
+    if (e->key() == Qt::Key_V) setActualMode(Trasladar);
+    if (e->key() == Qt::Key_D){
+        delete objeto2D;
+        objeto2D = new Objeto2D();
+        repaint();
+    }
+
 
 
     if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier && objeto2D->HayLineas()) {
@@ -343,25 +396,25 @@ void MainWindow::on_actionGuardar_triggered()
 
 void MainWindow::on_actionNormal_triggered()
 {
-    actualMode = Normal;
+    setActualMode(Normal);
     tipoLineaSeleccionada = LineaNormal;
 }
 
 void MainWindow::on_actionInterlineado_triggered()
 {
-    actualMode = Normal;
+    setActualMode(Normal);
     tipoLineaSeleccionada = LineaInterlineada;
 }
 
 //Herramientas - Ninguno/Modo normal
 void MainWindow::on_actionDibujar_triggered()
 {
-    actualMode = Edit;
+    setActualMode(Edit);
 }
 
 void MainWindow::on_actionTrasladar_triggered()
 {
-    actualMode = Trasladar;
+    setActualMode(Trasladar);
 
     preview2D = objeto2D->copia();
     preview2D->updateLineStyleToAll(LineaInterlineada);
@@ -369,10 +422,16 @@ void MainWindow::on_actionTrasladar_triggered()
 
 void MainWindow::on_actionRotar_triggered()
 {
-    actualMode = Rotar;
+    setActualMode(Rotar);
 }
 
 void MainWindow::on_actionEscalar_triggered()
 {
-    actualMode = Escalar;
+    setActualMode(Escalar);
 }
+
+void MainWindow::on_actionReflejar_triggered()
+{
+    setActualMode(Reflejar);
+}
+

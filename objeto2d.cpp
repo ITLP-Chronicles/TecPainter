@@ -1,6 +1,7 @@
 #include "objeto2d.h"
 #include <iostream>
 #include <tuple>
+#include <vector>
 using namespace std;
 
 
@@ -9,6 +10,7 @@ Objeto2D::Objeto2D() {
     inicio=nullptr;
     final=nullptr;
 }
+
 
 Objeto2D::~Objeto2D(){
     Linea* temp = inicio;
@@ -30,6 +32,17 @@ void Objeto2D::ForEachLine(std::function<void(Linea*)> callBack){
 
 bool Objeto2D::HayLineas(){
     return this->inicio != nullptr && this->final != nullptr;
+}
+
+void Objeto2D::eliminarTodasLineas(){
+    std::vector<Linea*>* temp = new std::vector<Linea*>();
+    ForEachLine([temp](Linea* line){
+        temp->push_back(line);
+    });
+    for(int i = 0; i < (int)temp->size(); i++){
+        eliminar(temp->at(i));
+    }
+    delete temp;
 }
 
 Objeto2D *Objeto2D::copia() {
