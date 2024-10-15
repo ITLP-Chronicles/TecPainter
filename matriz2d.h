@@ -19,6 +19,12 @@ public:
 
     void equals(Matriz2D*);
     Matriz2D* copia();
+
+    //Static Methods
+    static Matriz2D* GenerateRotationMatrix(float piRadians);
+    static Matriz2D* GenerateTraslationMatrix(int deltaX, int deltaY);
+    static Matriz2D* GenerateScaleMatrix(float scaleFactorX, float scaleFactorY);
+    static Matriz2D* GenerateVerticalMirrorMatrix();
 };
 
 #endif // MATRIZ2D_H

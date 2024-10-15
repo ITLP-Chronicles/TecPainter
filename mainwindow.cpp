@@ -131,6 +131,9 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             actualMode = Normal;
             goto StoreActualLine;
         }
+        else if (actualMode == Trasladar){
+            tipoLineaSeleccionada = LineaInterlineada;
+        }
 
         StoreActualLine:
             actualLine = new Linea(click.x, click.y, click.x, click.y);
@@ -145,7 +148,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
 void MainWindow::mouseMoveEvent(QMouseEvent *e) {
     if (!actualLine)return;
 
-    if(actualMode == Normal) goto DisplayChangingLine;
+    if(actualMode == Normal || actualMode == Reflejar) goto DisplayChangingLine;
     if(actualMode == Edit){
         if (pointToMove == actualLine->p1){
             actualLine->p1 = actualLine->p2;
@@ -203,11 +206,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
 
             delete centro;
         }
-        if (actualMode == Reflejar){
+        //if (actualMode == Reflejar){   -- THIS IS BEING HANDLED IN 'Normal' CASE ABOVE
             //TODO: Calcular el ángulo de la línea que se hace
             //- Permitir que la línea se dibujo (Primera fase del reflejar)
             //- Cuando se suelte la línea, realizar el algoritmo del reflejo
-        }
+        //}
     }
 
     DisplayChangingLine:
@@ -222,6 +225,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
     if (actualMode == Normal) {
         objeto2D->agregar(actualLine);
         goto UpdateLastLine;
+    }
+    if (actualMode == Reflejar){
+        tipoLineaSeleccionada = LineaNormal;
+        goto ReflejarCase;
     }
 
     if(objeto2D->HayLineas()){
@@ -279,6 +286,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
         lastLine = actualLine;
         actualLine = nullptr;
 
+
+    ReflejarCase:
+        actualLine = nullptr;
+
     preview2D = new Objeto2D;
     repaint();
 }
@@ -295,15 +306,31 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         repaint();
     }
 
+    //Test button, only pressing 'S'
+    if (e->key() == Qt::Key_S){
+        float angle = M_PI/4.0;
+        Matriz2D* rotate = Matriz2D::GenerateRotationMatrix(angle);
+        Matriz2D* vertical_swap = Matriz2D::GenerateVerticalMirrorMatrix();
+        Matriz2D* rotate_back = Matriz2D::GenerateRotationMatrix(-angle);
 
+        Matriz2D* mirror_effect_part_1 = rotate->mult(vertical_swap);
+        Matriz2D* mirror_effect_complete = mirror_effect_part_1->mult(rotate_back);
+
+        objeto2D->transformar(mirror_effect_complete);
+
+        delete rotate;
+        delete vertical_swap;
+        delete rotate_back;
+        delete mirror_effect_part_1;
+        delete mirror_effect_complete;
+        repaint();
+    }
 
     if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier && objeto2D->HayLineas()) {
         deletedObjectStack.push(objeto2D->copia());
         delete objeto2D;
         objeto2D = objectStack.top()->copia();
-        objectStack.pop();
-        repaint();
-    } else if (e->key() == Qt::Key_Y && e->modifiers() & Qt::ControlModifier){
+        objectStack.pop(); repaint(); } else if (e->key() == Qt::Key_Y && e->modifiers() & Qt::ControlModifier){
         if (!deletedObjectStack.empty()){
             objectStack.push(objeto2D->copia());
             delete objeto2D;
