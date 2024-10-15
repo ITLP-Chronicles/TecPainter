@@ -24,7 +24,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>490</y>
+      <y>480</y>
       <width>501</width>
       <height>20</height>
      </rect>
@@ -36,8 +36,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>520</y>
+      <x>20</x>
+      <y>510</y>
       <width>361</width>
       <height>20</height>
      </rect>
@@ -154,7 +154,7 @@ z-index: 100;</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>17</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMen">
@@ -179,6 +179,7 @@ z-index: 100;</string>
     <addaction name="actionTrasladar"/>
     <addaction name="actionRotar"/>
     <addaction name="actionEscalar"/>
+    <addaction name="actionReflejar"/>
    </widget>
    <addaction name="menuMen"/>
    <addaction name="menuL_nea"/>
@@ -252,6 +253,11 @@ z-index: 100;</string>
    </property>
    <property name="shortcut">
     <string>E</string>
+   </property>
+  </action>
+  <action name="actionReflejar">
+   <property name="text">
+    <string>Reflejar</string>
    </property>
   </action>
  </widget>

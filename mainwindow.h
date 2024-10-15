@@ -15,7 +15,8 @@ enum Mode {
     Edit,
     Trasladar,
     Rotar,
-    Escalar
+    Escalar,
+    Reflejar,
 };
 
 class MainWindow : public QMainWindow
@@ -29,6 +30,9 @@ class MainWindow : public QMainWindow
     Mode actualMode = Normal;
     std::stack<Objeto2D*> objectStack;
     std::stack<Objeto2D*> deletedObjectStack;
+
+    //Setter for actualMode. Used for update logic on window every time mode changes.
+    void setActualMode(Mode newMode);
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -48,6 +52,7 @@ private slots:
     void on_actionTrasladar_triggered();
     void on_actionRotar_triggered();
     void on_actionEscalar_triggered();
+    void on_actionReflejar_triggered();
 };
 #endif // MAINWINDOW_H
 
