@@ -168,43 +168,16 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
             // Update lastMousePos for the next move event
         }
         if (actualMode == Rotar) {
-            Punto *centro = objeto2D->centro();
-            //int delta1X = actualLine->p2->x - centro->x;
-            //int delta1Y = actualLine->p2->y - centro->y;
-            int delta2X = actualLine->p1->x - centro->x;
-            int delta2Y = actualLine->p1->y - centro->y;
-            int delta1X = actualLine->p2->x - actualLine->p1->x;
-            int delta1Y = actualLine->p2->y - actualLine->p1->y;
-            float angle = atan2(delta1Y, delta1X) - atan2(delta2Y, delta2X);
-            //float angle = atan2(delta1Y, delta1X);
-
             preview2D = objeto2D->copia();
             preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->rotar(actualLine->p1->x, actualLine->p1->y, angle);
-            delete centro;
+            preview2D->rotar(actualLine);
         }
         if (actualMode == Escalar) {
-            Punto *centro = objeto2D->centro();
-
-            int deltaX = actualLine->p2->x - actualLine->p1->x;
-            int deltaY = actualLine->p2->y - actualLine->p1->y;
-
-            float distanciaInicialX = actualLine->p1->x - centro->x;
-            float distanciaInicialY = actualLine->p1->y - centro->y;
-
-            if (distanciaInicialX == 0 || distanciaInicialY == 0) {
-                delete centro;
-                return;
-            }
-
-            float factorX = 1 + ((float) deltaX / distanciaInicialX);
-            float factorY = 1 + ((float) deltaY / distanciaInicialY);
 
             preview2D = objeto2D->copia();
             preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->escalar(factorX, factorY, actualLine->p1->x, actualLine->p1->y);
+            preview2D->escalar(actualLine);
 
-            delete centro;
         }
         //if (actualMode == Reflejar){   -- THIS IS BEING HANDLED IN 'Normal' CASE ABOVE
             //TODO: Calcular el ángulo de la línea que se hace
@@ -228,11 +201,8 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
     }
 
     if (actualMode == Reflejar){
-        //What do this do? It doesn't update the obj lines, just for temporal linement (it already works)
         tipoLineaSeleccionada = LineaNormal;
 
-        //Do all reflex logic here. You have actualLine with user angle ready to use here!
-        //After this case, actualLine will be deleted without being added to object 2D! - Atte: Kris ---------------------------------
         int deltaX = actualLine->p2->x - actualLine->p1->x;
         int deltaY = actualLine->p2->y - actualLine->p1->y;
 
@@ -273,39 +243,11 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
         }
 
         if (actualMode == Rotar) {
-            Punto *centro = objeto2D->centro();
-            //int delta1X = actualLine->p2->x - centro->x;
-            //int delta1Y = actualLine->p2->y - centro->y;
-            int delta1X = actualLine->p2->x - actualLine->p1->x;
-            int delta1Y = actualLine->p2->y - actualLine->p1->y;
-            int delta2X = actualLine->p1->x - centro->x;
-            int delta2Y = actualLine->p1->y - centro->y;
-            float angle = atan2(delta1Y, delta1X) - atan2(delta2Y, delta2X);
-            //float angle = atan2(delta1Y, delta1X);
-
-            objeto2D->rotar(actualLine->p1->x, actualLine->p1->y, angle);
-            delete centro;
+            objeto2D->rotar(actualLine);
         }
         if (actualMode == Escalar) {
-            Punto *centro = objeto2D->centro();
+            objeto2D->escalar(actualLine);
 
-            int deltaX = actualLine->p2->x - actualLine->p1->x;
-            int deltaY = actualLine->p2->y - actualLine->p1->y;
-
-            float distanciaInicialX = actualLine->p1->x - centro->x;
-            float distanciaInicialY = actualLine->p1->y - centro->y;
-
-            if (distanciaInicialX == 0 || distanciaInicialY == 0) {
-                delete centro;
-                return;
-            }
-
-            float factorX = 1 + ((float) deltaX / distanciaInicialX);
-            float factorY = 1 + ((float) deltaY / distanciaInicialY);
-
-            objeto2D->escalar(factorX, factorY, actualLine->p1->x, actualLine->p1->y);
-
-            delete centro;
             if (preview2D) {
                 delete preview2D;
                 preview2D = nullptr;

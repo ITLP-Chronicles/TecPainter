@@ -173,10 +173,35 @@ void Objeto2D::trasladar(float newX, float newY){
     });
 }
 
+
 void Objeto2D::rotar(float xr, float yr, float ang){
     ForEachLine([xr, yr, ang](Linea *current){
         current->rotar(xr, yr, ang);
     });
+}
+
+void Objeto2D::rotar(Linea* inputLinea){
+    auto deltaX = inputLinea->p2->x - inputLinea->p1->x;
+    auto deltaY = inputLinea->p2->y - inputLinea->p1->y;
+    auto piRadians = atan2(deltaY, deltaX);
+
+    float cos_teta = cos(piRadians);
+    float sin_teta = sin(piRadians);
+
+    Matriz2D * traslate =  new Matriz2D(1,0, -inputLinea->p1->x, 0, 1, -inputLinea->p1->y);
+    Matriz2D* rotation = new Matriz2D(cos_teta, -sin_teta, 0, sin_teta, cos_teta,0);
+    Matriz2D * traslate_back =  new Matriz2D(1,0, inputLinea->p1->x, 0, 1, inputLinea->p1->y);
+
+    Matriz2D * finished_origin_rotated = traslate_back->mult(rotation);
+    Matriz2D * finished_back = finished_origin_rotated->mult(traslate);
+
+    transformar(finished_back);
+
+    delete traslate;
+    delete rotation;
+    delete traslate_back;
+    delete finished_origin_rotated;
+    delete finished_back;
 }
 
 void Objeto2D::escalar(float factorX, float factorY, float centerX, float centerY){
@@ -184,6 +209,29 @@ void Objeto2D::escalar(float factorX, float factorY, float centerX, float center
         current->escalar(factorX, factorY, centerX, centerY);
     });
 }
+
+void Objeto2D::escalar(Linea* inputLinea){
+    auto deltaX = inputLinea->p2->x - inputLinea->p1->x;
+    auto deltaY = inputLinea->p2->y - inputLinea->p1->y;
+    auto factorX = 0.01 + (deltaX)/100;
+    auto factorY = 0.01 + -(deltaY)/100;
+
+    Matriz2D * traslate =  new Matriz2D(1,0, -inputLinea->p1->x, 0, 1, -inputLinea->p1->y);
+    Matriz2D * scale = new Matriz2D(factorX, 0,0,0,factorY,0);
+    Matriz2D * traslate_back = new Matriz2D(1,0, inputLinea->p1->x, 0, 1, inputLinea->p1->y);
+
+    Matriz2D * traslate_origin = scale->mult(traslate);
+    Matriz2D * traslate_finished = traslate_back->mult(traslate_origin);
+
+    transformar(traslate_finished);
+
+    delete traslate;
+    delete scale;
+    delete traslate_back;
+    delete traslate_origin;
+    delete traslate_finished;
+}
+
 
 void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
     ForEachLine([newStyle](Linea *current){

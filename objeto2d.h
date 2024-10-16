@@ -23,7 +23,9 @@ public:
     std::tuple<Linea*, Punto*> seleccionada(int, int);
     void trasladar(float newX, float newY);
     void rotar(float xr, float yr, float ang);
+    void rotar(Linea * lineaInput);
     void escalar(float factorX, float factorY, float centerX, float centerY);
+    void escalar(Linea * lineaInput);
     void updateLineStyleToAll(TipoLinea newStyle);
     void transformar(Matriz2D*);
     void eliminarTodasLineas();
