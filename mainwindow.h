@@ -52,7 +52,7 @@ private slots:
     void on_actionTrasladar_triggered();
     void on_actionRotar_triggered();
     void on_actionEscalar_triggered();
-    void on_actionReflejar_triggered();
+    void on_actionEspejo_Reflejar_triggered();
 };
 #endif // MAINWINDOW_H
 

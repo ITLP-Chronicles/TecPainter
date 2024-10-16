@@ -10,7 +10,6 @@
 using namespace std;
 TipoLinea tipoLineaSeleccionada = LineaNormal;
 Objeto2D *preview2D = nullptr;
-QLabel *label_ActualMode = nullptr;
 QLabel *label_CommandsCheatSheet = nullptr;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
@@ -22,11 +21,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     objeto2D=new Objeto2D();
     preview2D = new Objeto2D();
     actualMode = Normal;
-
-    label_ActualMode = new QLabel("Modo actual: Normal", this);
-    label_ActualMode->setGeometry(10,40, 300,30);
-    label_ActualMode->show();
-
     label_CommandsCheatSheet = new QLabel(
 R"(
 Comandos Modos:
@@ -34,7 +28,8 @@ Comandos Modos:
 - Editar: E
 - Trasladar: T ó V
 - Rotar: R
-- Borrar: D
+- Borrar Dibujo: D
+- Reflejar: W
 )"
     , this);
     label_CommandsCheatSheet->setGeometry(660,360, 300,300);
@@ -68,13 +63,14 @@ std::string ModeToString(Mode mode){
         case Escalar: return "Escalar";
         case Rotar: return "Rotar";
         case Trasladar: return "Trasladar";
-        default: "----";
+        case Reflejar: return "Reflejar";
     }
+    return "---";
 }
 
 void MainWindow::setActualMode(Mode newMode){
     this->actualMode = newMode;
-    label_ActualMode->setText(GetActualModeMsg(ModeToString(newMode)));
+    this->ui->modo_actual->setText(GetActualModeMsg(ModeToString(newMode)));
 }
 
 MainWindow::~MainWindow()
@@ -133,6 +129,10 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         }
         else if (actualMode == Trasladar){
             tipoLineaSeleccionada = LineaInterlineada;
+        }
+        else if (actualMode == Reflejar){
+            tipoLineaSeleccionada = LineaInterlineada;
+            goto StoreActualLine;
         }
 
         StoreActualLine:
@@ -226,8 +226,32 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
         objeto2D->agregar(actualLine);
         goto UpdateLastLine;
     }
+
     if (actualMode == Reflejar){
+        //What do this do? It doesn't update the obj lines, just for temporal linement (it already works)
         tipoLineaSeleccionada = LineaNormal;
+
+        //Do all reflex logic here. You have actualLine with user angle ready to use here!
+        //After this case, actualLine will be deleted without being added to object 2D! - Atte: Kris ---------------------------------
+        int deltaX = actualLine->p2->x - actualLine->p1->x;
+        int deltaY = actualLine->p2->y - actualLine->p1->y;
+
+        double angle = atan2(deltaY, deltaX);
+        Matriz2D* rotate = Matriz2D::GenerateRotationMatrix(angle);
+        Matriz2D* vertical_swap = Matriz2D::GenerateVerticalMirrorMatrix();
+        Matriz2D* rotate_back = Matriz2D::GenerateRotationMatrix(-angle);
+
+        Matriz2D* mirror_effect_part_1 = rotate->mult(vertical_swap);
+        Matriz2D* mirror_effect_complete = mirror_effect_part_1->mult(rotate_back);
+
+        objeto2D->transformar(mirror_effect_complete);
+
+        delete rotate;
+        delete vertical_swap;
+        delete rotate_back;
+        delete mirror_effect_part_1;
+        delete mirror_effect_complete;
+        repaint();
         goto ReflejarCase;
     }
 
@@ -300,29 +324,10 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
     if (e->key() == Qt::Key_R) setActualMode(Rotar);
     if (e->key() == Qt::Key_T) setActualMode(Trasladar);
     if (e->key() == Qt::Key_V) setActualMode(Trasladar);
+    if (e->key() == Qt::Key_W) setActualMode(Reflejar);
     if (e->key() == Qt::Key_D){
         delete objeto2D;
         objeto2D = new Objeto2D();
-        repaint();
-    }
-
-    //Test button, only pressing 'S'
-    if (e->key() == Qt::Key_S){
-        float angle = M_PI/4.0;
-        Matriz2D* rotate = Matriz2D::GenerateRotationMatrix(angle);
-        Matriz2D* vertical_swap = Matriz2D::GenerateVerticalMirrorMatrix();
-        Matriz2D* rotate_back = Matriz2D::GenerateRotationMatrix(-angle);
-
-        Matriz2D* mirror_effect_part_1 = rotate->mult(vertical_swap);
-        Matriz2D* mirror_effect_complete = mirror_effect_part_1->mult(rotate_back);
-
-        objeto2D->transformar(mirror_effect_complete);
-
-        delete rotate;
-        delete vertical_swap;
-        delete rotate_back;
-        delete mirror_effect_part_1;
-        delete mirror_effect_complete;
         repaint();
     }
 
@@ -355,7 +360,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
     pen.setColor(QColor(0,0,255));
     painter->setPen(pen);
 
-    if (actualMode == Normal){
+    if (actualMode == Normal || actualMode == Reflejar){
         if (actualLine!=nullptr)
             actualLine->desplegar(painter);
     }
@@ -436,7 +441,7 @@ void MainWindow::on_actionInterlineado_triggered()
 //Herramientas - Ninguno/Modo normal
 void MainWindow::on_actionDibujar_triggered()
 {
-    setActualMode(Edit);
+    setActualMode(Normal);
 }
 
 void MainWindow::on_actionTrasladar_triggered()
@@ -457,7 +462,7 @@ void MainWindow::on_actionEscalar_triggered()
     setActualMode(Escalar);
 }
 
-void MainWindow::on_actionReflejar_triggered()
+void MainWindow::on_actionEspejo_Reflejar_triggered()
 {
     setActualMode(Reflejar);
 }

@@ -39,13 +39,13 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "on_actionGuardar_triggered",
     "",
     "on_actionLeer_triggered",
-    "resetDeletedObjectStack",
     "on_actionNormal_triggered",
     "on_actionInterlineado_triggered",
     "on_actionDibujar_triggered",
     "on_actionTrasladar_triggered",
     "on_actionRotar_triggered",
-    "on_actionEscalar_triggered"
+    "on_actionEscalar_triggered",
+    "on_actionEspejo_Reflejar_triggered"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -103,8 +103,6 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_actionLeer_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'resetDeletedObjectStack'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_actionNormal_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_actionInterlineado_triggered'
@@ -116,6 +114,8 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         // method 'on_actionRotar_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_actionEscalar_triggered'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_actionEspejo_Reflejar_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -129,13 +129,13 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         case 0: _t->on_actionGuardar_triggered(); break;
         case 1: _t->on_actionLeer_triggered(); break;
-        case 2: _t->resetDeletedObjectStack(); break;
-        case 3: _t->on_actionNormal_triggered(); break;
-        case 4: _t->on_actionInterlineado_triggered(); break;
-        case 5: _t->on_actionDibujar_triggered(); break;
-        case 6: _t->on_actionTrasladar_triggered(); break;
-        case 7: _t->on_actionRotar_triggered(); break;
-        case 8: _t->on_actionEscalar_triggered(); break;
+        case 2: _t->on_actionNormal_triggered(); break;
+        case 3: _t->on_actionInterlineado_triggered(); break;
+        case 4: _t->on_actionDibujar_triggered(); break;
+        case 5: _t->on_actionTrasladar_triggered(); break;
+        case 6: _t->on_actionRotar_triggered(); break;
+        case 7: _t->on_actionEscalar_triggered(); break;
+        case 8: _t->on_actionEspejo_Reflejar_triggered(); break;
         default: ;
         }
     }

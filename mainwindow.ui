@@ -59,92 +59,17 @@
      <string>Examen</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QLabel" name="modo_actual">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>410</y>
-      <width>71</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>A: Normal</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>430</y>
-      <width>71</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>E: Escalar</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_6">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>450</y>
-      <width>61</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>R: Rotar</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>470</y>
-      <width>81</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>T: Trasladar</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_8">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>380</y>
-      <width>51</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <bold>true</bold>
-      <kerning>false</kerning>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: black;
-z-index: 100;</string>
-    </property>
-    <property name="text">
-     <string>Atajos</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_9">
-    <property name="geometry">
-     <rect>
-      <x>540</x>
-      <y>490</y>
+      <x>20</x>
+      <y>10</y>
       <width>201</width>
-      <height>21</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Editar: Click derecho en línea</string>
+     <string>Modo actual: Normal</string>
     </property>
    </widget>
   </widget>
@@ -179,7 +104,7 @@ z-index: 100;</string>
     <addaction name="actionTrasladar"/>
     <addaction name="actionRotar"/>
     <addaction name="actionEscalar"/>
-    <addaction name="actionReflejar"/>
+    <addaction name="actionEspejo_Reflejar"/>
    </widget>
    <addaction name="menuMen"/>
    <addaction name="menuL_nea"/>
@@ -255,9 +180,9 @@ z-index: 100;</string>
     <string>E</string>
    </property>
   </action>
-  <action name="actionReflejar">
+  <action name="actionEspejo_Reflejar">
    <property name="text">
-    <string>Reflejar</string>
+    <string>Espejo/Reflejar</string>
    </property>
   </action>
  </widget>
