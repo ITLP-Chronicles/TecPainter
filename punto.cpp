@@ -32,9 +32,11 @@ void Punto::trasladar(float tx, float ty){
 
     Matriz2D* puntoMatriz = this->puntoAMatriz();
     puntoMatriz->trasladar(tx,ty);
-    this->reemplazar(matrizAPunto(puntoMatriz));
+    Punto* nuevoPuntoMatriz = matrizAPunto(puntoMatriz);
+    this->reemplazar(nuevoPuntoMatriz);
 
     delete puntoMatriz;
+    delete nuevoPuntoMatriz;
     puntoMatriz = nullptr;
 }
 
@@ -45,9 +47,11 @@ void Punto::rotar(float xr, float yr, float angulo) {
 
     Matriz2D* puntoMatriz = this->puntoAMatriz();
     puntoMatriz->rotar(xr,yr,angulo);
-    this->reemplazar(matrizAPunto(puntoMatriz));
+    Punto* nuevoPuntoMatriz = matrizAPunto(puntoMatriz);
+    this->reemplazar(nuevoPuntoMatriz);
 
     delete puntoMatriz;
+    delete nuevoPuntoMatriz;
     puntoMatriz = nullptr;
 }
 
@@ -57,9 +61,11 @@ void Punto::escalar(float sx, float sy, float xf, float yf) {
 
     Matriz2D* puntoMatriz = this->puntoAMatriz();
     puntoMatriz->escalar(sx,sy,xf,yf);
-    this->reemplazar(matrizAPunto(puntoMatriz));
+    Punto* nuevoPuntoMatriz = matrizAPunto(puntoMatriz);
+    this->reemplazar(nuevoPuntoMatriz);
 
     delete puntoMatriz;
+    delete nuevoPuntoMatriz;
     puntoMatriz = nullptr;
 }
 

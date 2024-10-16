@@ -33,10 +33,12 @@ public:
     QAction *actionTrasladar;
     QAction *actionRotar;
     QAction *actionEscalar;
+    QAction *actionEspejo_Reflejar;
     QWidget *centralwidget;
     QLabel *label;
     QLabel *label_2;
     QLabel *label_3;
+    QLabel *modo_actual;
     QMenuBar *menubar;
     QMenu *menuMen;
     QMenu *menuL_nea;
@@ -65,23 +67,30 @@ public:
         actionInterlineado->setObjectName("actionInterlineado");
         actionDibujar = new QAction(MainWindow);
         actionDibujar->setObjectName("actionDibujar");
+        actionDibujar->setMenuRole(QAction::MenuRole::AboutQtRole);
         actionTrasladar = new QAction(MainWindow);
         actionTrasladar->setObjectName("actionTrasladar");
         actionRotar = new QAction(MainWindow);
         actionRotar->setObjectName("actionRotar");
         actionEscalar = new QAction(MainWindow);
         actionEscalar->setObjectName("actionEscalar");
+        actionEspejo_Reflejar = new QAction(MainWindow);
+        actionEspejo_Reflejar->setObjectName("actionEspejo_Reflejar");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
+        centralwidget->setEnabled(true);
         label = new QLabel(centralwidget);
         label->setObjectName("label");
-        label->setGeometry(QRect(10, 490, 501, 20));
+        label->setGeometry(QRect(10, 480, 501, 20));
         label_2 = new QLabel(centralwidget);
         label_2->setObjectName("label_2");
-        label_2->setGeometry(QRect(10, 520, 361, 20));
+        label_2->setGeometry(QRect(20, 510, 361, 20));
         label_3 = new QLabel(centralwidget);
         label_3->setObjectName("label_3");
         label_3->setGeometry(QRect(370, 10, 51, 21));
+        modo_actual = new QLabel(centralwidget);
+        modo_actual->setObjectName("modo_actual");
+        modo_actual->setGeometry(QRect(20, 10, 201, 31));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
@@ -108,6 +117,7 @@ public:
         menuHerramienta->addAction(actionTrasladar);
         menuHerramienta->addAction(actionRotar);
         menuHerramienta->addAction(actionEscalar);
+        menuHerramienta->addAction(actionEspejo_Reflejar);
 
         retranslateUi(MainWindow);
 
@@ -123,12 +133,29 @@ public:
         actionNormal->setText(QCoreApplication::translate("MainWindow", "Normal", nullptr));
         actionInterlineado->setText(QCoreApplication::translate("MainWindow", "Interlineado", nullptr));
         actionDibujar->setText(QCoreApplication::translate("MainWindow", "Ninguno", nullptr));
+#if QT_CONFIG(tooltip)
+        actionDibujar->setToolTip(QCoreApplication::translate("MainWindow", "A", nullptr));
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(shortcut)
+        actionDibujar->setShortcut(QCoreApplication::translate("MainWindow", "A", nullptr));
+#endif // QT_CONFIG(shortcut)
         actionTrasladar->setText(QCoreApplication::translate("MainWindow", "Trasladar", nullptr));
+#if QT_CONFIG(shortcut)
+        actionTrasladar->setShortcut(QCoreApplication::translate("MainWindow", "T", nullptr));
+#endif // QT_CONFIG(shortcut)
         actionRotar->setText(QCoreApplication::translate("MainWindow", "Rotar", nullptr));
+#if QT_CONFIG(shortcut)
+        actionRotar->setShortcut(QCoreApplication::translate("MainWindow", "R", nullptr));
+#endif // QT_CONFIG(shortcut)
         actionEscalar->setText(QCoreApplication::translate("MainWindow", "Escalar", nullptr));
+#if QT_CONFIG(shortcut)
+        actionEscalar->setShortcut(QCoreApplication::translate("MainWindow", "E", nullptr));
+#endif // QT_CONFIG(shortcut)
+        actionEspejo_Reflejar->setText(QCoreApplication::translate("MainWindow", "Espejo/Reflejar", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "\342\234\250 Funci\303\263n: Puede deshacer cambios con ctrl + z con las l\303\255neas", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "Hecho Por Kristan Ru\303\255z Lim\303\263n y Ra\303\272l Armando", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Examen", nullptr));
+        modo_actual->setText(QCoreApplication::translate("MainWindow", "Modo actual: Normal", nullptr));
         menuMen->setTitle(QCoreApplication::translate("MainWindow", "Men\303\272", nullptr));
         menuL_nea->setTitle(QCoreApplication::translate("MainWindow", "L\303\255nea", nullptr));
         menuHerramienta->setTitle(QCoreApplication::translate("MainWindow", "Herramienta", nullptr));

@@ -104,3 +104,26 @@ void Matriz2D::equals(Matriz2D* M){
 Matriz2D* Matriz2D::copia(){
     return new Matriz2D(this);
 }
+
+//Generates rotation matrix LIKE IF IT WERE ON ORIGIN (0,0)
+Matriz2D* Matriz2D::GenerateRotationMatrix(float piRadians){
+    float cos_teta = cos(piRadians);
+    float sin_teta = sin(piRadians);
+    return new Matriz2D(cos_teta, -sin_teta, 0, sin_teta, cos_teta,0);
+}
+
+//Generates a traslation matrix (only displacement matrix), you need to multiply it with point to move.
+//Doesn't need to handle origin coordinates. Easier to use compared to scale and rotation
+// # hola
+Matriz2D* Matriz2D::GenerateTraslationMatrix(int deltaX, int deltaY){
+    return new Matriz2D(1,0, deltaX, 0, 1, deltaY);
+}
+
+//Generates a scale factor matrix LIKE IF IT WERE ON ORIGIN (0,0)
+Matriz2D* Matriz2D::GenerateScaleMatrix(float factorX, float factorY){
+    return new Matriz2D(factorX, 0,0,0,factorY,0);
+}
+
+Matriz2D* Matriz2D::GenerateVerticalMirrorMatrix(){
+    return new Matriz2D(1,0,0,0,-1,0);
+}
