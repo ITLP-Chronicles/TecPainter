@@ -202,33 +202,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 
     if (actualMode == Reflejar){
         tipoLineaSeleccionada = LineaNormal;
-
-        int deltaX = actualLine->p2->x - actualLine->p1->x;
-        int deltaY = actualLine->p2->y - actualLine->p1->y;
-
-        double angle = atan2(deltaY, deltaX);
-        Matriz2D* traslate_origin = Matriz2D::GenerateTraslationMatrix(-actualLine->p1->x, -actualLine->p1->y);
-        Matriz2D* rotate = Matriz2D::GenerateRotationMatrix(-angle);
-        Matriz2D* vertical_swap = Matriz2D::GenerateVerticalMirrorMatrix();
-        Matriz2D* rotate_back = Matriz2D::GenerateRotationMatrix(angle);
-        Matriz2D* traslate_back = Matriz2D::GenerateTraslationMatrix(actualLine->p1->x, actualLine->p1->y);
-
-        Matriz2D* traslate_part_1 = traslate_back->mult(rotate_back);
-        Matriz2D* mirror_effect_part_1 = traslate_part_1->mult(vertical_swap);
-        Matriz2D* mirror_effect_complete = mirror_effect_part_1->mult(rotate);
-        Matriz2D* traslate_complete = mirror_effect_complete->mult(traslate_origin);
-
-        objeto2D->transformar(traslate_complete);
-
-        delete traslate_origin;
-        delete rotate;
-        delete vertical_swap;
-        delete rotate_back;
-        delete traslate_back;
-        delete traslate_part_1;
-        delete mirror_effect_part_1;
-        delete mirror_effect_complete;
-        delete traslate_complete;
+        objeto2D->reflejar(actualLine);
         repaint();
         goto ReflejarCase;
     }

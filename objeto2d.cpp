@@ -4,14 +4,13 @@
 #include <vector>
 using namespace std;
 
-
-
+// Constructor ()
 Objeto2D::Objeto2D() {
     inicio=nullptr;
     final=nullptr;
 }
 
-
+// Destructor ()
 Objeto2D::~Objeto2D(){
     while(inicio != nullptr){
         Linea* temp = inicio;
@@ -21,6 +20,7 @@ Objeto2D::~Objeto2D(){
     }
 }
 
+// ---------------------- Utilidades --------------------------
 void Objeto2D::ForEachLine(std::function<void(Linea*)> callBack){
     Linea* temp = inicio;
     while(temp != nullptr){
@@ -66,10 +66,6 @@ void Objeto2D::agregar(Linea *linea) {
     }
 }
 
-void Objeto2D::desplegar(QPainter* painter){
-    ForEachLine([painter](Linea* linea){linea->desplegar(painter);});
-}
-
 void Objeto2D::eliminar(Linea *linea) {
     if (inicio == nullptr || linea == nullptr) return; // Check for null pointers
 
@@ -101,6 +97,9 @@ void Objeto2D::eliminar(Linea *linea) {
     }
 }
 
+void Objeto2D::desplegar(QPainter* painter){
+    ForEachLine([painter](Linea* linea){linea->desplegar(painter);});
+}
 
 tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
     //1. Posicionar puntero inicial para recorrer cada línea y revisar su cercanía con el click
@@ -116,6 +115,34 @@ tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
     //3. Retorna una tupla por defecto
     return std::make_tuple(nullptr, nullptr);
 }
+
+Punto *Objeto2D::centro(){
+    int minX = inicio->p1->x, maxX = inicio->p1->x,
+        minY = inicio->p1->y, maxY = inicio->p1->y;
+
+    ForEachLine([&](Linea* linea) {
+        for (int i = 0; i < 2; ++i) {
+            Punto* p = (i == 0) ? linea->p1 : linea->p2;
+
+            if (p->x < minX) minX = p->x;
+            if (p->x > maxX) maxX = p->x;
+
+            if (p->y < minY) minY = p->y;
+            if (p->y > maxY) maxY = p->y;
+        }
+    });
+
+    return new Punto ((minX+maxX)/2, (minY+maxY)/2);
+}
+
+void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
+    ForEachLine([newStyle](Linea *current){
+        current->tipoLinea = newStyle;
+    });
+}
+
+
+// ----------- Característica Especial (Guardar archivo y leer) ------------
 
 void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
     while (!lineaXML.isNull()) {
@@ -167,17 +194,40 @@ void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
     pointer = nullptr;
 }
 
+//---------------------- Graficación SIN Matrices ------------------------------------------
+
 void Objeto2D::trasladar(float newX, float newY){
     ForEachLine([newX, newY](Linea* current){
         current->trasladar(newX, newY);
     });
 }
 
-
 void Objeto2D::rotar(float xr, float yr, float ang){
     ForEachLine([xr, yr, ang](Linea *current){
         current->rotar(xr, yr, ang);
     });
+}
+
+void Objeto2D::escalar(float factorX, float factorY, float centerX, float centerY){
+    ForEachLine([factorX, factorY, centerX, centerY](Linea *current){
+        current->escalar(factorX, factorY, centerX, centerY);
+    });
+}
+
+//---------------------- Graficación CON Matrices ------------------------------------------
+
+void Objeto2D::transformar(Matriz2D* MTransform){
+    ForEachLine([MTransform](Linea *current){
+        current->transformar(MTransform);
+    });
+}
+
+void Objeto2D::trasladar(Linea* inputLinea){
+    auto deltaX = inputLinea->p2->x - inputLinea->p1->x;
+    auto deltaY = inputLinea->p2->y - inputLinea->p1->y;
+    Matriz2D* traslate = new Matriz2D(1,0, deltaX, 0, 1, deltaY);
+    transformar(traslate);
+    delete traslate;
 }
 
 void Objeto2D::rotar(Linea* inputLinea){
@@ -204,12 +254,6 @@ void Objeto2D::rotar(Linea* inputLinea){
     delete finished_back;
 }
 
-void Objeto2D::escalar(float factorX, float factorY, float centerX, float centerY){
-    ForEachLine([factorX, factorY, centerX, centerY](Linea *current){
-        current->escalar(factorX, factorY, centerX, centerY);
-    });
-}
-
 void Objeto2D::escalar(Linea* inputLinea){
     auto deltaX = inputLinea->p2->x - inputLinea->p1->x;
     auto deltaY = inputLinea->p2->y - inputLinea->p1->y;
@@ -232,34 +276,34 @@ void Objeto2D::escalar(Linea* inputLinea){
     delete traslate_finished;
 }
 
+void Objeto2D::reflejar(Linea* actualLine){
+    int deltaX = actualLine->p2->x - actualLine->p1->x;
+    int deltaY = actualLine->p2->y - actualLine->p1->y;
 
-void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
-    ForEachLine([newStyle](Linea *current){
-        current->tipoLinea = newStyle;
-    });
+    double angle = atan2(deltaY, deltaX);
+    Matriz2D* traslate_origin = Matriz2D::GenerateTraslationMatrix(-actualLine->p1->x, -actualLine->p1->y);
+    Matriz2D* rotate = Matriz2D::GenerateRotationMatrix(-angle);
+    Matriz2D* vertical_swap = Matriz2D::GenerateVerticalMirrorMatrix();
+    Matriz2D* rotate_back = Matriz2D::GenerateRotationMatrix(angle);
+    Matriz2D* traslate_back = Matriz2D::GenerateTraslationMatrix(actualLine->p1->x, actualLine->p1->y);
+
+    Matriz2D* traslate_part_1 = traslate_back->mult(rotate_back);
+    Matriz2D* mirror_effect_part_1 = traslate_part_1->mult(vertical_swap);
+    Matriz2D* mirror_effect_complete = mirror_effect_part_1->mult(rotate);
+    Matriz2D* traslate_complete = mirror_effect_complete->mult(traslate_origin);
+
+    transformar(traslate_complete);
+
+    delete traslate_origin;
+    delete rotate;
+    delete vertical_swap;
+    delete rotate_back;
+    delete traslate_back;
+    delete traslate_part_1;
+    delete mirror_effect_part_1;
+    delete mirror_effect_complete;
+    delete traslate_complete;
 }
 
-Punto *Objeto2D::centro(){
-    int minX = inicio->p1->x, maxX = inicio->p1->x,
-        minY = inicio->p1->y, maxY = inicio->p1->y;
 
-    ForEachLine([&](Linea* linea) {
-        for (int i = 0; i < 2; ++i) {
-            Punto* p = (i == 0) ? linea->p1 : linea->p2;
 
-            if (p->x < minX) minX = p->x;
-            if (p->x > maxX) maxX = p->x;
-
-            if (p->y < minY) minY = p->y;
-            if (p->y > maxY) maxY = p->y;
-        }
-    });
-
-    return new Punto ((minX+maxX)/2, (minY+maxY)/2);
-}
-
-void Objeto2D::transformar(Matriz2D* MTransform){
-    ForEachLine([MTransform](Linea *current){
-        current->transformar(MTransform);
-    });
-}
