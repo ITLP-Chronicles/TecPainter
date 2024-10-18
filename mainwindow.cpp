@@ -64,6 +64,7 @@ std::string ModeToString(Mode mode){
         case Rotar: return "Rotar";
         case Trasladar: return "Trasladar";
         case Reflejar: return "Reflejar";
+        case CizallarX: return "CizallarX";
     }
     return "---";
 }
@@ -80,9 +81,6 @@ MainWindow::~MainWindow()
         objectStack.pop();
     }
     delete objeto2D;
-    //if(actualLine)delete actualLine;
-    //if(lastLine)delete lastLine;
-    //if(pointToMove)delete pointToMove;
     actualLine = nullptr;
     lastLine = nullptr;
     pointToMove = nullptr;
@@ -134,6 +132,11 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             tipoLineaSeleccionada = LineaInterlineada;
             goto StoreActualLine;
         }
+        else if (actualMode == CizallarX){
+            preview2D = objeto2D->copia();
+            preview2D->updateLineStyleToAll(LineaInterlineada);
+            goto StoreActualLine;
+        }
 
         StoreActualLine:
             actualLine = new Linea(click.x, click.y, click.x, click.y);
@@ -178,6 +181,12 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
             preview2D->updateLineStyleToAll(LineaInterlineada);
             preview2D->escalar(actualLine);
 
+        }
+        if (actualMode == CizallarX) {
+            preview2D = objeto2D->copia();
+            preview2D->updateLineStyleToAll(LineaInterlineada);
+            Linea* vector = new Linea(objeto2D->centro(),actualLine->p2);
+            preview2D->cizallarX(vector);
         }
         //if (actualMode == Reflejar){   -- THIS IS BEING HANDLED IN 'Normal' CASE ABOVE
             //TODO: Calcular el ángulo de la línea que se hace
@@ -227,6 +236,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
                 preview2D = nullptr;
             }
         }
+        if (actualMode == CizallarX) {
+            Linea* vector = new Linea(objeto2D->centro(),actualLine->p2);
+            objeto2D->cizallarX(vector);
+        }
     }
     if (actualMode == Edit) goto UpdateLastLine;
 
@@ -249,6 +262,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
     if (e->key() == Qt::Key_T) setActualMode(Trasladar);
     if (e->key() == Qt::Key_V) setActualMode(Trasladar);
     if (e->key() == Qt::Key_W) setActualMode(Reflejar);
+    if (e->key() == Qt::Key_K) setActualMode(CizallarX);
     if (e->key() == Qt::Key_D){
         delete objeto2D;
         objeto2D = new Objeto2D();
@@ -288,23 +302,11 @@ void MainWindow::paintEvent(QPaintEvent *) {
         if (actualLine!=nullptr)
             actualLine->desplegar(painter);
     }
-
+    else{
+        if (preview2D!=nullptr)
+            preview2D->desplegar(painter);
+    }
     objeto2D->desplegar(painter);
-
-    if (actualMode == Trasladar){
-        if (preview2D!=nullptr)
-            preview2D->desplegar(painter);
-    }
-
-    if (actualMode == Rotar){
-        if (preview2D!=nullptr)
-            preview2D->desplegar(painter);
-    }
-
-    if (actualMode == Escalar){
-        if (preview2D!=nullptr)
-            preview2D->desplegar(painter);
-    }
     delete painter;
 }
 
@@ -389,5 +391,11 @@ void MainWindow::on_actionEscalar_triggered()
 void MainWindow::on_actionEspejo_Reflejar_triggered()
 {
     setActualMode(Reflejar);
+}
+
+
+void MainWindow::on_actionCizallar_X_triggered()
+{
+    setActualMode(CizallarX);
 }
 

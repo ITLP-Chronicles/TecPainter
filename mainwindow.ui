@@ -79,7 +79,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMen">
@@ -105,6 +105,7 @@
     <addaction name="actionRotar"/>
     <addaction name="actionEscalar"/>
     <addaction name="actionEspejo_Reflejar"/>
+    <addaction name="actionCizallar_X"/>
    </widget>
    <addaction name="menuMen"/>
    <addaction name="menuL_nea"/>
@@ -117,11 +118,6 @@
    </property>
    <property name="text">
     <string>Guardar</string>
-   </property>
-  </action>
-  <action name="actionCargar">
-   <property name="text">
-    <string>Cargar</string>
    </property>
   </action>
   <action name="actionLeer">
@@ -183,6 +179,20 @@
   <action name="actionEspejo_Reflejar">
    <property name="text">
     <string>Espejo/Reflejar</string>
+   </property>
+   <property name="shortcut">
+    <string>W</string>
+   </property>
+  </action>
+  <action name="actionCizallar_X">
+   <property name="text">
+    <string>CizallarX</string>
+   </property>
+   <property name="toolTip">
+    <string>CizallarX</string>
+   </property>
+   <property name="shortcut">
+    <string>K</string>
    </property>
   </action>
  </widget>

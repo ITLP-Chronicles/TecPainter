@@ -89,6 +89,7 @@ public:
     void rotar(Linea * lineaInput);
     void escalar(Linea * lineaInput);
     void reflejar(Linea * lineaInput);
+    void cizallarX(Linea * lineaInput);
 
 
     //----------- Guardado de archivos (Funcionalidad especial externa) --------------

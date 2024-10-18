@@ -258,7 +258,7 @@ void Objeto2D::escalar(Linea* inputLinea){
     auto deltaX = inputLinea->p2->x - inputLinea->p1->x;
     auto deltaY = inputLinea->p2->y - inputLinea->p1->y;
     auto factorX = 0.01 + (deltaX)/100;
-    auto factorY = 0.01 + -(deltaY)/100;
+    auto factorY = 0.01 - (deltaY)/100;
 
     Matriz2D * traslate =  new Matriz2D(1,0, -inputLinea->p1->x, 0, 1, -inputLinea->p1->y);
     Matriz2D * scale = new Matriz2D(factorX, 0,0,0,factorY,0);
@@ -281,6 +281,7 @@ void Objeto2D::reflejar(Linea* actualLine){
     int deltaY = actualLine->p2->y - actualLine->p1->y;
 
     double angle = atan2(deltaY, deltaX);
+
     Matriz2D* traslate_origin = Matriz2D::GenerateTraslationMatrix(-actualLine->p1->x, -actualLine->p1->y);
     Matriz2D* rotate = Matriz2D::GenerateRotationMatrix(-angle);
     Matriz2D* vertical_swap = Matriz2D::GenerateVerticalMirrorMatrix();
@@ -305,5 +306,23 @@ void Objeto2D::reflejar(Linea* actualLine){
     delete traslate_complete;
 }
 
+void Objeto2D::cizallarX(Linea* actualLine){
+    int deltaX = actualLine->p2->x - actualLine->p1->x;
+    int deltaY = actualLine->p2->y - actualLine->p1->y;
+    double angle = atan2(deltaY, deltaX);
 
+    Matriz2D* traslate_origin = Matriz2D::GenerateTraslationMatrix(-actualLine->p1->x, -actualLine->p1->y);
+    Matriz2D* morph = new Matriz2D(1,tan(angle/2),0,tan(angle/2),1,0);
+    Matriz2D* traslate_back = Matriz2D::GenerateTraslationMatrix(actualLine->p1->x, actualLine->p1->y);
 
+    Matriz2D* mirror_effect_part_1 = traslate_back->mult(morph);
+    Matriz2D* traslate_complete = mirror_effect_part_1->mult(traslate_origin);
+
+    transformar(traslate_complete);
+
+    delete traslate_origin;
+    delete morph;;
+    delete traslate_back;
+    delete mirror_effect_part_1;
+    delete traslate_complete;
+}
