@@ -64,6 +64,7 @@ std::string ModeToString(Mode mode){
         case Rotar: return "Rotar";
         case Trasladar: return "Trasladar";
         case Reflejar: return "Reflejar";
+        case EscalarArbitrario: return "Escalar Arbitrario";
     }
     return "---";
 }
@@ -118,7 +119,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             preview2D->updateLineStyleToAll(LineaInterlineada);
             goto StoreActualLine;
         }
-        else if (actualMode == Escalar){
+        else if (actualMode == Escalar || actualMode == EscalarArbitrario){
             preview2D = objeto2D->copia();
             preview2D->updateLineStyleToAll(LineaInterlineada);
             goto StoreActualLine;
@@ -148,7 +149,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
 void MainWindow::mouseMoveEvent(QMouseEvent *e) {
     if (!actualLine)return;
 
-    if(actualMode == Normal || actualMode == Reflejar) goto DisplayChangingLine;
+    if(actualMode == Normal) goto DisplayChangingLine;
     if(actualMode == Edit){
         if (pointToMove == actualLine->p1){
             actualLine->p1 = actualLine->p2;
@@ -177,13 +178,20 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
             preview2D = objeto2D->copia();
             preview2D->updateLineStyleToAll(LineaInterlineada);
             preview2D->escalar(actualLine);
-
         }
-        //if (actualMode == Reflejar){   -- THIS IS BEING HANDLED IN 'Normal' CASE ABOVE
-            //TODO: Calcular el ángulo de la línea que se hace
-            //- Permitir que la línea se dibujo (Primera fase del reflejar)
-            //- Cuando se suelte la línea, realizar el algoritmo del reflejo
-        //}
+
+        if (actualMode == Reflejar){
+            preview2D = objeto2D->copia();
+            preview2D->updateLineStyleToAll(LineaInterlineada);
+            preview2D->reflejar(actualLine);
+        }
+
+        if (actualMode == EscalarArbitrario){
+            preview2D = objeto2D->copia();
+            preview2D->updateLineStyleToAll(LineaInterlineada);
+            preview2D->escalarArbitrario(actualLine);
+        }
+
     }
 
     DisplayChangingLine:
@@ -227,6 +235,15 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
                 preview2D = nullptr;
             }
         }
+
+        if (actualMode == EscalarArbitrario) {
+            objeto2D->escalarArbitrario(actualLine);
+
+            if (preview2D) {
+                delete preview2D;
+                preview2D = nullptr;
+            }
+        }
     }
     if (actualMode == Edit) goto UpdateLastLine;
 
@@ -249,6 +266,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
     if (e->key() == Qt::Key_T) setActualMode(Trasladar);
     if (e->key() == Qt::Key_V) setActualMode(Trasladar);
     if (e->key() == Qt::Key_W) setActualMode(Reflejar);
+    if (e->key() == Qt::Key_Q) setActualMode(EscalarArbitrario);
     if (e->key() == Qt::Key_D){
         delete objeto2D;
         objeto2D = new Objeto2D();
@@ -284,27 +302,24 @@ void MainWindow::paintEvent(QPaintEvent *) {
     pen.setColor(QColor(0,0,255));
     painter->setPen(pen);
 
-    if (actualMode == Normal || actualMode == Reflejar){
+    if (actualMode == Normal){
         if (actualLine!=nullptr)
             actualLine->desplegar(painter);
+    }
+    else if (actualMode == Reflejar){
+        if (actualLine != nullptr)
+            actualLine->desplegar(painter);
+
+        if (preview2D != nullptr)
+            preview2D->desplegar(painter);
+    }
+    else if (actualMode != Edit){
+        if (preview2D!= nullptr)
+            preview2D->desplegar(painter);
     }
 
     objeto2D->desplegar(painter);
 
-    if (actualMode == Trasladar){
-        if (preview2D!=nullptr)
-            preview2D->desplegar(painter);
-    }
-
-    if (actualMode == Rotar){
-        if (preview2D!=nullptr)
-            preview2D->desplegar(painter);
-    }
-
-    if (actualMode == Escalar){
-        if (preview2D!=nullptr)
-            preview2D->desplegar(painter);
-    }
     delete painter;
 }
 
@@ -389,5 +404,11 @@ void MainWindow::on_actionEscalar_triggered()
 void MainWindow::on_actionEspejo_Reflejar_triggered()
 {
     setActualMode(Reflejar);
+}
+
+
+void MainWindow::on_actionEscalar_c_direccion_arbr_triggered()
+{
+    setActualMode(EscalarArbitrario);
 }
 

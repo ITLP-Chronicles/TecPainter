@@ -30,6 +30,8 @@ enum Mode {
     //Modo para reflejar todo el dibujo. Se activa mediante el GUI y atajo de teclado. Permite el dibujo
     //de una línea temporal y luego aplicar el efecto automáticamente.
     Reflejar,
+
+    EscalarArbitrario
 };
 
 class MainWindow : public QMainWindow
@@ -80,6 +82,7 @@ class MainWindow : public QMainWindow
         void on_actionRotar_triggered();
         void on_actionEscalar_triggered();
         void on_actionEspejo_Reflejar_triggered();
+        void on_actionEscalar_c_direccion_arbr_triggered();
 };
 #endif // MAINWINDOW_H
 

@@ -305,5 +305,58 @@ void Objeto2D::reflejar(Linea* actualLine){
     delete traslate_complete;
 }
 
+int sign(double number){
+    if (number > 0)
+        return 1;
 
+    if (number == 0)
+        return 0;
+
+    return -1;
+}
+
+int ObtenerCuadrante(float deltaX, float deltaY){
+    if ((sign(deltaX) == 1 || deltaX == 0) && (sign(deltaY) == 1 || deltaY == 0))
+        return 1;
+
+    else if (sign(deltaX) == -1 && sign(deltaY) == 1)
+        return 2;
+
+    else if (sign(deltaX) == -1 && sign(deltaY) == -1)
+        return 3;
+
+    else //if (sign(deltaX) == 1 && sign(deltaY) == -1)
+        return 4;
+}
+
+void Objeto2D::escalarArbitrario(Linea* actualLine){
+    auto deltaX = actualLine->p2->x - actualLine->p1->x;
+    auto deltaY = actualLine->p2->y - actualLine->p1->y;
+
+    auto piRadians = atan2(deltaY, deltaX);
+    auto factorX = sqrt(deltaX * deltaX + deltaY * deltaY)/100.0;
+
+    Matriz2D * traslate_to_origin = Matriz2D::GenerateTraslationMatrix(-actualLine->p1->x, -actualLine->p1->y);
+    Matriz2D * rotate_to_x = Matriz2D::GenerateRotationMatrix(-piRadians);
+    Matriz2D * scale_only_x = Matriz2D::GenerateScaleMatrix(factorX, 1);
+    Matriz2D * rotate_to_x_back = Matriz2D::GenerateRotationMatrix(piRadians);
+    Matriz2D * traslate_to_origin_back = Matriz2D::GenerateTraslationMatrix(actualLine->p1->x, actualLine->p1->y);
+
+    Matriz2D * step_1 = traslate_to_origin_back->mult(rotate_to_x_back);
+    Matriz2D * step_2 = step_1->mult(scale_only_x);
+    Matriz2D * step_3 = step_2->mult(rotate_to_x);
+    Matriz2D * step_4 = step_3->mult(traslate_to_origin);
+
+    transformar(step_4);
+
+    delete traslate_to_origin;
+    delete rotate_to_x;
+    delete scale_only_x;
+    delete rotate_to_x_back;
+    delete traslate_to_origin_back;
+    delete step_1;
+    delete step_2;
+    delete step_3;
+    delete step_4;
+}
 

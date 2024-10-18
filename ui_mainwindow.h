@@ -34,6 +34,7 @@ public:
     QAction *actionRotar;
     QAction *actionEscalar;
     QAction *actionEspejo_Reflejar;
+    QAction *actionEscalar_c_direccion_arbr;
     QWidget *centralwidget;
     QLabel *label;
     QLabel *label_2;
@@ -76,6 +77,8 @@ public:
         actionEscalar->setObjectName("actionEscalar");
         actionEspejo_Reflejar = new QAction(MainWindow);
         actionEspejo_Reflejar->setObjectName("actionEspejo_Reflejar");
+        actionEscalar_c_direccion_arbr = new QAction(MainWindow);
+        actionEscalar_c_direccion_arbr->setObjectName("actionEscalar_c_direccion_arbr");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         centralwidget->setEnabled(true);
@@ -118,6 +121,7 @@ public:
         menuHerramienta->addAction(actionRotar);
         menuHerramienta->addAction(actionEscalar);
         menuHerramienta->addAction(actionEspejo_Reflejar);
+        menuHerramienta->addAction(actionEscalar_c_direccion_arbr);
 
         retranslateUi(MainWindow);
 
@@ -132,7 +136,7 @@ public:
         actionLeer->setText(QCoreApplication::translate("MainWindow", "Leer", nullptr));
         actionNormal->setText(QCoreApplication::translate("MainWindow", "Normal", nullptr));
         actionInterlineado->setText(QCoreApplication::translate("MainWindow", "Interlineado", nullptr));
-        actionDibujar->setText(QCoreApplication::translate("MainWindow", "Ninguno", nullptr));
+        actionDibujar->setText(QCoreApplication::translate("MainWindow", "Dibujar", nullptr));
 #if QT_CONFIG(tooltip)
         actionDibujar->setToolTip(QCoreApplication::translate("MainWindow", "A", nullptr));
 #endif // QT_CONFIG(tooltip)
@@ -152,6 +156,7 @@ public:
         actionEscalar->setShortcut(QCoreApplication::translate("MainWindow", "E", nullptr));
 #endif // QT_CONFIG(shortcut)
         actionEspejo_Reflejar->setText(QCoreApplication::translate("MainWindow", "Espejo/Reflejar", nullptr));
+        actionEscalar_c_direccion_arbr->setText(QCoreApplication::translate("MainWindow", "Escalar c/direccion arbr.", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "\342\234\250 Funci\303\263n: Puede deshacer cambios con ctrl + z con las l\303\255neas", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "Hecho Por Kristan Ru\303\255z Lim\303\263n y Ra\303\272l Armando", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Examen", nullptr));
