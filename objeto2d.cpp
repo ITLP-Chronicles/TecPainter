@@ -309,10 +309,10 @@ void Objeto2D::reflejar(Linea* actualLine){
 void Objeto2D::cizallarX(Linea* actualLine){
     int deltaX = actualLine->p2->x - actualLine->p1->x;
     int deltaY = actualLine->p2->y - actualLine->p1->y;
-    double angle = atan2(deltaY, deltaX);
+    double angle = atan2(deltaY, deltaX) + 90;
 
     Matriz2D* traslate_origin = Matriz2D::GenerateTraslationMatrix(-actualLine->p1->x, -actualLine->p1->y);
-    Matriz2D* morph = new Matriz2D(1,tan(angle/2),0,tan(angle/2),1,0);
+    Matriz2D* morph = new Matriz2D(1,tan(-angle/2),0,0,1,0);
     Matriz2D* traslate_back = Matriz2D::GenerateTraslationMatrix(actualLine->p1->x, actualLine->p1->y);
 
     Matriz2D* mirror_effect_part_1 = traslate_back->mult(morph);
