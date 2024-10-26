@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "objeto2d.h"
+#include "bezier.h"
 #include <stack>
 
 namespace Ui {
@@ -31,7 +32,9 @@ enum Mode {
     //de una línea temporal y luego aplicar el efecto automáticamente.
     Reflejar,
 
-    EscalarArbitrario
+    EscalarArbitrario,
+
+    Curvas
 };
 
 class MainWindow : public QMainWindow
@@ -48,8 +51,11 @@ class MainWindow : public QMainWindow
     //Línea que indica la penúltima línea hecha
     Linea *lastLine = nullptr;
 
-    //TODO: Raul, que es esto?
+    //Punto a mover al editar lineas
     Punto* pointToMove = nullptr;
+
+    //Objeto Bezier para dibujar curvas
+    Bezier *curva = nullptr;
 
     //Modo de renderizado de las líneas hechas sobre el vuelo y guardadas en "actualLine"
     Mode actualMode = Normal;
@@ -60,6 +66,8 @@ class MainWindow : public QMainWindow
 
     //Getter de la propiedad "actualMode", realiza lógica además de solo establecer el modo actual
     void setActualMode(Mode newMode);
+    //Añadir objeto Bezier al objeto2d
+    void addBezier(Punto);
 
     // GUI Eventos QT PRINCIPALES de uso (Interacción con mouse y teclado)
     public:

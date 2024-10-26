@@ -16,7 +16,6 @@ Objeto2D::~Objeto2D(){
         Linea* temp = inicio;
         inicio = inicio->sig;
         delete temp;
-        cout << "Se libero una linea" << endl;
     }
 }
 
@@ -48,7 +47,7 @@ Objeto2D *Objeto2D::copia() {
     Objeto2D *objeto2d = new Objeto2D();
     Linea *linea = inicio; while(linea!=nullptr)
     {
-        objeto2d->agregar(linea->copia());
+        objeto2d->agregarLinea(linea->copia());
         linea=linea->sig;
     }
     return objeto2d;
@@ -56,13 +55,23 @@ Objeto2D *Objeto2D::copia() {
 
 //------------ Métodos -------------
 
-void Objeto2D::agregar(Linea *linea) {
+void Objeto2D::agregarLinea(Linea *linea) {
     if (inicio==nullptr) {
         inicio=linea;
         final=linea;
     } else {
         final->sig=linea;
         final=linea;
+    }
+}
+
+void Objeto2D::agregarCurva(Bezier *curva) {
+    if (curva==nullptr) {
+        curvaInicio=curva;
+        curvaFinal=curva;
+    } else {
+        curvaFinal->sig=curva;
+        curvaFinal=curva;
     }
 }
 
@@ -99,6 +108,13 @@ void Objeto2D::eliminar(Linea *linea) {
 
 void Objeto2D::desplegar(QPainter* painter){
     ForEachLine([painter](Linea* linea){linea->desplegar(painter);});
+    if (curvaInicio != nullptr){
+        Bezier* curvaTemp = curvaInicio;
+        while(curvaTemp != nullptr){
+            curvaTemp->desplegar(painter);
+            curvaTemp = curvaTemp->sig;
+        }
+    }
 }
 
 tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
@@ -166,7 +182,7 @@ void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
             QString lineMode = lineaXML.attribute("estilo");
             linea->tipoLinea = lineMode == "I" ? LineaInterlineada:LineaNormal;
         }
-        this->agregar(linea);
+        this->agregarLinea(linea);
         lineaXML = lineaXML.nextSiblingElement();
     }
 }
@@ -220,6 +236,15 @@ void Objeto2D::transformar(Matriz2D* MTransform){
     ForEachLine([MTransform](Linea *current){
         current->transformar(MTransform);
     });
+
+    Bezier* curvaTemp = curvaInicio;
+    while(curvaTemp != nullptr){
+        Punto* temp = curvaTemp->puntosControl[0];
+        for (int i = 0; i < curvaTemp->numeroPuntosControl; i++){
+            temp->transformar(MTransform);
+        }
+        curvaTemp = curvaTemp->sig;
+    }
 }
 
 void Objeto2D::trasladar(Linea* inputLinea){

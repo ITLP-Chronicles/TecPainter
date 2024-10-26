@@ -10,6 +10,7 @@
 using namespace std;
 TipoLinea tipoLineaSeleccionada = LineaNormal;
 Objeto2D *preview2D = nullptr;
+Bezier *objBezier = nullptr;
 QLabel *label_CommandsCheatSheet = nullptr;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
@@ -65,6 +66,7 @@ std::string ModeToString(Mode mode){
         case Trasladar: return "Trasladar";
         case Reflejar: return "Reflejar";
         case EscalarArbitrario: return "Escalar Arbitrario";
+        case Curvas: return "Bezier";
     }
     return "---";
 }
@@ -81,9 +83,6 @@ MainWindow::~MainWindow()
         objectStack.pop();
     }
     delete objeto2D;
-    //if(actualLine)delete actualLine;
-    //if(lastLine)delete lastLine;
-    //if(pointToMove)delete pointToMove;
     actualLine = nullptr;
     lastLine = nullptr;
     pointToMove = nullptr;
@@ -96,14 +95,18 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     Punto click(e->position().x(), e->position().y());
 
     if (e->button() == Qt::RightButton) {
-        if (!objeto2D->HayLineas())return;
+        if (!objeto2D->HayLineas()){
+            addBezier(click);
+            return;
+        }
         auto line_ClosestPoint = objeto2D->seleccionada(click.x, click.y);
         actualLine = std::get<0>(line_ClosestPoint);
         pointToMove = std::get<1>(line_ClosestPoint);
         if (std::get<1>(line_ClosestPoint)) objectStack.push(objeto2D->copia());
 
-        //If theres a selected line, is Edit Mode, otherwise Normal Mode
-        if (actualLine != nullptr) setActualMode(Edit); else setActualMode(Normal);
+        //If theres a selected line, is Edit Mode, otherwise adds Bezier
+        if (actualLine != nullptr) setActualMode(Edit);
+        else addBezier(click);
 
     } else if (e->button() == Qt::LeftButton) {
         deletedObjectStack = *new std::stack<Objeto2D*>();
@@ -204,7 +207,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 
     if (actualMode != Edit) objectStack.push(objeto2D->copia());
     if (actualMode == Normal) {
-        objeto2D->agregar(actualLine);
+        objeto2D->agregarLinea(actualLine);
         goto UpdateLastLine;
     }
 
@@ -363,6 +366,18 @@ void MainWindow::on_actionGuardar_triggered()
     QTextStream archivo(&sFile);
     archivo<<document.toString();
     sFile.close();
+}
+
+void MainWindow::addBezier(Punto click){
+    objectStack.push(objeto2D->copia());
+    setActualMode(Curvas);
+    Punto **control=new Punto*[4];
+    control[0]=new Punto(click.x - 150, click.y);
+    control[1]=new Punto(click.x - 50, click.y - 200);
+    control[2]=new Punto(click.x + 50, click.y + 200);
+    control[3]=new Punto(click.x + 150, click.y);
+    curva = new Bezier(control,3,100);
+    objeto2D->agregarCurva(curva);
 }
 
 void MainWindow::on_actionNormal_triggered()

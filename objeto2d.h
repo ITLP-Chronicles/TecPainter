@@ -2,6 +2,7 @@
 #define OBJETO2D_H
 
 #include "linea.h"
+#include "bezier.h"
 #include <tuple>
 #include <QtXml>
 
@@ -28,6 +29,10 @@ public:
     //Indica el estilo de línea por defecto que se configurará cada línea agregada nueva.
     TipoLinea defaultLineStyle;
 
+    //Indica la lista de curvaInicio de bezier
+    Bezier *curvaInicio;
+    Bezier *curvaFinal;
+
     //Constructor por defecto. Inicializa todas las variables en sus configuraciones por defecto
     Objeto2D();
 
@@ -38,7 +43,10 @@ public:
     ~Objeto2D();
 
     //Agrega al final de la lista interna de 'Lineas'.
-    void agregar(Linea *);
+    void agregarLinea(Linea *);
+
+    //Agrega al final de la lista interna de curvas de bezier.
+    void agregarCurva(Bezier *);
 
     //Elimina de la lista interna la línea pasada por parámetro.
     //(Se realiza por medio de un bucle hasta que se encuentra).

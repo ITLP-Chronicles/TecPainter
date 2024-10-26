@@ -1,45 +1,77 @@
 #include "bezier.h"
 #include "linea.h"
 
-int Bezier::factorial(int num){
+int factorial(int num){
     if (num == 0) return 1;
     return num * factorial(num-1);
 }
 
-Bezier::Bezier(Punto** control,int n,int m) {
-    puntosControl = control;
-    numeroPuntosControl = n;
-    numeroPuntosCurva = m;
-    puntosCurva = new Punto*[m+1];
-    coeficientes = new float[n+1];
+Bezier::Bezier(Punto** control, int n, int m) {
+    puntosControl=control;
+    numeroPuntosControl=n;
+    numeroPuntosCurva=m;
+    puntosCurva=new Punto*[m+1];
+    coeficientes=new float[n+1];
+    obtenerCoeficientes();
+    calcular();
+}
+Bezier::~Bezier(){
+    for (int i = 0; i <= numeroPuntosCurva; i++) {
+        delete puntosCurva[i];
+    }
+    delete[] puntosCurva;
+
+    delete[] coeficientes;
+
+    Linea* current = inicio;
+    while (current != nullptr) {
+        Linea* next = current->sig;
+        delete current;
+        current = next;
+    }
 }
 
 void Bezier::obtenerCoeficientes(){
-    for (int k = 0; k < numeroPuntosControl; k++){
-        coeficientes[k] = factorial(numeroPuntosControl)/(factorial(k)*factorial((numeroPuntosControl-k)));
+    int nFactorial = factorial(numeroPuntosControl);
+    for(int k = 0; k <= numeroPuntosControl; k++){
+        float kFactorial = factorial(k);
+        float nMenoskFactorial = factorial(numeroPuntosControl-k);
+        coeficientes[k] = nFactorial / (kFactorial * nMenoskFactorial);
     }
 }
 
-float Bezier::bezier(int k, float u){
-    return coeficientes[k] * pow(u,k)*pow(1-u,numeroPuntosControl-k);
+float Bezier::BEZ(int k, float u) {
+    return coeficientes[k]*pow(u,k)*pow(1-u,numeroPuntosControl-k);
 }
 
-void Bezier::calcular(){
-    obtenerCoeficientes();
-    for (int u = 0; u < numeroPuntosCurva; u++){
-        float x = 0, y = 0;
-        for (int k = 0; k < numeroPuntosCurva; k++){
-            x += puntosCurva[k]->x * bezier(k, u);
-            y += puntosCurva[k]->y * bezier(k, u);
+Punto *Bezier::calcularPunto(float u) {
+    Punto *puntoCurva=new Punto();
+    for (int k = 0; k <= numeroPuntosControl; k++) {
+        float bez = BEZ(k, u);
+        puntoCurva->x += bez * puntosControl[k]->x;
+        puntoCurva->y += bez * puntosControl[k]->y;
+    }
+    return puntoCurva;
+}
 
-        }
-        puntosCurva[u]->x = x;
-        puntosCurva[u]->y = y;
+void Bezier::calcular() {
+    for (int i=0; i<=numeroPuntosCurva; i++) {
+        puntosCurva[i]=calcularPunto((float)i/numeroPuntosCurva);
+    }
+    inicio = new Linea(puntosCurva[0], puntosCurva[1]);
+    Linea* lineaActual = inicio;
+
+    for (int i = 1; i < numeroPuntosCurva; i++) {
+        Linea* siguienteLinea = new Linea(puntosCurva[i], puntosCurva[i + 1]);
+        lineaActual->sig = siguienteLinea;
+        lineaActual = siguienteLinea;
     }
 }
-void Bezier::desplegar(QPainter* painter){
-    for (int i = 0; i < numeroPuntosControl; i++){
-        Linea* linea = new Linea(puntosCurva[i],puntosCurva[i+1]);
-        linea->desplegar(painter);
+
+void Bezier::desplegar(QPainter* painter) {
+    Linea* l = inicio;
+    while (l != nullptr) {
+        l->desplegar(painter);
+        l = l->sig;
     }
 }
