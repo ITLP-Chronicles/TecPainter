@@ -12,10 +12,11 @@ Bezier::Bezier(std::vector<Punto*>* nuevosPuntosControl, int stepsPorDefecto){
     this->puntosDeControl = nuevosPuntosControl;
     this->pasos = stepsPorDefecto;
     this->puntosDeCurva = new std::vector<Punto*>();
-
-    for (int step = 0; stepsPorDefecto; step++){
+    
+    //Con step nos referimos a la cantidad de puntos a hacerse y el no. de punto actual que se está calculando.
+    for (int step = 0; step < stepsPorDefecto; step++){
         auto actualIterPoints = this->puntosDeControl;
-        double t = step / stepsPorDefecto;
+        double t = step / stepsPorDefecto; //Aquí ya se está obteniendo el valor correspondiente de t en este step
 
         while (actualIterPoints->size() > 1) {
             auto temp = new std::vector<Punto*>();
@@ -25,6 +26,10 @@ Bezier::Bezier(std::vector<Punto*>* nuevosPuntosControl, int stepsPorDefecto){
                     GetLinearInterpolation(actualIterPoints->at(i), actualIterPoints->at(i+1), t)
                 );
             }
+            actualIterPoints = temp;
         }
+        
+        //Aquí obtendríamos el punto resultante de todo el cálculo solo en este valor de t, lo agregamos al  arreglo de curvas
+        puntosDeCurva->push_back(actualIterPoints->at(0));
     }
 }
