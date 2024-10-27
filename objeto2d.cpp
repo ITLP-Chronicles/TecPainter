@@ -108,6 +108,7 @@ void Objeto2D::eliminar(Linea *linea) {
 
 void Objeto2D::desplegar(QPainter* painter){
     ForEachLine([painter](Linea* linea){linea->desplegar(painter);});
+
     if (curvaInicio != nullptr){
         Bezier* curvaTemp = curvaInicio;
         while(curvaTemp != nullptr){

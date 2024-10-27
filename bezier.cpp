@@ -15,6 +15,7 @@ Bezier::Bezier(Punto** control, int n, int m) {
     obtenerCoeficientes();
     calcular();
 }
+
 Bezier::~Bezier(){
     for (int i = 0; i <= numeroPuntosCurva; i++) {
         delete puntosCurva[i];

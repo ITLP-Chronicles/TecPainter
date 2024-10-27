@@ -371,12 +371,15 @@ void MainWindow::on_actionGuardar_triggered()
 void MainWindow::addBezier(Punto click){
     objectStack.push(objeto2D->copia());
     setActualMode(Curvas);
+
+    //Estableciendo los puntos de control por defecto - Bezier
     Punto **control=new Punto*[4];
     control[0]=new Punto(click.x - 150, click.y);
     control[1]=new Punto(click.x - 50, click.y - 200);
     control[2]=new Punto(click.x + 50, click.y + 200);
     control[3]=new Punto(click.x + 150, click.y);
     curva = new Bezier(control,3,100);
+
     objeto2D->agregarCurva(curva);
 }
 
@@ -420,7 +423,6 @@ void MainWindow::on_actionEspejo_Reflejar_triggered()
 {
     setActualMode(Reflejar);
 }
-
 
 void MainWindow::on_actionEscalar_c_direccion_arbr_triggered()
 {

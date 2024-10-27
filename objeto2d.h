@@ -30,6 +30,7 @@ public:
     TipoLinea defaultLineStyle;
 
     //Indica la lista de curvaInicio de bezier
+    //TODO: Por qué hay 2 y no solo una? --------------------------------
     Bezier *curvaInicio;
     Bezier *curvaFinal;
 
