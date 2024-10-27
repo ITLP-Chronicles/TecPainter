@@ -4,10 +4,66 @@
 #include <vector>
 using namespace std;
 
+// ----------- Característica Especial (Guardar archivo y leer) ------------
+
+void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
+    while (!lineaXML.isNull()) {
+        Linea* linea = new Linea();
+
+        QDomElement puntoXML = lineaXML.firstChildElement();
+        if (!puntoXML.isNull()) {
+            float x = puntoXML.attribute("X").toFloat();
+            float y = puntoXML.attribute("Y").toFloat();
+            linea->p1 = new Punto(x, y);
+            std::cout << "Punto X=" << x << " Y=" << y << std::endl;
+
+            puntoXML = puntoXML.nextSiblingElement();
+            if (!puntoXML.isNull()) {
+                x = puntoXML.attribute("X").toFloat();
+                y = puntoXML.attribute("Y").toFloat();
+                linea->p2 = new Punto(x, y);
+                std::cout << "Punto X=" << x << " Y=" << y << std::endl;
+            }
+
+            QString lineMode = lineaXML.attribute("estilo");
+            linea->tipoLinea = lineMode == "I" ? LineaInterlineada:LineaNormal;
+        }
+        this->agregarLinea(linea);
+        lineaXML = lineaXML.nextSiblingElement();
+    }
+}
+void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
+    Linea* pointer = this->inicio;
+    while (pointer != nullptr)
+    {
+        QDomElement linea=document.createElement("Linea");
+        linea.setAttribute("estilo", pointer->tipoLinea == LineaNormal ? "N":"I");
+        objeto2DXML.appendChild(linea);
+
+        QDomElement punto=document.createElement("Punto");
+        punto.setAttribute("X",pointer->p1->x);
+        punto.setAttribute("Y",pointer->p1->y);
+        linea.appendChild(punto);
+
+        punto=document.createElement("Punto");
+        punto.setAttribute("X",pointer->p2->x);
+        punto.setAttribute("Y",pointer->p2->y);
+        linea.appendChild(punto);
+
+        pointer = pointer->sig;
+    }
+    pointer = nullptr;
+}
+
+// ---------------- Default Constructor -----------------
+
 // Constructor ()
 Objeto2D::Objeto2D() {
     inicio=nullptr;
     final=nullptr;
+    defaultLineStyle = LineaNormal;
+    listaDeBezieres = new std::vector<Bezier*>();
+
 }
 
 // Destructor ()
@@ -19,7 +75,7 @@ Objeto2D::~Objeto2D(){
     }
 }
 
-// ---------------------- Utilidades --------------------------
+// ---------------------- Linea Logic --------------------------
 void Objeto2D::ForEachLine(std::function<void(Linea*)> callBack){
     Linea* temp = inicio;
     while(temp != nullptr){
@@ -30,6 +86,16 @@ void Objeto2D::ForEachLine(std::function<void(Linea*)> callBack){
 
 bool Objeto2D::HayLineas(){
     return this->inicio != nullptr && this->final != nullptr;
+}
+
+void Objeto2D::agregarLinea(Linea *linea) {
+    if (inicio==nullptr) {
+        inicio=linea;
+        final=linea;
+    } else {
+        final->sig=linea;
+        final=linea;
+    }
 }
 
 void Objeto2D::eliminarTodasLineas(){
@@ -43,37 +109,30 @@ void Objeto2D::eliminarTodasLineas(){
     delete temp;
 }
 
-Objeto2D *Objeto2D::copia() {
-    Objeto2D *objeto2d = new Objeto2D();
-    Linea *linea = inicio; while(linea!=nullptr)
-    {
-        objeto2d->agregarLinea(linea->copia());
-        linea=linea->sig;
-    }
-    return objeto2d;
+
+void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
+    ForEachLine([newStyle](Linea *current){
+        current->tipoLinea = newStyle;
+    });
 }
 
-//------------ Métodos -------------
 
-void Objeto2D::agregarLinea(Linea *linea) {
-    if (inicio==nullptr) {
-        inicio=linea;
-        final=linea;
-    } else {
-        final->sig=linea;
-        final=linea;
+//Solo toma en cuenta las líneas
+tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
+    //1. Posicionar puntero inicial para recorrer cada línea y revisar su cercanía con el click
+    Linea* pointer = inicio;
+    while (pointer != nullptr){
+        //2. Llamar al método de la línea. Retorna <bool, Punto*>: True si dio click allí y el punto más cercano
+        auto tuple = pointer->esSeleccionada(x,y);
+        if (std::get<0>(tuple)){
+            return std::make_tuple(pointer, std::get<1>(tuple));
+        }
+        pointer = pointer->sig;
     }
+    //3. Retorna una tupla por defecto
+    return std::make_tuple(nullptr, nullptr);
 }
 
-void Objeto2D::agregarCurva(Bezier *curva) {
-    if (curva==nullptr) {
-        curvaInicio=curva;
-        curvaFinal=curva;
-    } else {
-        curvaFinal->sig=curva;
-        curvaFinal=curva;
-    }
-}
 
 void Objeto2D::eliminar(Linea *linea) {
     if (inicio == nullptr || linea == nullptr) return; // Check for null pointers
@@ -106,33 +165,59 @@ void Objeto2D::eliminar(Linea *linea) {
     }
 }
 
+
+
+//------------ Curvas de Bezier Logic -------------
+
+void Objeto2D::agregarCurva(Bezier *curva) {
+    this->listaDeBezieres->push_back(curva);
+}
+
+//Funcionalidad específica de c++ no pensarlo mucho
+void Objeto2D::eliminarCurva(Bezier *nuevaCurva) {
+    auto it = this->listaDeBezieres->begin();
+    while (it != this->listaDeBezieres->end()) {
+        if (*it == nuevaCurva) {
+            delete *it;
+            it = this->listaDeBezieres->erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+bool Objeto2D::HayCurvas(){
+    return this->listaDeBezieres->size() > 0;
+}
+
+
+//----------- Objeto2D Métodos --------------
+
 void Objeto2D::desplegar(QPainter* painter){
     ForEachLine([painter](Linea* linea){linea->desplegar(painter);});
 
-    if (curvaInicio != nullptr){
-        Bezier* curvaTemp = curvaInicio;
-        while(curvaTemp != nullptr){
-            curvaTemp->desplegar(painter);
-            curvaTemp = curvaTemp->sig;
-        }
-    }
+    for (int i = 0; i < (int)this->listaDeBezieres->size(); i++)
+        this->listaDeBezieres->at(i)->Display(painter, LineaNormal);
 }
 
-tuple<Linea*, Punto*> Objeto2D::seleccionada(int x, int y){
-    //1. Posicionar puntero inicial para recorrer cada línea y revisar su cercanía con el click
-    Linea* pointer = inicio;
-    while (pointer != nullptr){
-        //2. Llamar al método de la línea. Retorna <bool, Punto*>: True si dio click allí y el punto más cercano
-        auto tuple = pointer->esSeleccionada(x,y);
-        if (std::get<0>(tuple)){
-            return std::make_tuple(pointer, std::get<1>(tuple));
-        }
-        pointer = pointer->sig;
+//TODO: Copiar también las curvas de bezier
+Objeto2D *Objeto2D::copia() {
+    Objeto2D *objeto2d = new Objeto2D();
+
+    Linea *linea = inicio;
+    while(linea!=nullptr)
+    {
+        objeto2d->agregarLinea(linea->copia());
+        linea=linea->sig;
     }
-    //3. Retorna una tupla por defecto
-    return std::make_tuple(nullptr, nullptr);
+
+    for (int i = 0; i < (int)this->listaDeBezieres->size(); i++)
+        objeto2d->agregarCurva(this->listaDeBezieres->at(i)->copiar());
+
+    return objeto2d;
 }
 
+//Solo toma en cuenta las líneas no las curvas
 Punto *Objeto2D::centro(){
     int minX = inicio->p1->x, maxX = inicio->p1->x,
         minY = inicio->p1->y, maxY = inicio->p1->y;
@@ -150,65 +235,6 @@ Punto *Objeto2D::centro(){
     });
 
     return new Punto ((minX+maxX)/2, (minY+maxY)/2);
-}
-
-void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
-    ForEachLine([newStyle](Linea *current){
-        current->tipoLinea = newStyle;
-    });
-}
-
-
-// ----------- Característica Especial (Guardar archivo y leer) ------------
-
-void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
-    while (!lineaXML.isNull()) {
-        Linea* linea = new Linea();
-
-        QDomElement puntoXML = lineaXML.firstChildElement();
-        if (!puntoXML.isNull()) {
-            float x = puntoXML.attribute("X").toFloat();
-            float y = puntoXML.attribute("Y").toFloat();
-            linea->p1 = new Punto(x, y);
-            std::cout << "Punto X=" << x << " Y=" << y << std::endl;
-
-            puntoXML = puntoXML.nextSiblingElement();
-            if (!puntoXML.isNull()) {
-                x = puntoXML.attribute("X").toFloat();
-                y = puntoXML.attribute("Y").toFloat();
-                linea->p2 = new Punto(x, y);
-                std::cout << "Punto X=" << x << " Y=" << y << std::endl;
-            }
-
-            QString lineMode = lineaXML.attribute("estilo");
-            linea->tipoLinea = lineMode == "I" ? LineaInterlineada:LineaNormal;
-        }
-        this->agregarLinea(linea);
-        lineaXML = lineaXML.nextSiblingElement();
-    }
-}
-
-void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
-    Linea* pointer = this->inicio;
-    while (pointer != nullptr)
-    {
-        QDomElement linea=document.createElement("Linea");
-        linea.setAttribute("estilo", pointer->tipoLinea == LineaNormal ? "N":"I");
-        objeto2DXML.appendChild(linea);
-
-        QDomElement punto=document.createElement("Punto");
-        punto.setAttribute("X",pointer->p1->x);
-        punto.setAttribute("Y",pointer->p1->y);
-        linea.appendChild(punto);
-
-        punto=document.createElement("Punto");
-        punto.setAttribute("X",pointer->p2->x);
-        punto.setAttribute("Y",pointer->p2->y);
-        linea.appendChild(punto);
-
-        pointer = pointer->sig;
-    }
-    pointer = nullptr;
 }
 
 //---------------------- Graficación SIN Matrices ------------------------------------------
@@ -238,13 +264,12 @@ void Objeto2D::transformar(Matriz2D* MTransform){
         current->transformar(MTransform);
     });
 
-    Bezier* curvaTemp = curvaInicio;
-    while(curvaTemp != nullptr){
-        Punto* temp = curvaTemp->puntosControl[0];
-        for (int i = 0; i < curvaTemp->numeroPuntosControl; i++){
-            temp->transformar(MTransform);
+    for (int i = 0; i < (int)this->listaDeBezieres->size(); i++){
+        Bezier* temp = this->listaDeBezieres->at(i);
+        for (int j = 0; j < (int)temp->puntosDeControl->size(); i++){
+            Punto* actualPoint = temp->puntosDeControl->at(j);
+            actualPoint->transformar(MTransform);
         }
-        curvaTemp = curvaTemp->sig;
     }
 }
 
@@ -329,30 +354,6 @@ void Objeto2D::reflejar(Linea* actualLine){
     delete mirror_effect_part_1;
     delete mirror_effect_complete;
     delete traslate_complete;
-}
-
-int sign(double number){
-    if (number > 0)
-        return 1;
-
-    if (number == 0)
-        return 0;
-
-    return -1;
-}
-
-int ObtenerCuadrante(float deltaX, float deltaY){
-    if ((sign(deltaX) == 1 || deltaX == 0) && (sign(deltaY) == 1 || deltaY == 0))
-        return 1;
-
-    else if (sign(deltaX) == -1 && sign(deltaY) == 1)
-        return 2;
-
-    else if (sign(deltaX) == -1 && sign(deltaY) == -1)
-        return 3;
-
-    else //if (sign(deltaX) == 1 && sign(deltaY) == -1)
-        return 4;
 }
 
 void Objeto2D::escalarArbitrario(Linea* actualLine){

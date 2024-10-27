@@ -10,7 +10,6 @@
 using namespace std;
 TipoLinea tipoLineaSeleccionada = LineaNormal;
 Objeto2D *preview2D = nullptr;
-Bezier *objBezier = nullptr;
 QLabel *label_CommandsCheatSheet = nullptr;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
@@ -22,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     objeto2D=new Objeto2D();
     preview2D = new Objeto2D();
     actualMode = Normal;
+
+
     label_CommandsCheatSheet = new QLabel(
 R"(
 Comandos Modos:
@@ -82,10 +83,11 @@ MainWindow::~MainWindow()
         delete objectStack.top();
         objectStack.pop();
     }
-    delete objeto2D;
     actualLine = nullptr;
     lastLine = nullptr;
     pointToMove = nullptr;
+    delete objeto2D;
+    delete curva;
     delete preview2D;
     delete ui;
 }
@@ -95,18 +97,14 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     Punto click(e->position().x(), e->position().y());
 
     if (e->button() == Qt::RightButton) {
-        if (!objeto2D->HayLineas()){
-            addBezier(click);
-            return;
-        }
         auto line_ClosestPoint = objeto2D->seleccionada(click.x, click.y);
         actualLine = std::get<0>(line_ClosestPoint);
         pointToMove = std::get<1>(line_ClosestPoint);
+
         if (std::get<1>(line_ClosestPoint)) objectStack.push(objeto2D->copia());
 
         //If theres a selected line, is Edit Mode, otherwise adds Bezier
-        if (actualLine != nullptr) setActualMode(Edit);
-        else addBezier(click);
+        if (actualLine != nullptr) setActualMode(Edit); else addBezier(&click);
 
     } else if (e->button() == Qt::LeftButton) {
         deletedObjectStack = *new std::stack<Objeto2D*>();
@@ -202,6 +200,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
         actualLine->p2->y=e->position().y();
     repaint();
 }
+
 void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
     if (!actualLine) return;
 
@@ -309,6 +308,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
         if (actualLine!=nullptr)
             actualLine->desplegar(painter);
     }
+
     else if (actualMode == Reflejar){
         if (actualLine != nullptr)
             actualLine->desplegar(painter);
@@ -319,10 +319,10 @@ void MainWindow::paintEvent(QPaintEvent *) {
     else if (actualMode != Edit){
         if (preview2D!= nullptr)
             preview2D->desplegar(painter);
+
     }
 
     objeto2D->desplegar(painter);
-
     delete painter;
 }
 
@@ -368,19 +368,19 @@ void MainWindow::on_actionGuardar_triggered()
     sFile.close();
 }
 
-void MainWindow::addBezier(Punto click){
+void MainWindow::addBezier(Punto* click){
     objectStack.push(objeto2D->copia());
     setActualMode(Curvas);
 
-    //Estableciendo los puntos de control por defecto - Bezier
-    Punto **control=new Punto*[4];
-    control[0]=new Punto(click.x - 150, click.y);
-    control[1]=new Punto(click.x - 50, click.y - 200);
-    control[2]=new Punto(click.x + 50, click.y + 200);
-    control[3]=new Punto(click.x + 150, click.y);
-    curva = new Bezier(control,3,100);
+    //Curva bezier por defecto
+    auto help = new std::vector<Punto*>();
+    help->push_back(new Punto(click->x - 150, click->y));
+    help->push_back(new Punto(click->x - 50, click->y - 200));
+    help->push_back(new Punto(click->x + 50, click->y + 200));
+    help->push_back(new Punto(click->x + 150, click->y));
 
-    objeto2D->agregarCurva(curva);
+    curva = new Bezier(help, 500); //500 points to draw // Set as actual curva
+    objeto2D->agregarCurva(curva); //Store it in objeto2D
 }
 
 void MainWindow::on_actionNormal_triggered()
@@ -409,23 +409,19 @@ void MainWindow::on_actionTrasladar_triggered()
     preview2D->updateLineStyleToAll(LineaInterlineada);
 }
 
-void MainWindow::on_actionRotar_triggered()
-{
+void MainWindow::on_actionRotar_triggered() {
     setActualMode(Rotar);
 }
 
-void MainWindow::on_actionEscalar_triggered()
-{
+void MainWindow::on_actionEscalar_triggered() {
     setActualMode(Escalar);
 }
 
-void MainWindow::on_actionEspejo_Reflejar_triggered()
-{
+void MainWindow::on_actionEspejo_Reflejar_triggered() {
     setActualMode(Reflejar);
 }
 
-void MainWindow::on_actionEscalar_c_direccion_arbr_triggered()
-{
+void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {
     setActualMode(EscalarArbitrario);
 }
 

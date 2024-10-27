@@ -21,10 +21,6 @@ public:
     void transformar(Matriz2D*);
     Punto *matrizAPunto(Matriz2D*);
     Matriz2D *puntoAMatriz();
-
-
-    Punto* operator + (const Punto&);
-    Punto* operator * (const Punto&);
 };
 
 #endif // PUNTO_H

@@ -31,8 +31,7 @@ public:
 
     //Indica la lista de curvaInicio de bezier
     //TODO: Por qué hay 2 y no solo una? --------------------------------
-    Bezier *curvaInicio;
-    Bezier *curvaFinal;
+    std::vector<Bezier*>* listaDeBezieres;
 
     //Constructor por defecto. Inicializa todas las variables en sus configuraciones por defecto
     Objeto2D();
@@ -43,27 +42,19 @@ public:
     //Destructor.
     ~Objeto2D();
 
-    //Agrega al final de la lista interna de 'Lineas'.
     void agregarLinea(Linea *);
-
-    //Agrega al final de la lista interna de curvas de bezier.
-    void agregarCurva(Bezier *);
-
-    //Elimina de la lista interna la línea pasada por parámetro.
-    //(Se realiza por medio de un bucle hasta que se encuentra).
     void eliminar(Linea *);
-
-    //Despliega en la ventana de monitor QT
-    //Dependencia FUERTE con el framework QT
-    void desplegar(QPainter *);
-
+    void eliminarTodasLineas();
     bool HayLineas();
-
     //Establece un estilo de línea para cada una de las líneas ya existentes de la lista interna de este objeto.
     //No tiene relación alguna con el estilo de línea por defecto en 'defaultLineStyle'
     void updateLineStyleToAll(TipoLinea newStyle);
 
-    void eliminarTodasLineas();
+    void agregarCurva(Bezier *);
+    void eliminarCurva(Bezier*);
+    bool HayCurvas();
+    void desplegar(QPainter *);
+
 
     //Obten el centro de este objeto2D de forma dinámica tomando en cuenta las líneas internas de este obj.
     Punto *centro();

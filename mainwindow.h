@@ -66,8 +66,9 @@ class MainWindow : public QMainWindow
 
     //Getter de la propiedad "actualMode", realiza lógica además de solo establecer el modo actual
     void setActualMode(Mode newMode);
-    //Añadir objeto Bezier al objeto2d
-    void addBezier(Punto);
+
+    //Añadir objeto Bezier al objeto2d //Is this neccesary?
+    void addBezier(Punto*);
 
     // GUI Eventos QT PRINCIPALES de uso (Interacción con mouse y teclado)
     public:
