@@ -23,12 +23,13 @@ public:
     ~Bezier();
 
     //Lo despliega, exige el tipo de línea en como se desee imprimir en pantalla
-    void Display(QPainter* painter, TipoLinea tipoLineaPreferido);
+    void Display(QPainter* painter);
 
     Bezier* copiar();
 
     std::tuple<bool, Punto*> esSeleccionada(int clickX, int clickY, int radioSelectionRange);
 
+    TipoLinea tipoLineasBezier = LineaNormal;
 
     //When you change internals control points, by default they don't change curve points, they need to be
     //recalculated, so with this function you can recalculate them.

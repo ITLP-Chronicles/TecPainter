@@ -3,6 +3,8 @@
 #include "linea.h"
 #include <math.h>
 
+using namespace std;
+
 //Método para poder obtener el punto "intermedio" en el porcentaje actualT (entre 0 y 1) entre p1 y p2
 //e.g Si tengo (1,1)  y (1,10) con t = 0.5, me dará (1,5).
 Punto* GetLinearInterpolation(Punto* p1, Punto* p2, double actualT){
@@ -49,53 +51,44 @@ std::tuple<bool, Punto*> Bezier::esSeleccionada(int clickX, int clickY, int radi
     return {false, nullptr};
 }
 
-//El núcleo del los beziers. El algoritmo en sí.
 void Bezier::RecalculateSelf(){
-    if (this->puntosDeCurva->size() > 0){
-        for(const auto& punto : *this->puntosDeCurva)
+    if (!this->puntosDeCurva->empty()) {
+        for (auto& punto : *this->puntosDeCurva)
             delete punto;
         this->puntosDeCurva->clear();
     }
 
-    // Con step nos referimos a la cantidad de puntos a calcular y el número de punto actual que se está calculando.
-    for (int step = 0; step < this->pasos; step++){
-        auto actualIterPoints = new std::vector<Punto*>(*puntosDeControl);
-        double t = (step * 1.0) / this->pasos; // Aquí se obtiene el valor correspondiente de t en este step
+    for (int step = 0; step < this->pasos; ++step) {
+        // Copiamos los puntos de control a una nueva lista de puntos iterados
+        std::vector<std::unique_ptr<Punto>> actualIterPoints;
+        for (const auto& controlPoint : *this->puntosDeControl) {
+            actualIterPoints.push_back(std::make_unique<Punto>(controlPoint->x, controlPoint->y));
+        }
 
-        while (actualIterPoints->size() > 1) {
-            auto temp = new std::vector<Punto*>();
+        double t = (step * 1.0) / this->pasos;
 
-            for (int i = 0; i < (int)actualIterPoints->size() - 1; i++) {
-                temp->push_back(
-                    GetLinearInterpolation(actualIterPoints->at(i), actualIterPoints->at(i+1), t)
-                );
+        // Calculamos la interpolación de Bézier hasta que quede un solo punto
+        while (actualIterPoints.size() > 1) {
+            std::vector<std::unique_ptr<Punto>> temp;
+            for (size_t i = 0; i < actualIterPoints.size() - 1; ++i) {
+                auto point = GetLinearInterpolation(actualIterPoints[i].get(), actualIterPoints[i + 1].get(), t);
+                temp.push_back(std::make_unique<Punto>(point->x, point->y));
+                delete point;
             }
-
-           //for (auto point : *actualIterPoints) {
-            //    delete point;
-            //}
-
-            delete actualIterPoints;
-            actualIterPoints = temp;
+            actualIterPoints = std::move(temp); // Transferimos la propiedad de temp a actualIterPoints
         }
 
-        // Agrega el punto resultante final a puntosDeCurva
-        puntosDeCurva->push_back(actualIterPoints->at(0));
-
-        // Limpia cualquier punto restante en actualIterPoints (excepto el primero ya agregado)
-        for (size_t i = 1; i < actualIterPoints->size(); ++i) {
-            delete actualIterPoints->at(i);
-        }
-
-        delete actualIterPoints;
+        // Agregamos el punto final calculado a puntosDeCurva
+        this->puntosDeCurva->push_back(new Punto(actualIterPoints[0]->x, actualIterPoints[0]->y));
     }
 }
 
-void Bezier::Display(QPainter* painter, TipoLinea type){
+
+void Bezier::Display(QPainter* painter){
     //Display the curve itself
     for (int i = 0; i < (int)this->puntosDeCurva->size() - 1; i++){
         auto tempLine = new Linea(this->puntosDeCurva->at(i), this->puntosDeCurva->at(i+1));
-        tempLine->tipoLinea = type;
+        tempLine->tipoLinea = this->tipoLineasBezier;
         tempLine->desplegar(painter);
         delete tempLine;
     }
@@ -104,7 +97,7 @@ void Bezier::Display(QPainter* painter, TipoLinea type){
     for (int i = 0; i < (int)this->puntosDeControl->size() - 1; i++){
         //Same method, like previous. just creating lines.
         auto tempLine = new Linea(this->puntosDeControl->at(i), this->puntosDeControl->at(i+1));
-        tempLine->tipoLinea = type;
+        tempLine->tipoLinea = this->tipoLineasBezier;
         tempLine->desplegar(painter);
         delete tempLine;
     }

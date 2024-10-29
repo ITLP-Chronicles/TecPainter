@@ -114,6 +114,10 @@ void Objeto2D::updateLineStyleToAll(TipoLinea newStyle){
     ForEachLine([newStyle](Linea *current){
         current->tipoLinea = newStyle;
     });
+
+    for (const auto& bezier : *this->listaDeBezieres){
+        bezier->tipoLineasBezier = newStyle;
+    }
 }
 
 
@@ -220,8 +224,9 @@ std::tuple<Bezier*, Punto*> Objeto2D::seleccionadaCurva(int clickX, int clickY){
 void Objeto2D::desplegar(QPainter* painter){
     ForEachLine([painter](Linea* linea){linea->desplegar(painter);});
 
-    for (int i = 0; i < (int)this->listaDeBezieres->size(); i++)
-        this->listaDeBezieres->at(i)->Display(painter, LineaNormal);
+    for (int i = 0; i < (int)this->listaDeBezieres->size(); i++){
+        this->listaDeBezieres->at(i)->Display(painter);
+    }
 }
 
 //TODO: Copiar también las curvas de bezier
@@ -294,6 +299,7 @@ void Objeto2D::transformar(Matriz2D* MTransform){
             Punto* actualPoint = temp->puntosDeControl->at(j);
             actualPoint->transformar(MTransform);
         }
+        temp->RecalculateSelf();
     }
 }
 

@@ -121,18 +121,16 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             auto [curve, pointSelected] = objeto2D->seleccionadaCurva(click.x, click.y);
             curva = curve;
             curvaControlPointSelected = pointSelected;
+            setActualMode(Curvas);
 
             //A curve was selected! //Note: both are nullptr or none of them. Thats how  "seleccionadaCurva(x,y)" works
             if (curva && curvaControlPointSelected){
-
                 //You can do some logic here. Right now it isn't neccesary Atte: Kris
-
             } else {
                 //Neither a line nor a curve was selected... (click on blank space) so, create a new bezier curve right there
                 //and set it as our actual "this.curva" but "this.curvaControlPointSelected" will be nullptr. Its just creating it
                 //not selecting any point yet.
                 addBezier(&click);
-                setActualMode(Curvas);
             }
         }
     } else if (e->button() == Qt::LeftButton) {
@@ -197,7 +195,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
                 int deltaY = e->position().y() - actualLine->p2->y;
 
                 // Apply the translation to preview2D
-                preview2D->trasladar(deltaX, deltaY);
+                preview2D->trasladar(deltaX, deltaY); //For some reason trasladar matrix version doesnt work...
+
 
                 // Update lastMousePos for the next move event
             }
@@ -242,62 +241,72 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
-    if (!actualLine) return;
 
-    if (actualMode != Edit) objectStack.push(objeto2D->copia());
-    if (actualMode == Normal) {
-        objeto2D->agregarLinea(actualLine);
-        goto UpdateLastLine;
-    }
-
-    if (actualMode == Reflejar){
-        tipoLineaSeleccionada = LineaNormal;
-        objeto2D->reflejar(actualLine);
-        repaint();
-        goto ReflejarCase;
-    }
-
-    if(objeto2D->HayLineas()){
-        if (actualMode == Trasladar){
-            int deltaX = actualLine->p2->x - actualLine->p1->x;
-            int deltaY = actualLine->p2->y - actualLine->p1->y;
-            objeto2D->trasladar(deltaX, deltaY);
-            delete preview2D;
-            preview2D = nullptr;
+    if (actualLine){
+        if (actualMode != Edit) objectStack.push(objeto2D->copia());
+        if (actualMode == Normal) {
+            objeto2D->agregarLinea(actualLine);
+            goto UpdateLastLine;
         }
 
-        if (actualMode == Rotar) {
-            objeto2D->rotar(actualLine);
+        if (actualMode == Reflejar){
+            tipoLineaSeleccionada = LineaNormal;
+            objeto2D->reflejar(actualLine);
+            repaint();
+            goto ReflejarCase;
         }
-        if (actualMode == Escalar) {
-            objeto2D->escalar(actualLine);
 
-            if (preview2D) {
+        if(objeto2D->HayLineas()){
+            if (actualMode == Trasladar){
+                int deltaX = actualLine->p2->x - actualLine->p1->x;
+                int deltaY = actualLine->p2->y - actualLine->p1->y;
+                objeto2D->trasladar(deltaX, deltaY);
                 delete preview2D;
                 preview2D = nullptr;
             }
-        }
 
-        if (actualMode == EscalarArbitrario) {
-            objeto2D->escalarArbitrario(actualLine);
+            if (actualMode == Rotar) {
+                objeto2D->rotar(actualLine);
+            }
+            if (actualMode == Escalar) {
+                objeto2D->escalar(actualLine);
 
-            if (preview2D) {
-                delete preview2D;
-                preview2D = nullptr;
+                if (preview2D) {
+                    delete preview2D;
+                    preview2D = nullptr;
+                }
+            }
+
+            if (actualMode == EscalarArbitrario) {
+                objeto2D->escalarArbitrario(actualLine);
+
+                if (preview2D) {
+                    delete preview2D;
+                    preview2D = nullptr;
+                }
             }
         }
+
+        if (actualMode == Edit) goto UpdateLastLine;
+
+        UpdateLastLine:
+            lastLine = actualLine;
+            actualLine = nullptr;
+
+
+        ReflejarCase:
+            actualLine = nullptr;
+            preview2D = new Objeto2D;
+
     }
-    if (actualMode == Edit) goto UpdateLastLine;
 
-    UpdateLastLine:
-        lastLine = actualLine;
-        actualLine = nullptr;
+    if (curva && curvaControlPointSelected){
+        curva = nullptr;
+        curvaControlPointSelected = nullptr;
 
+        setActualMode(Normal);
+    }
 
-    ReflejarCase:
-        actualLine = nullptr;
-
-    preview2D = new Objeto2D;
     repaint();
 }
 
