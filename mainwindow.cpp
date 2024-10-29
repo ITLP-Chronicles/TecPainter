@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     objeto2D=new Objeto2D();
     preview2D = new Objeto2D();
     actualMode = Normal;
+
+
     label_CommandsCheatSheet = new QLabel(
 R"(
 Comandos Modos:
@@ -65,6 +67,7 @@ std::string ModeToString(Mode mode){
         case Trasladar: return "Trasladar";
         case Reflejar: return "Reflejar";
         case EscalarArbitrario: return "Escalar Arbitrario";
+        case Curvas: return "Bezier";
     }
     return "---";
 }
@@ -80,13 +83,11 @@ MainWindow::~MainWindow()
         delete objectStack.top();
         objectStack.pop();
     }
-    delete objeto2D;
-    //if(actualLine)delete actualLine;
-    //if(lastLine)delete lastLine;
-    //if(pointToMove)delete pointToMove;
     actualLine = nullptr;
     lastLine = nullptr;
     pointToMove = nullptr;
+    delete objeto2D;
+    delete curva;
     delete preview2D;
     delete ui;
 }
@@ -96,17 +97,46 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     Punto click(e->position().x(), e->position().y());
 
     if (e->button() == Qt::RightButton) {
-        if (!objeto2D->HayLineas())return;
-        auto line_ClosestPoint = objeto2D->seleccionada(click.x, click.y);
-        actualLine = std::get<0>(line_ClosestPoint);
-        pointToMove = std::get<1>(line_ClosestPoint);
-        if (std::get<1>(line_ClosestPoint)) objectStack.push(objeto2D->copia());
+        //Reset selection
+        actualLine = nullptr;
+        pointToMove = nullptr;
+        curva = nullptr;
+        curvaControlPointSelected = nullptr;
 
-        //If theres a selected line, is Edit Mode, otherwise Normal Mode
-        if (actualLine != nullptr) setActualMode(Edit); else setActualMode(Normal);
+        //FIRST: Try to see if a line was selected first (avoid calculate at first if bezier curves were selectedj as well)
 
+        //A line was selected?
+        auto [line, closestPoint] = objeto2D->seleccionada(click.x, click.y);
+        actualLine = line;
+        pointToMove = closestPoint;
+
+        //A Line was selected! //Note: both are nullptr or none of them. Thats how  "seleccionada(x,y)" works
+        if (actualLine && pointToMove){
+            objectStack.push(objeto2D->copia());
+            setActualMode(Edit);
+        }
+        //A line wasn't selected...
+        else{
+            //Now, a curve bezier was selected instead?
+            auto [curve, pointSelected] = objeto2D->seleccionadaCurva(click.x, click.y);
+            curva = curve;
+            curvaControlPointSelected = pointSelected;
+
+            //A curve was selected! //Note: both are nullptr or none of them. Thats how  "seleccionadaCurva(x,y)" works
+            if (curva && curvaControlPointSelected){
+
+                //You can do some logic here. Right now it isn't neccesary Atte: Kris
+
+            } else {
+                //Neither a line nor a curve was selected... (click on blank space) so, create a new bezier curve right there
+                //and set it as our actual "this.curva" but "this.curvaControlPointSelected" will be nullptr. Its just creating it
+                //not selecting any point yet.
+                addBezier(&click);
+                setActualMode(Curvas);
+            }
+        }
     } else if (e->button() == Qt::LeftButton) {
-        deletedObjectStack = *new std::stack<Objeto2D*>();
+        deletedObjectStack = *new std::stack<Objeto2D*>();//Why this?
 
         if (actualMode == Normal) goto StoreActualLine;
         else if (actualMode == Trasladar){
@@ -124,8 +154,8 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             preview2D->updateLineStyleToAll(LineaInterlineada);
             goto StoreActualLine;
         }
-        else if (actualMode == Edit){
-            actualMode = Normal;
+        else if (actualMode == Edit || actualMode == Curvas){
+            setActualMode(Normal);
             goto StoreActualLine;
         }
         else if (actualMode == Trasladar){
@@ -140,71 +170,83 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             actualLine = new Linea(click.x, click.y, click.x, click.y);
             actualLine->tipoLinea = tipoLineaSeleccionada;
     }
+
     repaint();
+
     //Call original parent event
     QMainWindow::mousePressEvent(e);
 }
 
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e) {
-    if (!actualLine)return;
 
-    if(actualMode == Normal) goto DisplayChangingLine;
-    if(actualMode == Edit){
-        if (pointToMove == actualLine->p1){
-            actualLine->p1 = actualLine->p2;
-            actualLine->p2 = pointToMove;
+    //Do line logic if theres a line selected
+    if (actualLine){
+        if(actualMode == Normal) goto DisplayChangingLine;
+        if(actualMode == Edit){
+            if (pointToMove == actualLine->p1){
+                actualLine->p1 = actualLine->p2;
+                actualLine->p2 = pointToMove;
+            }
+            goto DisplayChangingLine;
         }
-        goto DisplayChangingLine;
+        if(objeto2D->HayLineas()){
+            if(actualMode == Trasladar){
+                // Calculate the translation delta
+                int deltaX = e->position().x() - actualLine->p2->x;
+                int deltaY = e->position().y() - actualLine->p2->y;
+
+                // Apply the translation to preview2D
+                preview2D->trasladar(deltaX, deltaY);
+
+                // Update lastMousePos for the next move event
+            }
+            if (actualMode == Rotar) {
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->rotar(actualLine);
+            }
+            if (actualMode == Escalar) {
+
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->escalar(actualLine);
+            }
+
+            if (actualMode == Reflejar){
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->reflejar(actualLine);
+            }
+
+            if (actualMode == EscalarArbitrario){
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->escalarArbitrario(actualLine);
+            }
+
+        }
+
+        DisplayChangingLine:
+            actualLine->p2->x=e->position().x();
+            actualLine->p2->y=e->position().y();
     }
-    if(objeto2D->HayLineas()){
-        if(actualMode == Trasladar){
-            // Calculate the translation delta
-            int deltaX = e->position().x() - actualLine->p2->x;
-            int deltaY = e->position().y() - actualLine->p2->y;
 
-            // Apply the translation to preview2D
-            preview2D->trasladar(deltaX, deltaY);
-
-            // Update lastMousePos for the next move event
-        }
-        if (actualMode == Rotar) {
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->rotar(actualLine);
-        }
-        if (actualMode == Escalar) {
-
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->escalar(actualLine);
-        }
-
-        if (actualMode == Reflejar){
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->reflejar(actualLine);
-        }
-
-        if (actualMode == EscalarArbitrario){
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->escalarArbitrario(actualLine);
-        }
-
+    //Do curve logic if one is selected
+    if(curva && curvaControlPointSelected){
+        curvaControlPointSelected->x = e->position().x();
+        curvaControlPointSelected->y = e->position().y();
+        curva->RecalculateSelf();
     }
-
-    DisplayChangingLine:
-        actualLine->p2->x=e->position().x();
-        actualLine->p2->y=e->position().y();
     repaint();
 }
+
 void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
     if (!actualLine) return;
 
     if (actualMode != Edit) objectStack.push(objeto2D->copia());
     if (actualMode == Normal) {
-        objeto2D->agregar(actualLine);
+        objeto2D->agregarLinea(actualLine);
         goto UpdateLastLine;
     }
 
@@ -306,6 +348,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
         if (actualLine!=nullptr)
             actualLine->desplegar(painter);
     }
+
     else if (actualMode == Reflejar){
         if (actualLine != nullptr)
             actualLine->desplegar(painter);
@@ -316,10 +359,10 @@ void MainWindow::paintEvent(QPaintEvent *) {
     else if (actualMode != Edit){
         if (preview2D!= nullptr)
             preview2D->desplegar(painter);
+
     }
 
     objeto2D->desplegar(painter);
-
     delete painter;
 }
 
@@ -365,6 +408,20 @@ void MainWindow::on_actionGuardar_triggered()
     sFile.close();
 }
 
+void MainWindow::addBezier(Punto* click){
+    objectStack.push(objeto2D->copia());
+
+    //Curva bezier por defecto
+    auto help = new std::vector<Punto*>();
+    help->push_back(new Punto(click->x - 150, click->y));
+    help->push_back(new Punto(click->x - 50, click->y - 200));
+    help->push_back(new Punto(click->x + 50, click->y + 200));
+    help->push_back(new Punto(click->x + 150, click->y));
+
+    curva = new Bezier(help, 500); //500 points to draw // Set as actual curva
+    objeto2D->agregarCurva(curva); //Store it in objeto2D
+}
+
 void MainWindow::on_actionNormal_triggered()
 {
     setActualMode(Normal);
@@ -391,24 +448,19 @@ void MainWindow::on_actionTrasladar_triggered()
     preview2D->updateLineStyleToAll(LineaInterlineada);
 }
 
-void MainWindow::on_actionRotar_triggered()
-{
+void MainWindow::on_actionRotar_triggered() {
     setActualMode(Rotar);
 }
 
-void MainWindow::on_actionEscalar_triggered()
-{
+void MainWindow::on_actionEscalar_triggered() {
     setActualMode(Escalar);
 }
 
-void MainWindow::on_actionEspejo_Reflejar_triggered()
-{
+void MainWindow::on_actionEspejo_Reflejar_triggered() {
     setActualMode(Reflejar);
 }
 
-
-void MainWindow::on_actionEscalar_c_direccion_arbr_triggered()
-{
+void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {
     setActualMode(EscalarArbitrario);
 }
 
