@@ -57,6 +57,9 @@ class MainWindow : public QMainWindow
     //Objeto Bezier para dibujar curvas
     Bezier *curva = nullptr;
 
+    //Punto a mover de la curva actual seleccionada
+    Punto *curvaControlPointSelected = nullptr;
+
     //Modo de renderizado de las líneas hechas sobre el vuelo y guardadas en "actualLine"
     Mode actualMode = Normal;
 

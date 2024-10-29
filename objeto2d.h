@@ -42,6 +42,7 @@ public:
     //Destructor.
     ~Objeto2D();
 
+    // ------------------------- Line Logic ----------------------------
     void agregarLinea(Linea *);
     void eliminar(Linea *);
     void eliminarTodasLineas();
@@ -49,16 +50,6 @@ public:
     //Establece un estilo de línea para cada una de las líneas ya existentes de la lista interna de este objeto.
     //No tiene relación alguna con el estilo de línea por defecto en 'defaultLineStyle'
     void updateLineStyleToAll(TipoLinea newStyle);
-
-    void agregarCurva(Bezier *);
-    void eliminarCurva(Bezier*);
-    bool HayCurvas();
-    void desplegar(QPainter *);
-
-
-    //Obten el centro de este objeto2D de forma dinámica tomando en cuenta las líneas internas de este obj.
-    Punto *centro();
-
     // Verifica si el click hecho en clickX y en clickY concuerda con la
     // ubicación de cualquier línea dibujada interna de este objeto.
     //
@@ -72,6 +63,20 @@ public:
     // 			2. El punto es nullptr
     // 		Pero siempre regresa una tupla
     std::tuple<Linea*, Punto*> seleccionada(int clickX, int clickY);
+
+    // ------------------------- Bezier Logic --------------------------------
+    void agregarCurva(Bezier *);
+    void eliminarCurva(Bezier*);
+    bool HayCurvas();
+    void desplegar(QPainter *);
+    std::tuple<Bezier*, Punto*> seleccionadaCurva(int clickX, int clickY);
+
+
+
+    //Obten el centro de este objeto2D de forma dinámica tomando en cuenta las líneas internas de este obj.
+    Punto *centro();
+
+
 
     // --------------------- Graficación 2D SIN MATRICES -----------------------
 

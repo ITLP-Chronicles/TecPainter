@@ -97,17 +97,46 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     Punto click(e->position().x(), e->position().y());
 
     if (e->button() == Qt::RightButton) {
-        auto line_ClosestPoint = objeto2D->seleccionada(click.x, click.y);
-        actualLine = std::get<0>(line_ClosestPoint);
-        pointToMove = std::get<1>(line_ClosestPoint);
+        //Reset selection
+        actualLine = nullptr;
+        pointToMove = nullptr;
+        curva = nullptr;
+        curvaControlPointSelected = nullptr;
 
-        if (std::get<1>(line_ClosestPoint)) objectStack.push(objeto2D->copia());
+        //FIRST: Try to see if a line was selected first (avoid calculate at first if bezier curves were selectedj as well)
 
-        //If theres a selected line, is Edit Mode, otherwise adds Bezier
-        if (actualLine != nullptr) setActualMode(Edit); else addBezier(&click);
+        //A line was selected?
+        auto [line, closestPoint] = objeto2D->seleccionada(click.x, click.y);
+        actualLine = line;
+        pointToMove = closestPoint;
 
+        //A Line was selected! //Note: both are nullptr or none of them. Thats how  "seleccionada(x,y)" works
+        if (actualLine && pointToMove){
+            objectStack.push(objeto2D->copia());
+            setActualMode(Edit);
+        }
+        //A line wasn't selected...
+        else{
+            //Now, a curve bezier was selected instead?
+            auto [curve, pointSelected] = objeto2D->seleccionadaCurva(click.x, click.y);
+            curva = curve;
+            curvaControlPointSelected = pointSelected;
+
+            //A curve was selected! //Note: both are nullptr or none of them. Thats how  "seleccionadaCurva(x,y)" works
+            if (curva && curvaControlPointSelected){
+
+                //You can do some logic here. Right now it isn't neccesary Atte: Kris
+
+            } else {
+                //Neither a line nor a curve was selected... (click on blank space) so, create a new bezier curve right there
+                //and set it as our actual "this.curva" but "this.curvaControlPointSelected" will be nullptr. Its just creating it
+                //not selecting any point yet.
+                addBezier(&click);
+                setActualMode(Curvas);
+            }
+        }
     } else if (e->button() == Qt::LeftButton) {
-        deletedObjectStack = *new std::stack<Objeto2D*>();
+        deletedObjectStack = *new std::stack<Objeto2D*>();//Why this?
 
         if (actualMode == Normal) goto StoreActualLine;
         else if (actualMode == Trasladar){
@@ -125,8 +154,8 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             preview2D->updateLineStyleToAll(LineaInterlineada);
             goto StoreActualLine;
         }
-        else if (actualMode == Edit){
-            actualMode = Normal;
+        else if (actualMode == Edit || actualMode == Curvas){
+            setActualMode(Normal);
             goto StoreActualLine;
         }
         else if (actualMode == Trasladar){
@@ -141,63 +170,74 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             actualLine = new Linea(click.x, click.y, click.x, click.y);
             actualLine->tipoLinea = tipoLineaSeleccionada;
     }
+
     repaint();
+
     //Call original parent event
     QMainWindow::mousePressEvent(e);
 }
 
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e) {
-    if (!actualLine)return;
 
-    if(actualMode == Normal) goto DisplayChangingLine;
-    if(actualMode == Edit){
-        if (pointToMove == actualLine->p1){
-            actualLine->p1 = actualLine->p2;
-            actualLine->p2 = pointToMove;
+    //Do line logic if theres a line selected
+    if (actualLine){
+        if(actualMode == Normal) goto DisplayChangingLine;
+        if(actualMode == Edit){
+            if (pointToMove == actualLine->p1){
+                actualLine->p1 = actualLine->p2;
+                actualLine->p2 = pointToMove;
+            }
+            goto DisplayChangingLine;
         }
-        goto DisplayChangingLine;
+        if(objeto2D->HayLineas()){
+            if(actualMode == Trasladar){
+                // Calculate the translation delta
+                int deltaX = e->position().x() - actualLine->p2->x;
+                int deltaY = e->position().y() - actualLine->p2->y;
+
+                // Apply the translation to preview2D
+                preview2D->trasladar(deltaX, deltaY);
+
+                // Update lastMousePos for the next move event
+            }
+            if (actualMode == Rotar) {
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->rotar(actualLine);
+            }
+            if (actualMode == Escalar) {
+
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->escalar(actualLine);
+            }
+
+            if (actualMode == Reflejar){
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->reflejar(actualLine);
+            }
+
+            if (actualMode == EscalarArbitrario){
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->escalarArbitrario(actualLine);
+            }
+
+        }
+
+        DisplayChangingLine:
+            actualLine->p2->x=e->position().x();
+            actualLine->p2->y=e->position().y();
     }
-    if(objeto2D->HayLineas()){
-        if(actualMode == Trasladar){
-            // Calculate the translation delta
-            int deltaX = e->position().x() - actualLine->p2->x;
-            int deltaY = e->position().y() - actualLine->p2->y;
 
-            // Apply the translation to preview2D
-            preview2D->trasladar(deltaX, deltaY);
-
-            // Update lastMousePos for the next move event
-        }
-        if (actualMode == Rotar) {
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->rotar(actualLine);
-        }
-        if (actualMode == Escalar) {
-
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->escalar(actualLine);
-        }
-
-        if (actualMode == Reflejar){
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->reflejar(actualLine);
-        }
-
-        if (actualMode == EscalarArbitrario){
-            preview2D = objeto2D->copia();
-            preview2D->updateLineStyleToAll(LineaInterlineada);
-            preview2D->escalarArbitrario(actualLine);
-        }
-
+    //Do curve logic if one is selected
+    if(curva && curvaControlPointSelected){
+        curvaControlPointSelected->x = e->position().x();
+        curvaControlPointSelected->y = e->position().y();
+        curva->RecalculateSelf();
     }
-
-    DisplayChangingLine:
-        actualLine->p2->x=e->position().x();
-        actualLine->p2->y=e->position().y();
     repaint();
 }
 
@@ -370,7 +410,6 @@ void MainWindow::on_actionGuardar_triggered()
 
 void MainWindow::addBezier(Punto* click){
     objectStack.push(objeto2D->copia());
-    setActualMode(Curvas);
 
     //Curva bezier por defecto
     auto help = new std::vector<Punto*>();

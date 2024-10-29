@@ -1,6 +1,7 @@
 #include "bezier.h"
 #include <vector>
 #include "linea.h"
+#include <math.h>
 
 //Método para poder obtener el punto "intermedio" en el porcentaje actualT (entre 0 y 1) entre p1 y p2
 //e.g Si tengo (1,1)  y (1,10) con t = 0.5, me dará (1,5).
@@ -25,6 +26,29 @@ Bezier::~Bezier(){
         delete punto;
 }
 
+
+/* Dado un punto retorna el posible punto que se haya seleccionado con respecto a los PUNTOS DE CONTROL dado un radio (rango
+ * de selección
+ * En caso de que si:
+ * 		Retorna una tupla con
+ * 			- booleano = true
+ * 			- Punto* = El puntero al punto que se selecciono
+ *
+ * En caso de que no:
+ * 		Retorna una tupla con
+ *			- booleano = false
+ *			- Punto* = nullptr
+*/
+std::tuple<bool, Punto*> Bezier::esSeleccionada(int clickX, int clickY, int radiusSelectionRange){
+    for (const auto& insideControlPoint : *this->puntosDeControl){
+        double distance = sqrt(pow(clickX - insideControlPoint->x, 2) + pow(clickY - insideControlPoint->y, 2));
+        if (distance < radiusSelectionRange){
+            return {true, insideControlPoint};
+        }
+    }
+    return {false, nullptr};
+}
+
 //El núcleo del los beziers. El algoritmo en sí.
 void Bezier::RecalculateSelf(){
     if (this->puntosDeCurva->size() > 0){
@@ -33,30 +57,36 @@ void Bezier::RecalculateSelf(){
         this->puntosDeCurva->clear();
     }
 
-    //Con step nos referimos a la cantidad de puntos a hacerse y el no. de punto actual que se está calculando.
+    // Con step nos referimos a la cantidad de puntos a calcular y el número de punto actual que se está calculando.
     for (int step = 0; step < this->pasos; step++){
         auto actualIterPoints = new std::vector<Punto*>(*puntosDeControl);
-        double t = (step * 1.0) / this->pasos; //Aquí ya se está obteniendo el valor correspondiente de t en este step
+        double t = (step * 1.0) / this->pasos; // Aquí se obtiene el valor correspondiente de t en este step
 
         while (actualIterPoints->size() > 1) {
             auto temp = new std::vector<Punto*>();
 
-            //Calcula los puntos intermedios dado el valor t.e.g entre los puntos
-            //1-2, 2-3, 3-4, 4-5, 5-6, pero evitando 'último'-null. Por eso el size() - 1
-            //y los guarda en temp para ser usados en la siguiente iteración.
-            //Hasta que temp sea de longitud 1 (el punto que buscamos), ya acabamos por este step.
-            for (int i = 0; i < (int)actualIterPoints->size() -1; i++){
+            for (int i = 0; i < (int)actualIterPoints->size() - 1; i++) {
                 temp->push_back(
                     GetLinearInterpolation(actualIterPoints->at(i), actualIterPoints->at(i+1), t)
                 );
             }
+
+           //for (auto point : *actualIterPoints) {
+            //    delete point;
+            //}
+
             delete actualIterPoints;
             actualIterPoints = temp;
         }
 
-        //Aquí obtendríamos el punto resultante de todo el cálculo solo en este valor de t, lo agregamos al arreglo de curvas.
-        //y continuamos con el siguiente valor de t
+        // Agrega el punto resultante final a puntosDeCurva
         puntosDeCurva->push_back(actualIterPoints->at(0));
+
+        // Limpia cualquier punto restante en actualIterPoints (excepto el primero ya agregado)
+        for (size_t i = 1; i < actualIterPoints->size(); ++i) {
+            delete actualIterPoints->at(i);
+        }
+
         delete actualIterPoints;
     }
 }

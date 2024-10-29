@@ -27,6 +27,9 @@ public:
 
     Bezier* copiar();
 
+    std::tuple<bool, Punto*> esSeleccionada(int clickX, int clickY, int radioSelectionRange);
+
+
     //When you change internals control points, by default they don't change curve points, they need to be
     //recalculated, so with this function you can recalculate them.
     void RecalculateSelf();

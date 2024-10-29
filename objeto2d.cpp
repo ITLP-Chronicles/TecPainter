@@ -191,6 +191,30 @@ bool Objeto2D::HayCurvas(){
 }
 
 
+/* Checa si se ha seleccionado algun punto de control de cualquier curva de bezier y devuelve la curva y su punto de control
+ * seleccionado, puede devolver:
+ *
+ * En caso de que encuentre:
+ * 	Una tupla con lo siguiente:
+ * 		- Bezier* = Curva a la cual el punto le pertenece
+ * 		- Punto* = Punto de CONTROL seleccionado de la curva Bezier*
+ *
+ * 	De lo contrario:
+ * 		- Bezier* = nullptr
+ * 		- Punto* = nullptr
+*/
+std::tuple<Bezier*, Punto*> Objeto2D::seleccionadaCurva(int clickX, int clickY){
+    int radioSelection = 30; //In pixels
+
+    for (const auto& curvaBezier: *this->listaDeBezieres){
+        auto [isFound, pointFound] = curvaBezier->esSeleccionada(clickX, clickY, radioSelection);
+        if (isFound)
+            return {curvaBezier, pointFound};
+    }
+
+    return {nullptr, nullptr};
+}
+
 //----------- Objeto2D Métodos --------------
 
 void Objeto2D::desplegar(QPainter* painter){
