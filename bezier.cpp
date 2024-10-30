@@ -93,13 +93,18 @@ void Bezier::Display(QPainter* painter){
         delete tempLine;
     }
 
+    float width = 10;
+    float height = 10;
+
     //Display helping lines to edit bezer curve
-    for (int i = 0; i < (int)this->puntosDeControl->size() - 1; i++){
+    for (int i = 0; i < (int)this->puntosDeControl->size(); i++){
         //Same method, like previous. just creating lines.
-        auto tempLine = new Linea(this->puntosDeControl->at(i), this->puntosDeControl->at(i+1));
-        tempLine->tipoLinea = this->tipoLineasBezier;
-        tempLine->desplegar(painter);
-        delete tempLine;
+        painter->drawEllipse(
+            this->puntosDeControl->at(i)->x - (width / 10),
+            this->puntosDeControl->at(i)->y - (height / 2),
+            width,
+            height
+        );
     }
 }
 
