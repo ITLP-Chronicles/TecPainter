@@ -295,7 +295,7 @@ void Objeto2D::transformar(Matriz2D* MTransform){
 
     for (int i = 0; i < (int)this->listaDeBezieres->size(); i++){
         Bezier* temp = this->listaDeBezieres->at(i);
-        for (int j = 0; j < (int)temp->puntosDeControl->size(); i++){
+        for (int j = 0; j < (int)temp->puntosDeControl->size(); j++){
             Punto* actualPoint = temp->puntosDeControl->at(j);
             actualPoint->transformar(MTransform);
         }

@@ -89,14 +89,17 @@ void Bezier::Display(QPainter* painter){
     for (int i = 0; i < (int)this->puntosDeCurva->size() - 1; i++){
         auto tempLine = new Linea(this->puntosDeCurva->at(i), this->puntosDeCurva->at(i+1));
         tempLine->tipoLinea = this->tipoLineasBezier;
-        tempLine->desplegar(painter);
+        if (tipoLineasBezier == LineaInterlineada && i%20 > 10){
+            tempLine->desplegar(painter);
+        }
+        else if (tipoLineasBezier == LineaNormal) tempLine->desplegar(painter);
         delete tempLine;
     }
 
     float width = 10;
     float height = 10;
 
-    //Display helping lines to edit bezer curve
+    //Display helping circles to edit bezer curve
     for (int i = 0; i < (int)this->puntosDeControl->size(); i++){
         //Same method, like previous. just creating lines.
         painter->drawEllipse(

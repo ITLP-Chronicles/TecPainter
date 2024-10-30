@@ -134,7 +134,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
             }
         }
     } else if (e->button() == Qt::LeftButton) {
-        deletedObjectStack = *new std::stack<Objeto2D*>();//Why this?
+        deletedObjectStack = *new std::stack<Objeto2D*>();//Reset stack
 
         if (actualMode == Normal) goto StoreActualLine;
         else if (actualMode == Trasladar){
@@ -188,17 +188,11 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
             }
             goto DisplayChangingLine;
         }
-        if(objeto2D->HayLineas()){
+        if(objeto2D->HayLineas() || objeto2D->HayCurvas()){
             if(actualMode == Trasladar){
-                // Calculate the translation delta
-                int deltaX = e->position().x() - actualLine->p2->x;
-                int deltaY = e->position().y() - actualLine->p2->y;
-
-                // Apply the translation to preview2D
-                preview2D->trasladar(deltaX, deltaY); //For some reason trasladar matrix version doesnt work...
-
-
-                // Update lastMousePos for the next move event
+                preview2D = objeto2D->copia();
+                preview2D->updateLineStyleToAll(LineaInterlineada);
+                preview2D->trasladar(actualLine);
             }
             if (actualMode == Rotar) {
                 preview2D = objeto2D->copia();
@@ -242,6 +236,13 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 
+
+    if (curva && curvaControlPointSelected){
+        curva = nullptr;
+        curvaControlPointSelected = nullptr;
+        objectStack.push(objeto2D->copia());
+        setActualMode(Normal);
+    }
     if (actualLine){
         if (actualMode != Edit) objectStack.push(objeto2D->copia());
         if (actualMode == Normal) {
@@ -256,17 +257,21 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
             goto ReflejarCase;
         }
 
-        if(objeto2D->HayLineas()){
+        if(objeto2D->HayLineas() || objeto2D->HayCurvas()){
             if (actualMode == Trasladar){
-                int deltaX = actualLine->p2->x - actualLine->p1->x;
-                int deltaY = actualLine->p2->y - actualLine->p1->y;
-                objeto2D->trasladar(deltaX, deltaY);
-                delete preview2D;
-                preview2D = nullptr;
+                objeto2D->trasladar(actualLine);
+                if (preview2D) {
+                    delete preview2D;
+                    preview2D = nullptr;
+                }
             }
 
             if (actualMode == Rotar) {
                 objeto2D->rotar(actualLine);
+                if (preview2D) {
+                    delete preview2D;
+                    preview2D = nullptr;
+                }
             }
             if (actualMode == Escalar) {
                 objeto2D->escalar(actualLine);
@@ -300,13 +305,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 
     }
 
-    if (curva && curvaControlPointSelected){
-        curva = nullptr;
-        curvaControlPointSelected = nullptr;
-
-        setActualMode(Normal);
-    }
-
     repaint();
 }
 
@@ -324,7 +322,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e){
         repaint();
     }
 
-    if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier && objeto2D->HayLineas()) {
+    if (e->key() == Qt::Key_Z && e->modifiers() & Qt::ControlModifier && (objeto2D->HayLineas() || objeto2D->HayCurvas())) {
         deletedObjectStack.push(objeto2D->copia());
         delete objeto2D;
         objeto2D = objectStack.top()->copia();
@@ -472,4 +470,3 @@ void MainWindow::on_actionEspejo_Reflejar_triggered() {
 void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {
     setActualMode(EscalarArbitrario);
 }
-
