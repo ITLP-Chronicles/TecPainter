@@ -100,6 +100,7 @@ public:
     //----------- Guardado de archivos (Funcionalidad especial externa) --------------
 
     void leer(QDomElement, QDomElement);
+    void leer(QDomElement);
     void guardar(QDomDocument,QDomElement);
 
 private:

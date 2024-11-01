@@ -116,5 +116,7 @@ Bezier* Bezier::copiar(){
     for (int i = 0; i < (int)this->puntosDeControl->size(); i++){
         copyPuntosControl->push_back(this->puntosDeControl->at(i)->copia());
     }
-    return new Bezier(copyPuntosControl, this->pasos);
+    Bezier *copiaBezier = new Bezier(copyPuntosControl, this->pasos);
+    copiaBezier->tipoLineasBezier = tipoLineasBezier;
+    return copiaBezier;
 }

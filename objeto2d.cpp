@@ -6,30 +6,44 @@ using namespace std;
 
 // ----------- Característica Especial (Guardar archivo y leer) ------------
 
-void Objeto2D::leer(QDomElement lineaXML, QDomElement puntoXML){
-    while (!lineaXML.isNull()) {
-        Linea* linea = new Linea();
+void Objeto2D::leer(QDomElement objeto2DXML){
+    QDomElement trazoXML = objeto2DXML.firstChildElement();
 
-        QDomElement puntoXML = lineaXML.firstChildElement();
-        if (!puntoXML.isNull()) {
-            float x = puntoXML.attribute("X").toFloat();
-            float y = puntoXML.attribute("Y").toFloat();
-            linea->p1 = new Punto(x, y);
-            std::cout << "Punto X=" << x << " Y=" << y << std::endl;
+    while (!trazoXML.isNull()) {
+        QDomElement puntoXML = trazoXML.firstChildElement();
+        if (trazoXML.tagName() == "Linea"){
+            Linea* linea = new Linea();
 
-            puntoXML = puntoXML.nextSiblingElement();
             if (!puntoXML.isNull()) {
-                x = puntoXML.attribute("X").toFloat();
-                y = puntoXML.attribute("Y").toFloat();
-                linea->p2 = new Punto(x, y);
-                std::cout << "Punto X=" << x << " Y=" << y << std::endl;
-            }
+                float x = puntoXML.attribute("X").toFloat();
+                float y = puntoXML.attribute("Y").toFloat();
+                linea->p1 = new Punto(x, y);
 
-            QString lineMode = lineaXML.attribute("estilo");
-            linea->tipoLinea = lineMode == "I" ? LineaInterlineada:LineaNormal;
+                puntoXML = puntoXML.nextSiblingElement();
+                if (!puntoXML.isNull()) {
+                    x = puntoXML.attribute("X").toFloat();
+                    y = puntoXML.attribute("Y").toFloat();
+                    linea->p2 = new Punto(x, y);
+                }
+
+                QString lineMode = trazoXML.attribute("estilo");
+                linea->tipoLinea = lineMode == "I" ? LineaInterlineada:LineaNormal;
+            }
+            this->agregarLinea(linea);
+        } else{
+            std::vector<Punto*>* puntosDeControl = new std::vector<Punto*>();;
+            while (!puntoXML.isNull()){
+                float x = puntoXML.attribute("X").toFloat();
+                float y = puntoXML.attribute("Y").toFloat();
+                puntosDeControl->push_back(new Punto(x, y));
+                puntoXML = puntoXML.nextSiblingElement();
+            }
+            Bezier* curva = new Bezier(puntosDeControl,500);
+            QString lineMode = trazoXML.attribute("estilo");
+            curva->tipoLineasBezier = lineMode == "I" ? LineaInterlineada:LineaNormal;
+            this->agregarCurva(curva);
         }
-        this->agregarLinea(linea);
-        lineaXML = lineaXML.nextSiblingElement();
+        trazoXML = trazoXML.nextSiblingElement();
     }
 }
 void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
@@ -53,6 +67,19 @@ void Objeto2D::guardar(QDomDocument document, QDomElement objeto2DXML){
         pointer = pointer->sig;
     }
     pointer = nullptr;
+
+    for (int i = 0; i < (int)listaDeBezieres->size(); i++){
+        QDomElement curva=document.createElement("Curva");
+        curva.setAttribute("estilo", listaDeBezieres->at(i)->tipoLineasBezier == LineaNormal ? "N":"I");
+        objeto2DXML.appendChild(curva);
+
+        for (int j = 0; j < (int)listaDeBezieres->at(i)->puntosDeControl->size(); j++){
+            QDomElement punto=document.createElement("Punto");
+            punto.setAttribute("X",listaDeBezieres->at(i)->puntosDeControl->at(j)->x);
+            punto.setAttribute("Y",listaDeBezieres->at(i)->puntosDeControl->at(j)->y);
+            curva.appendChild(punto);
+        }
+    }
 }
 
 // ---------------- Default Constructor -----------------

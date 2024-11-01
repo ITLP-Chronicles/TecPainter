@@ -20,19 +20,6 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>480</y>
-      <width>501</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>✨ Función: Puede deshacer cambios con ctrl + z con las líneas</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
@@ -43,20 +30,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Hecho Por Kristan Ruíz Limón y Raúl Armando</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>10</y>
-      <width>51</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Examen</string>
+     <string>Hecho Por Kristan Ruíz Limón y Raúl Armando Méndez Arámbula</string>
     </property>
    </widget>
    <widget class="QLabel" name="modo_actual">
@@ -79,7 +53,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMen">

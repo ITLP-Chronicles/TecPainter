@@ -383,11 +383,9 @@ void MainWindow::on_actionLeer_triggered()
     document.setContent(&file);
 
     QDomElement objeto2DXML = document.firstChildElement();
-    QDomElement lineaXML = objeto2DXML.firstChildElement();
-    QDomElement puntoXML=lineaXML.firstChildElement();
 
     objeto2D = new Objeto2D;
-    objeto2D->leer(lineaXML,puntoXML);
+    objeto2D->leer(objeto2DXML);
 
     objectStack = *new std::stack<Objeto2D*>();
     deletedObjectStack = *new std::stack<Objeto2D*>();
@@ -426,6 +424,7 @@ void MainWindow::addBezier(Punto* click){
     help->push_back(new Punto(click->x + 150, click->y));
 
     curva = new Bezier(help, 500); //500 points to draw // Set as actual curva
+    curva->tipoLineasBezier = tipoLineaSeleccionada;
     objeto2D->agregarCurva(curva); //Store it in objeto2D
 }
 
