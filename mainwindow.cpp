@@ -6,6 +6,7 @@
 #include "objeto2d.h"
 #include <stack>
 #include <QLabel>
+#include "matriz.h"
 
 using namespace std;
 TipoLinea tipoLineaSeleccionada = LineaNormal;
@@ -37,6 +38,15 @@ Comandos Modos:
     label_CommandsCheatSheet->setGeometry(660,360, 300,300);
     label_CommandsCheatSheet->show();
 
+    //Testing
+    Matriz m(3,3 ,{{1,0,0}, {0,1,0}, {0,0,1}});
+    Matriz m2(3,3, {{1,2,3}, {4,5,6}, {7,8,9}});
+    Matriz algo = m * m2;
+
+    Matriz aa = Matriz::generarMatrizGraficableCuadrada(3,{{1,2,3}, {1,2,3}});
+
+
+
     setStyleSheet(
     "QMenu {"
     "	background-color: white;"
@@ -50,6 +60,7 @@ Comandos Modos:
     "	color: black;"
     "}"
     );
+
 }
 
 QString GetActualModeMsg(std::string msg){

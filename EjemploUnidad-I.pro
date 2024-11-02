@@ -14,18 +14,22 @@ SOURCES += \
     linea.cpp \
     main.cpp \
     mainwindow.cpp \
+    matriz.cpp \
     matriz2d.cpp \
     objeto2d.cpp \
     punto.cpp \
+    punto3d.cpp \
     utils.cpp
 
 HEADERS += \
     bezier.h \
     linea.h \
     mainwindow.h \
+    matriz.h \
     matriz2d.h \
     objeto2d.h \
     punto.h \
+    punto3d.h \
     utils.h
 
 FORMS += \
