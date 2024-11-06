@@ -5,14 +5,16 @@
 class Punto3D
 {
 public:
-    Matriz* x_y_z;
+    float x;
+    float y;
+    float z;
 
-    Punto3D(int x, int y, int z);
+    Punto3D(float x, float y, float z);
 
     // void desplegar(QPainter *); maybe make an obj for this
     Punto3D clonar();
 
-    bool esSeleccionado(int, int);
+    bool esSeleccionado(float, float);
 
     void transformar(const Matriz&);
 };

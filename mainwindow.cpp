@@ -41,10 +41,17 @@ Comandos Modos:
     //Testing
     Matriz m(3,3 ,{{1,0,0}, {0,1,0}, {0,0,1}});
     Matriz m2(3,3, {{1,2,3}, {4,5,6}, {7,8,9}});
+
     Matriz algo = m * m2;
+    /// 1, 2 , 3
+    /// 4, 5 , 6
+    /// 7, 8 , 9
 
+    ///El 3 es para indicar el tamaño cuadratico (filas y columnas)
     Matriz aa = Matriz::generarMatrizGraficableCuadrada(3,{{1,2,3}, {1,2,3}});
-
+    /// 1, 2, 3
+    /// 1, 2, 3
+    /// 0, 0, 1
 
 
     setStyleSheet(
