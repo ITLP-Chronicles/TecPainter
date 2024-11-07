@@ -39,6 +39,13 @@ Matrix::Matrix(int rows, int columns, const std::vector<std::vector<double>>& ra
     }
 }
 
+Matrix::~Matrix(){
+    for (int actualRow = 0; actualRow < this->rows; ++actualRow) {
+        delete[] this->data[actualRow];
+    }
+    delete[] this->data;
+}
+
 Matrix Matrix::operator*(const Matrix& other) const {
     //This matrix * otherMatrix. From left to right
 

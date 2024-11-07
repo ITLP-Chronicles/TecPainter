@@ -28,6 +28,7 @@ public:
     /// corchetes. Si el tamaño dado y el arreglo no concuerdan en tamaño, se dará una excepción.
     Matrix(int rows, int columns);
     Matrix(int rows, int columns, const std::vector<std::vector<double>>& rawData);
+    ~Matrix();
 
 
     /// Sobrecarga de operador para multiplicar fácil con otra matriz sin usar notación específica

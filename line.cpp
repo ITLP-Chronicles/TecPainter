@@ -4,8 +4,6 @@
 Line::Line()
     : vertex1(Vertex()), vertex2(Vertex()), intermitentSeparationWidth(5), lineType(NormalLine) {}
 
-Line::Line(const Vertex& v1, const Vertex& v2) : vertex1(v1.copy()), vertex2(v2.copy()) {}
-
 Line::Line(const Point& p1, const Point& p2)
     : vertex1(Vertex(p1)), vertex2(Vertex(p2)), intermitentSeparationWidth(5), lineType(NormalLine){}
 

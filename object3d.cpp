@@ -10,7 +10,7 @@ void Object3D::addSurface(const Surface& toAdd){
 }
 
 void Object3D::transform(const Matrix& transformy){
-    for (Surface s : this->surfaces){
+    for (Surface& s : this->surfaces){
         s.transform(transformy);
     }
 }

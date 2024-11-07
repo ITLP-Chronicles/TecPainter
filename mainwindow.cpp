@@ -10,57 +10,10 @@
 #include "displayer.h"
 
 using namespace std;
-QLabel *label_CommandsCheatSheet = nullptr;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    actualMode = Normal;
-
-    //Matrix thisToMatrix(1,3, {{23, 3, 23}});
-    //auto cut = Matrix::debug(thisToMatrix);
-
-    obj3D = new Object3D();
-    Surface *s = new Surface();
-    s->addVertex(Vertex(200,200,200));
-    s->addVertex(Vertex(300,200,200));
-    s->addVertex(Vertex(300,300,200));
-    s->addVertex(Vertex(200,300,200));
-    obj3D->addSurface(*s);
-
-    double ang = (10 * 3.14159) / 180.0;
-    Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {{1,0,0,-250}, {0,1,0,-250}, {0,0,1, -150}});
-    auto aaaaa = Matrix::debug(t1);
-    Matrix t2 = Matrix::generateGraphicableSquareMatrix(4, {{1,0,0,0}, {0, cos(ang), -sin(ang), 0}, {0, sin(ang), cos(ang)}});
-    auto aaa = Matrix::debug(t2);
-    Matrix t3 = Matrix::generateGraphicableSquareMatrix(4, {{1,0,0,250}, {0,1,0, 250}, {0,0,1, 150}});
-    auto aaaa =  Matrix::debug(t3);
-
-    obj3D->transform(t3 *(t2 * t1));
-
-
-    //Testing -------------------------------
-    // Matrix m(3,3 ,{{1,0,0}, {0,1,0}, {0,0,1}});
-    // auto z = Matrix::debug(m);
-
-    // Matrix m2(3,3, {{1,2,3}, {4,5,6}, {7,8,9}});
-    // auto zz = Matrix::debug(m2);
-
-    // Matrix algo = m * m2;
-    // auto zzz = Matrix::debug(algo);
-    // /// 1, 2 , 3
-    // /// 4, 5 , 6
-    // /// 7, 8 , 9
-
-    // ///El 3 es para indicar el tamaño cuadratico (filas y columnas)
-    // Matrix aa = Matrix::generateGraphicableSquareMatrix(3,{{1,2,3}, {1,2,3}});
-    // auto zzzz = Matrix::debug(aa);
-    // /// 1, 2, 3
-    /// 1, 2, 3
-    /// 0, 0, 1
-
-
-    // Setting colors ------------------------------
+    // ------------------------- Setting colors ------------------------------
     setStyleSheet(
     "QMenu {"
     "	background-color: white;"
@@ -75,20 +28,110 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     "}"
     );
 
-    label_CommandsCheatSheet = new QLabel(
-    R"(
-Comandos Modos:
-- Normal: A
-- Editar: E
-- Trasladar: T ó V
-- Rotar: R
-- Borrar Dibujo: D
-- Reflejar: W
-    )"
-    , this);
-    label_CommandsCheatSheet->setGeometry(660,360, 300,300);
-    label_CommandsCheatSheet->show();
 
+    // -------------------- Constructor ---------------------
+    ui->setupUi(this);
+    actualMode = Normal;
+    ui->label->setText(""); //"Puede hacer ctrl + z" text reset.
+    ui->label_2->setText("Hecho por Raul Armando y Kristan");
+    ui->label_3->setText("-- 3D --");
+
+    obj3D = new Object3D();
+
+    // Front Side
+    Surface *s = new Surface();
+    s->addVertex(Vertex(200,200,200));
+    s->addVertex(Vertex(300,200,200));
+    s->addVertex(Vertex(300,300,200));
+    s->addVertex(Vertex(200,300,200));
+    obj3D->addSurface(*s);
+
+    // // Right Side
+    s = new Surface();
+    s->addVertex(Vertex(300,200,200));
+    s->addVertex(Vertex(300,200,100));
+    s->addVertex(Vertex(300,300,100));
+    s->addVertex(Vertex(300,300,200));
+    obj3D->addSurface(*s);
+
+    // // Back Side
+    s = new Surface();
+    s->addVertex(Vertex(300,200,100));
+    s->addVertex(Vertex(200,200,100));
+    s->addVertex(Vertex(200,300,100));
+    s->addVertex(Vertex(300,300,100));
+    obj3D->addSurface(*s);
+
+    // // Left Side
+    s = new Surface();
+    s->addVertex(Vertex(200,200,100));
+    s->addVertex(Vertex(200,200,200));
+    s->addVertex(Vertex(200,300,200));
+    s->addVertex(Vertex(200,300,100));
+    obj3D->addSurface(*s);
+
+    // // Top Side
+    s = new Surface();
+    s->addVertex(Vertex(200,300,200));
+    s->addVertex(Vertex(300,300,200));
+    s->addVertex(Vertex(300,300,100));
+    s->addVertex(Vertex(200,300,100));
+    obj3D->addSurface(*s);
+
+    // // Bottom Side
+    s = new Surface();
+    s->addVertex(Vertex(200,200,200));
+    s->addVertex(Vertex(200,200,100));
+    s->addVertex(Vertex(300,200,100));
+    s->addVertex(Vertex(300,200,200));
+    obj3D->addSurface(*s);
+
+
+    double ang = (10 * 3.14159) / 180.0;
+    Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                            {1,0,0, -250},
+                                                            {0,1,0, -250},
+                                                            {0,0,1, -150}});
+    Matrix t2 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                            {1, 0,        0,          0},
+                                                            {0, cos(ang), -sin(ang),  0},
+                                                            {0, sin(ang), cos(ang),   0}});
+    Matrix t3 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                            {1,0,0, 250},
+                                                            {0,1,0, 250},
+                                                            {0,0,1, 150}});
+
+    obj3D->transform(t3 * (t2 * t1));
+
+    this->timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateObj()));
+    this->timer->start(30);
+}
+
+void MainWindow::updateObj(){
+    float ang = (1 * 3.14159) / 180.0;
+    Matrix traslateToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                          {1,0,0, -250},
+                                                                          {0,1,0, -250},
+                                                                          {0,0,1, -150}
+                                                                         });
+
+    Matrix rotate = Matrix::generateGraphicableSquareMatrix(4,
+                                                            {
+                                                             {cos(ang), 0, sin(ang), 0},
+                                                             {0,		1, 0, 	     0},
+                                                             {-sin(ang),0, cos(ang), 0}
+                                                            });
+
+    Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4,
+                                                                          {
+                                                                           {1,0,0, 250},
+                                                                           {0,1,0, 250},
+                                                                           {0,0,1, 150}
+                                                                          });
+
+    obj3D->transform(traslateBackToOrigin * (rotate * traslateToOrigin));
+    repaint();
 }
 
 QString GetActualModeMsg(std::string msg){
@@ -127,6 +170,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
+    if (e->button() == Qt::RightButton){
+        this->updateObj();
+    }
+
     //Point click(e->position().x(), e->position().y());
 
     // if (e->button() == Qt::RightButton) {
@@ -264,7 +311,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e) {
     //     curvaControlPointSelected->y = e->position().y();
     //     curva->RecalculateSelf();
     // }
-    repaint();
+    //repaint();
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
@@ -338,7 +385,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
 
     // }
 
-    repaint();
+    //repaint();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e){

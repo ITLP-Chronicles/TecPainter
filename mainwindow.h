@@ -43,6 +43,8 @@ class MainWindow : public QMainWindow
 
     Object3D* obj3D;
 
+    QTimer *timer;
+
     //Obj que administra el dibujo principal
     //Objeto2D *objeto2D;
 
@@ -71,6 +73,7 @@ class MainWindow : public QMainWindow
     //Getter de la propiedad "actualMode", realiza lógica además de solo establecer el modo actual
     void setActualMode(Mode newMode);
 
+
     //Añadir objeto Bezier al objeto2d //Is this neccesary?
     //void addBezier(Point*);
 
@@ -83,6 +86,10 @@ class MainWindow : public QMainWindow
         void mouseReleaseEvent(QMouseEvent *);
         void paintEvent(QPaintEvent *);
         void keyPressEvent(QKeyEvent *);
+
+
+    public slots:
+        void updateObj();
 
     // GUI Eventos QT Generados Automáticamente (No tocar)
     private slots:

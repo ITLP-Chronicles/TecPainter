@@ -23,7 +23,6 @@ public:
 
     Line copy() const;
 
-    Line(const Vertex& vertex1, const Vertex& vertex2);
     Line(const Point& p1, const Point& p2);
     Line(double, double, double, double, double, double);
 

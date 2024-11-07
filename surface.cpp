@@ -10,7 +10,7 @@ void Surface::addVertex(const Vertex& toAdd){
 }
 
 void Surface::transform(const Matrix& transformy){
-    for (auto vertex : this->vertices) {
+    for (Vertex& vertex : this->vertices) {
         vertex.transform(transformy);
     }
 }
