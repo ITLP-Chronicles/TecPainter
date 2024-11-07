@@ -1,9 +1,9 @@
-#include "punto.h"
+#include "point.h"
 #include "utils.h"
 #include <cmath>
 
 
-double Utils::distanciaPuntoALinea(int px, int py, double x1, double y1, double x2, double y2) {
+double Utils::distancePointToLine(int px, int py, double x1, double y1, double x2, double y2) {
     // Vector AB
     double ABx = x2 - x1;
     double ABy = y2 - y1;
@@ -30,11 +30,11 @@ double Utils::distanciaPuntoALinea(int px, int py, double x1, double y1, double 
 }
 
 
-double Utils::distancia2Puntos(Punto* p1, Punto* p2){
+double Utils::distance2Points(Point* p1, Point* p2){
     return std::sqrt(std::pow((p2->x - p1->y), 2) + std::pow(p2->y - p1->y, 2));
 }
 
-double Utils::distancia2Puntos(double x1, double y1, double x2, double y2){
+double Utils::distance2Points(double x1, double y1, double x2, double y2){
     return std::sqrt(std::pow((x2-x1),2) + std::pow((y2-y1), 2));
 }
 

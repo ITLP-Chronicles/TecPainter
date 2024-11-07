@@ -10,27 +10,27 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    bezier.cpp \
-    linea.cpp \
+    displayer.cpp \
+    line.cpp \
     main.cpp \
     mainwindow.cpp \
-    matriz.cpp \
-    matriz2d.cpp \
-    objeto2d.cpp \
-    punto.cpp \
-    punto3d.cpp \
-    utils.cpp
+    matrix.cpp \
+    object3d.cpp \
+    point.cpp \
+    surface.cpp \
+    utils.cpp \
+    vertex.cpp
 
 HEADERS += \
-    bezier.h \
-    linea.h \
+    displayer.h \
+    line.h \
     mainwindow.h \
-    matriz.h \
-    matriz2d.h \
-    objeto2d.h \
-    punto.h \
-    punto3d.h \
-    utils.h
+    matrix.h \
+    object3d.h \
+    point.h \
+    surface.h \
+    utils.h \
+    vertex.h
 
 FORMS += \
     mainwindow.ui

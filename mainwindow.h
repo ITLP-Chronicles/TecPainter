@@ -2,9 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "objeto2d.h"
-#include "bezier.h"
 #include <stack>
+#include "object3d.h"
 
 namespace Ui {
 class MainWindow;
@@ -42,36 +41,38 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     Ui::MainWindow *ui;
 
+    Object3D* obj3D;
+
     //Obj que administra el dibujo principal
-    Objeto2D *objeto2D;
+    //Objeto2D *objeto2D;
 
     //Línea temporal del usuario al realizar sus trazos (1 a la vez)
-    Linea *actualLine = nullptr;
+    //Linea *actualLine = nullptr;
 
     //Línea que indica la penúltima línea hecha
-    Linea *lastLine = nullptr;
+    //Linea *lastLine = nullptr;
 
-    //Punto a mover al editar lineas
-    Punto* pointToMove = nullptr;
+    //Point a mover al editar lineas
+    //Point* pointToMove = nullptr;
 
     //Objeto Bezier para dibujar curvas
-    Bezier *curva = nullptr;
+    //Bezier *curva = nullptr;
 
-    //Punto a mover de la curva actual seleccionada
-    Punto *curvaControlPointSelected = nullptr;
+    //Point a mover de la curva actual seleccionada
+    //Point *curvaControlPointSelected = nullptr;
 
     //Modo de renderizado de las líneas hechas sobre el vuelo y guardadas en "actualLine"
     Mode actualMode = Normal;
 
     //Lógica para implementar el ctrl + z  y  el ctrl + y
-    std::stack<Objeto2D*> objectStack;
-    std::stack<Objeto2D*> deletedObjectStack;
+    ///std::stack<Objeto2D*> objectStack;
+    //std::stack<Objeto2D*> deletedObjectStack;
 
     //Getter de la propiedad "actualMode", realiza lógica además de solo establecer el modo actual
     void setActualMode(Mode newMode);
 
     //Añadir objeto Bezier al objeto2d //Is this neccesary?
-    void addBezier(Punto*);
+    //void addBezier(Point*);
 
     // GUI Eventos QT PRINCIPALES de uso (Interacción con mouse y teclado)
     public:
