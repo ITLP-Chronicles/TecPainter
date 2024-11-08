@@ -1,0 +1,12 @@
+debug/displayer.o
+debug/line.o
+debug/main.o
+debug/mainwindow.o
+debug/matrix.o
+debug/object3d.o
+debug/point.o
+debug/surface.o
+debug/utils.o
+debug/vertex.o
+debug/qrc_resources.o
+debug/moc_mainwindow.o

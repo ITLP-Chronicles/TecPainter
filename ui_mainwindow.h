@@ -16,6 +16,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
 
@@ -36,10 +37,11 @@ public:
     QAction *actionEspejo_Reflejar;
     QAction *actionEscalar_c_direccion_arbr;
     QWidget *centralwidget;
-    QLabel *label;
     QLabel *label_2;
-    QLabel *label_3;
     QLabel *modo_actual;
+    QPushButton *btnVuelta;
+    QPushButton *btnMarometa;
+    QPushButton *btnGiro;
     QMenuBar *menubar;
     QMenu *menuMen;
     QMenu *menuL_nea;
@@ -50,7 +52,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(800, 600);
+        MainWindow->resize(801, 611);
         MainWindow->setStyleSheet(QString::fromUtf8("color: black;"));
         actionGuardar = new QAction(MainWindow);
         actionGuardar->setObjectName("actionGuardar");
@@ -82,22 +84,25 @@ public:
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         centralwidget->setEnabled(true);
-        label = new QLabel(centralwidget);
-        label->setObjectName("label");
-        label->setGeometry(QRect(10, 480, 501, 20));
         label_2 = new QLabel(centralwidget);
         label_2->setObjectName("label_2");
-        label_2->setGeometry(QRect(20, 510, 361, 20));
-        label_3 = new QLabel(centralwidget);
-        label_3->setObjectName("label_3");
-        label_3->setGeometry(QRect(370, 10, 51, 21));
+        label_2->setGeometry(QRect(420, 530, 361, 20));
         modo_actual = new QLabel(centralwidget);
         modo_actual->setObjectName("modo_actual");
-        modo_actual->setGeometry(QRect(20, 10, 201, 31));
+        modo_actual->setGeometry(QRect(590, 10, 201, 31));
+        btnVuelta = new QPushButton(centralwidget);
+        btnVuelta->setObjectName("btnVuelta");
+        btnVuelta->setGeometry(QRect(260, 490, 80, 18));
+        btnMarometa = new QPushButton(centralwidget);
+        btnMarometa->setObjectName("btnMarometa");
+        btnMarometa->setGeometry(QRect(350, 490, 80, 18));
+        btnGiro = new QPushButton(centralwidget);
+        btnGiro->setObjectName("btnGiro");
+        btnGiro->setGeometry(QRect(440, 490, 80, 18));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 25));
+        menubar->setGeometry(QRect(0, 0, 801, 25));
         menuMen = new QMenu(menubar);
         menuMen->setObjectName("menuMen");
         menuL_nea = new QMenu(menubar);
@@ -157,10 +162,11 @@ public:
 #endif // QT_CONFIG(shortcut)
         actionEspejo_Reflejar->setText(QCoreApplication::translate("MainWindow", "Espejo/Reflejar", nullptr));
         actionEscalar_c_direccion_arbr->setText(QCoreApplication::translate("MainWindow", "Escalar c/direccion arbr.", nullptr));
-        label->setText(QCoreApplication::translate("MainWindow", "\342\234\250 Funci\303\263n: Puede deshacer cambios con ctrl + z con las l\303\255neas", nullptr));
-        label_2->setText(QCoreApplication::translate("MainWindow", "Hecho Por Kristan Ru\303\255z Lim\303\263n y Ra\303\272l Armando", nullptr));
-        label_3->setText(QCoreApplication::translate("MainWindow", "Examen", nullptr));
+        label_2->setText(QCoreApplication::translate("MainWindow", "Hecho Por Kristan Ru\303\255z Lim\303\263n y Ra\303\272l Armando M\303\251ndez Ar\303\241mbula", nullptr));
         modo_actual->setText(QCoreApplication::translate("MainWindow", "Modo actual: Normal", nullptr));
+        btnVuelta->setText(QCoreApplication::translate("MainWindow", "Vuelta", nullptr));
+        btnMarometa->setText(QCoreApplication::translate("MainWindow", "Marometa", nullptr));
+        btnGiro->setText(QCoreApplication::translate("MainWindow", "Giro", nullptr));
         menuMen->setTitle(QCoreApplication::translate("MainWindow", "Men\303\272", nullptr));
         menuL_nea->setTitle(QCoreApplication::translate("MainWindow", "L\303\255nea", nullptr));
         menuHerramienta->setTitle(QCoreApplication::translate("MainWindow", "Herramienta", nullptr));

@@ -1,0 +1,12 @@
+release/displayer.o
+release/line.o
+release/main.o
+release/mainwindow.o
+release/matrix.o
+release/object3d.o
+release/point.o
+release/surface.o
+release/utils.o
+release/vertex.o
+release/qrc_resources.o
+release/moc_mainwindow.o

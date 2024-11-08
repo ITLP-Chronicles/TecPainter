@@ -33,9 +33,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     // -------------------- Constructor ---------------------
     ui->setupUi(this);
     actualMode = Normal;
-    ui->label->setText(""); //"Puede hacer ctrl + z" text reset.
-    ui->label_2->setText("Hecho por Raul Armando y Kristan");
-    ui->label_3->setText("-- 3D --");
 
     // ------------- Obj3D creation ----------------
 
@@ -112,50 +109,8 @@ Matrix MainWindow::getRotationMatrix(Axis axis) {
                                                            {0, 0, 1, 0}});
 }
 
-QString GetActualModeMsg(std::string msg){
-    std::string beginning = "Modo actual: ";
-    QString algo = QString((beginning + msg).data());
-    return algo;
-}
-
-std::string ModeToString(Mode mode){
-    switch(mode){
-        case Normal: return "Normal";
-        case Edit: return "Edición";
-        case Escalar: return "Escalar";
-        case Rotar: return "Rotar";
-        case Trasladar: return "Trasladar";
-        case Reflejar: return "Reflejar";
-        case EscalarArbitrario: return "Escalar Arbitrario";
-        case Curvas: return "Bezier";
-    }
-    return "---";
-}
-
-void MainWindow::setActualMode(Mode newMode){
-    this->actualMode = newMode;
-    this->ui->modo_actual->setText(GetActualModeMsg(ModeToString(newMode)));
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *e)
-{
-    if (e->button() == Qt::RightButton){
-        this->updateObj();
-    }
-    QMainWindow::mousePressEvent(e);
-}
-
-
-void MainWindow::mouseMoveEvent(QMouseEvent *e) {}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
-}
-
+void MainWindow::mouseMoveEvent(QMouseEvent* _) {}
+void MainWindow::mouseReleaseEvent(QMouseEvent* _) {}
 void MainWindow::keyPressEvent(QKeyEvent *e){
     if (e->key() == Qt::Key_A) setActualMode(Normal);
     if (e->key() == Qt::Key_E) setActualMode(Escalar);
@@ -181,68 +136,13 @@ void MainWindow::paintEvent(QPaintEvent *) {
     delete painter;
 }
 
-void MainWindow::on_actionLeer_triggered()
-{}
-
-void MainWindow::on_actionGuardar_triggered()
-{}
-
-void MainWindow::on_actionNormal_triggered()
-{
-/*    setActualMode(Normal);
-    tipoLineaSeleccionada = LineaNormal*/;
+MainWindow::~MainWindow(){
+    delete obj3D;
+    delete ui;
 }
 
-void MainWindow::on_actionInterlineado_triggered()
-{
-/*    setActualMode(Normal);
-    tipoLineaSeleccionada = LineaInterlineada*/;
-}
-
-//Herramientas - Ninguno/Modo normal
-void MainWindow::on_actionDibujar_triggered()
-{
-    //setActualMode(Normal);
-}
-
-void MainWindow::on_actionTrasladar_triggered()
-{
-/*    setActualMode(Trasladar);
-
-    preview2D = objeto2D->copia();
-    preview2D->updateLineStyleToAll(LineaInterlineada)*/;
-}
-
-void MainWindow::on_actionRotar_triggered() {
-    setActualMode(Rotar);
-}
-
-void MainWindow::on_actionEscalar_triggered() {
-    setActualMode(Escalar);
-}
-
-void MainWindow::on_actionEspejo_Reflejar_triggered() {
-    setActualMode(Reflejar);
-}
-
-void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {
-    setActualMode(EscalarArbitrario);
-}
-void MainWindow::on_btnVuelta_clicked()
-{
-
-}
-
-
-void MainWindow::on_btnMarometa_clicked()
-{
-
-}
-
-
-void MainWindow::on_btnGiro_clicked()
-{
-
+void MainWindow::mousePressEvent(QMouseEvent *e) {
+    QMainWindow::mousePressEvent(e);
 }
 
 void MainWindow::setRotationAxisX() {
@@ -256,3 +156,45 @@ void MainWindow::setRotationAxisY() {
 void MainWindow::setRotationAxisZ() {
     currentAxis = Z_AXIS;
 }
+
+// -------------------- Stuff ------------------------
+void MainWindow::on_actionLeer_triggered(){}
+void MainWindow::on_actionGuardar_triggered(){}
+void MainWindow::on_actionNormal_triggered(){}
+void MainWindow::on_actionInterlineado_triggered(){}
+void MainWindow::on_actionDibujar_triggered(){}
+void MainWindow::on_actionTrasladar_triggered(){}
+void MainWindow::on_actionRotar_triggered(){}
+void MainWindow::on_actionEscalar_triggered(){}
+void MainWindow::on_actionEspejo_Reflejar_triggered() {}
+void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {}
+void MainWindow::on_btnVuelta_clicked(){}
+void MainWindow::on_btnMarometa_clicked(){}
+void MainWindow::on_btnGiro_clicked(){}
+
+
+QString GetActualModeMsg(std::string msg){
+    std::string beginning = "Modo actual: ";
+    QString algo = QString((beginning + msg).data());
+    return algo;
+}
+
+std::string ModeToString(Mode mode){
+    switch(mode){
+        case Normal: return "Normal";
+        case Edit: return "Edición";
+        case Escalar: return "Escalar";
+        case Rotar: return "Rotar";
+        case Trasladar: return "Trasladar";
+        case Reflejar: return "Reflejar";
+        case EscalarArbitrario: return "Escalar Arbitrario";
+        case Curvas: return "Bezier";
+    }
+    return "---";
+}
+
+void MainWindow::setActualMode(Mode newMode){
+    this->actualMode = newMode;
+    this->ui->modo_actual->setText(GetActualModeMsg(ModeToString(newMode)));
+}
+
