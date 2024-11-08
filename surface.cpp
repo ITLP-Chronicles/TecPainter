@@ -2,8 +2,9 @@
 #include <vector>
 #include "vertex.h"
 #include "matrix.h"
+#include <QColor>
 
-Surface::Surface() : vertices(std::vector<Vertex>()) {}
+Surface::Surface() : color(QColor::fromRgb(255,255,255)), vertices(std::vector<Vertex>())  {}
 
 void Surface::addVertex(const Vertex& toAdd){
     this->vertices.push_back(toAdd);
@@ -15,10 +16,10 @@ void Surface::transform(const Matrix& transformy){
     }
 }
 
-Surface Surface::copy(){
+Surface Surface::copy() const{
     auto toReturn = Surface();
 
-    for(Vertex& v : this->vertices){
+    for(Vertex v : this->vertices){
         toReturn.addVertex(v);
     }
 

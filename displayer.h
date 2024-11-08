@@ -11,7 +11,7 @@ class Displayer
 public:
     static void vertex(QPainter* painterRef, const Vertex& vertexToDisplay);
     static void line(QPainter* painterRef, const Line& lineToDisplay);
-    static void surface(QPainter* painterRef, Surface& surfaceToDisplay);
+    static void surface(QPainter* painterRef, const Surface& surfaceToDisplay);
     static void object3d(QPainter* painterRef, const Object3D& objToDisplay);
 };
 

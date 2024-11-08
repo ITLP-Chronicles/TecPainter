@@ -2,6 +2,7 @@
 #include "vertex.h"
 #include "surface.h"
 #include "object3d.h"
+#include "qpainterpath.h"
 
 void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
     for (Surface surface : obj.surfaces){
@@ -53,7 +54,7 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
             temp = new Line(v1->x, v1->y, v1->z, v2->x, v2->y, v2->z);
             Displayer::line(painterRef, *temp);
             delete temp;
-            /// Testing //painterRef->drawLine(s.vertices.at(i).point.x, s.vertices.at(i).point.y, s.vertices.at(i+1).point.x, s.vertices.at(i+1).point.y);
+            //painterRef->drawLine(s.vertices.at(i).x, s.vertices.at(i).y, s.vertices.at(i+1).x, s.vertices.at(i+1).y);
         }
 
         Vertex* last = &s.vertices.at(s.vertices.size() -1 );
@@ -62,7 +63,20 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
         temp = new Line(last->x, last->y, last->z, first->x, first->y, first->z);
         Displayer::line(painterRef, *temp);
         delete temp;
-        /// Testing //painterRef->drawLine(s.vertices.at(s.vertices.size() - 1).point.x, s.vertices.at(s.vertices.size() - 1).point.y, s.vertices.at(0).point.x, s.vertices.at(0).point.y);
+        //painterRef->drawLine(s.vertices.at(s.vertices.size() - 1).x, s.vertices.at(s.vertices.size() - 1).y, s.vertices.at(0).x, s.vertices.at(0).y);
+
+        if (!s.vertices.empty()){
+            QPainterPath path;
+
+            path.moveTo(s.vertices[0].x, s.vertices[0].y);
+            for (size_t i = 0; i < s.vertices.size(); i++){
+                path.lineTo(s.vertices[i].x, s.vertices[i].y);
+            }
+
+            path.closeSubpath();
+
+            painterRef->fillPath(path, QBrush(QColor::fromRgb(255,165,200)));
+        }
     }
 }
 
