@@ -2,6 +2,7 @@
 #include "vertex.h"
 #include "surface.h"
 #include "object3d.h"
+#include "qpainterpath.h"
 
 void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
     for (Surface surface : obj.surfaces){
@@ -9,9 +10,24 @@ void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
     }
 }
 
-void Displayer::surface(QPainter* painterRef, Surface& s){
-    Surface copySurface = s.
+void Displayer::surface(QPainter* painterRef, const Surface& originalSurface){
+    Surface s = originalSurface.copy();
+    float xv = 0, yv = 0, zv = 500;
+    float zf = 1000;
 
+    for (Vertex& v : s.vertices){
+        float dp = (zf-zv)/(zf-v.z);
+        v.y *= dp;
+        v.x *= dp;
+    }
+
+    for (Vertex& v: s.vertices){
+        xv += v.x;
+        yv += v.y;
+    }
+
+    xv /= s.vertices.size();
+    yv /= s.vertices.size();
 
     float x1 = s.vertices[0].x;
     float y1 = s.vertices[0].y;
@@ -25,17 +41,12 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
     float y3 = s.vertices[2].y;
     float z3 = s.vertices[2].z;
 
-    float A  = y1 * (z2 - z3) + y2*(z3-z1)+y3*(z1-z2);
-    float B = z1 * (x2-x3) + z2 * (x3-x1) + z3* (x1-x2);
-    float C = x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2);
-    float D = -x1*(y2*z3-y3*z2)-x2*(y3*z1-y1*z3)-x3*(y1*z2-y2*z1);
+    float A=y1*(z2-z3)+y2*(z3-z1)+y3*(z1-z2);
+    float B=z1*(x2-x3)+z2*(x3-x1)+z3*(x1-x2);
+    float C=x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2);
+    float D=-x1*(y2*z3-y3*z2)-x2*(y3*z1-y1*z3)-x3*(y1*z2-y2*z1);
 
-    float xv = 0, yv = 0, zv = 500;
 
-    for (Vertex& v: s.vertices){
-        xv += v.x;
-        yv += v.y;
-    }
 
     if (A*xv+B+yv+C*zv+D>0){
         Line *temp;
@@ -46,7 +57,7 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
             temp = new Line(v1->x, v1->y, v1->z, v2->x, v2->y, v2->z);
             Displayer::line(painterRef, *temp);
             delete temp;
-            /// Testing //painterRef->drawLine(s.vertices.at(i).point.x, s.vertices.at(i).point.y, s.vertices.at(i+1).point.x, s.vertices.at(i+1).point.y);
+            //painterRef->drawLine(s.vertices.at(i).x, s.vertices.at(i).y, s.vertices.at(i+1).x, s.vertices.at(i+1).y);
         }
 
         Vertex* last = &s.vertices.at(s.vertices.size() -1 );
@@ -55,7 +66,20 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
         temp = new Line(last->x, last->y, last->z, first->x, first->y, first->z);
         Displayer::line(painterRef, *temp);
         delete temp;
-        /// Testing //painterRef->drawLine(s.vertices.at(s.vertices.size() - 1).point.x, s.vertices.at(s.vertices.size() - 1).point.y, s.vertices.at(0).point.x, s.vertices.at(0).point.y);
+        //painterRef->drawLine(s.vertices.at(s.vertices.size() - 1).x, s.vertices.at(s.vertices.size() - 1).y, s.vertices.at(0).x, s.vertices.at(0).y);
+
+        if (!s.vertices.empty()){
+            QPainterPath path;
+
+            path.moveTo(s.vertices[0].x, s.vertices[0].y);
+            for (size_t i = 0; i < s.vertices.size(); i++){
+                path.lineTo(s.vertices[i].x, s.vertices[i].y);
+            }
+
+            path.closeSubpath();
+
+            painterRef->fillPath(path, QBrush(QColor::fromRgb(255,165,200)));
+        }
     }
 }
 

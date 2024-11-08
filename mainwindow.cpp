@@ -35,18 +35,15 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->label_2->setText("Hecho por Raul Armando y Kristan");
     ui->label_3->setText("-- 3D --");
 
-
     // ------------- Obj3D creation ----------------
 
     obj3D = new Object3D();
-
     obj3D->addPrism(200,100,200,100,100,100);
-    // obj3D->addPrism(215,200,185,70,200,70);
-
-    // obj3D->addPrism(195,400,205,20,40,20);
-    // obj3D->addPrism(285,400,205,20,40,20);
-    // obj3D->addPrism(195,400,115,20,40,20);
-    // obj3D->addPrism(285,400,115,20,40,20);
+    obj3D->addPrism(215,200,185,70,200,70);
+    obj3D->addPrism(195,400,205,20,40,20);
+    obj3D->addPrism(285,400,205,20,40,20);
+    obj3D->addPrism(195,400,115,20,40,20);
+    obj3D->addPrism(285,400,115,20,40,20);
 
 
     double ang = (10 * 3.14159) / 180.0;
@@ -96,6 +93,47 @@ void MainWindow::updateObj(){
     repaint();
 }
 
+void MainWindow::paintEvent(QPaintEvent *) {
+    //Basic window rendering settings
+    QPainter *painter= new QPainter(this);
+    painter->setRenderHint(QPainter::Antialiasing,true);
+    painter->fillRect(this->rect(), Qt::white);
+
+    //Basic pen settings
+    QPen pen;
+    pen.setColor(QColor(0,0,0));
+    painter->setPen(pen);
+
+    Displayer::object3d(painter, *obj3D);
+    delete painter;
+}
+
+MainWindow::~MainWindow(){
+    delete ui;
+    delete obj3D;
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *e) {
+    QMainWindow::mousePressEvent(e);
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *e) {}
+void MainWindow::mouseReleaseEvent(QMouseEvent* _) {}
+void MainWindow::keyPressEvent(QKeyEvent *e){};
+void MainWindow::on_actionLeer_triggered() {}
+void MainWindow::on_actionGuardar_triggered() {}
+void MainWindow::on_actionNormal_triggered() {}
+void MainWindow::on_actionInterlineado_triggered() {}
+
+//Herramientas - Ninguno/Modo normal
+void MainWindow::on_actionDibujar_triggered() {}
+void MainWindow::on_actionTrasladar_triggered() {}
+void MainWindow::on_actionRotar_triggered(){}
+void MainWindow::on_actionEscalar_triggered(){}
+void MainWindow::on_actionEspejo_Reflejar_triggered() {}
+void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {}
+
+///Old code
 QString GetActualModeMsg(std::string msg){
     std::string beginning = "Modo actual: ";
     QString algo = QString((beginning + msg).data());
@@ -119,96 +157,4 @@ std::string ModeToString(Mode mode){
 void MainWindow::setActualMode(Mode newMode){
     this->actualMode = newMode;
     this->ui->modo_actual->setText(GetActualModeMsg(ModeToString(newMode)));
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *e)
-{
-    if (e->button() == Qt::RightButton){
-        this->updateObj();
-    }
-    QMainWindow::mousePressEvent(e);
-}
-
-
-void MainWindow::mouseMoveEvent(QMouseEvent *e) {}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent* _) {
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *e){
-    if (e->key() == Qt::Key_A) setActualMode(Normal);
-    if (e->key() == Qt::Key_E) setActualMode(Escalar);
-    if (e->key() == Qt::Key_R) setActualMode(Rotar);
-    if (e->key() == Qt::Key_T) setActualMode(Trasladar);
-    if (e->key() == Qt::Key_V) setActualMode(Trasladar);
-    if (e->key() == Qt::Key_W) setActualMode(Reflejar);
-    if (e->key() == Qt::Key_Q) setActualMode(EscalarArbitrario);
-};
-
-void MainWindow::paintEvent(QPaintEvent *) {
-    //Basic window rendering settings
-    QPainter *painter= new QPainter(this);
-    painter->setRenderHint(QPainter::Antialiasing,true);
-    painter->fillRect(this->rect(), Qt::white);
-
-    //Basic pen settings
-    QPen pen;
-    pen.setColor(QColor(0,0,255));
-    painter->setPen(pen);
-
-    Displayer::object3d(painter, *obj3D);
-    delete painter;
-}
-
-void MainWindow::on_actionLeer_triggered()
-{}
-
-void MainWindow::on_actionGuardar_triggered()
-{}
-
-void MainWindow::on_actionNormal_triggered()
-{
-/*    setActualMode(Normal);
-    tipoLineaSeleccionada = LineaNormal*/;
-}
-
-void MainWindow::on_actionInterlineado_triggered()
-{
-/*    setActualMode(Normal);
-    tipoLineaSeleccionada = LineaInterlineada*/;
-}
-
-//Herramientas - Ninguno/Modo normal
-void MainWindow::on_actionDibujar_triggered()
-{
-    //setActualMode(Normal);
-}
-
-void MainWindow::on_actionTrasladar_triggered()
-{
-/*    setActualMode(Trasladar);
-
-    preview2D = objeto2D->copia();
-    preview2D->updateLineStyleToAll(LineaInterlineada)*/;
-}
-
-void MainWindow::on_actionRotar_triggered() {
-    setActualMode(Rotar);
-}
-
-void MainWindow::on_actionEscalar_triggered() {
-    setActualMode(Escalar);
-}
-
-void MainWindow::on_actionEspejo_Reflejar_triggered() {
-    setActualMode(Reflejar);
-}
-
-void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {
-    setActualMode(EscalarArbitrario);
 }
