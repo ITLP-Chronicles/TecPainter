@@ -12,6 +12,7 @@ public:
     std::vector<Surface> surfaces;
     void addSurface(const Surface& toAdd);
     void transform(const Matrix& transformy);
+    void addPrism(float x, float y, float z, float width, float height, float depth);
 };
 
 #endif // OBJECT3D_H

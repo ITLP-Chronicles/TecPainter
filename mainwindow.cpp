@@ -38,53 +38,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     obj3D = new Object3D();
 
-    // Front Side
-    Surface *s = new Surface();
-    s->addVertex(Vertex(200,200,200));
-    s->addVertex(Vertex(300,200,200));
-    s->addVertex(Vertex(300,300,200));
-    s->addVertex(Vertex(200,300,200));
-    obj3D->addSurface(*s);
+    obj3D->addPrism(200,100,200,100,100,100);
+    obj3D->addPrism(215,200,185,70,200,70);
 
-    // // Right Side
-    s = new Surface();
-    s->addVertex(Vertex(300,200,200));
-    s->addVertex(Vertex(300,200,100));
-    s->addVertex(Vertex(300,300,100));
-    s->addVertex(Vertex(300,300,200));
-    obj3D->addSurface(*s);
-
-    // // Back Side
-    s = new Surface();
-    s->addVertex(Vertex(300,200,100));
-    s->addVertex(Vertex(200,200,100));
-    s->addVertex(Vertex(200,300,100));
-    s->addVertex(Vertex(300,300,100));
-    obj3D->addSurface(*s);
-
-    // // Left Side
-    s = new Surface();
-    s->addVertex(Vertex(200,200,100));
-    s->addVertex(Vertex(200,200,200));
-    s->addVertex(Vertex(200,300,200));
-    s->addVertex(Vertex(200,300,100));
-    obj3D->addSurface(*s);
-
-    // // Top Side
-    s = new Surface();
-    s->addVertex(Vertex(200,300,200));
-    s->addVertex(Vertex(300,300,200));
-    s->addVertex(Vertex(300,300,100));
-    s->addVertex(Vertex(200,300,100));
-    obj3D->addSurface(*s);
-
-    // // Bottom Side
-    s = new Surface();
-    s->addVertex(Vertex(200,200,200));
-    s->addVertex(Vertex(200,200,100));
-    s->addVertex(Vertex(300,200,100));
-    s->addVertex(Vertex(300,200,200));
-    obj3D->addSurface(*s);
+    obj3D->addPrism(195,400,205,20,40,20);
+    obj3D->addPrism(285,400,205,20,40,20);
+    obj3D->addPrism(195,400,115,20,40,20);
+    obj3D->addPrism(285,400,115,20,40,20);
 
 
     double ang = (10 * 3.14159) / 180.0;
