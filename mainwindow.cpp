@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     obj3D->addPrism(200,100,200,100,100,100);
 
     obj3D->addPrism(215,200,185,70,200,70);
+
     obj3D->addPrism(195,400,205,20,40,20);
     obj3D->addPrism(285,400,205,20,40,20);
     obj3D->addPrism(195,400,115,20,40,20);

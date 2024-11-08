@@ -10,8 +10,20 @@ void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
 }
 
 void Displayer::surface(QPainter* painterRef, Surface& s){
-    Surface copySurface = s.
-
+    Surface sup = s.copy();
+    float xv=0, yv=0, zv=500;
+    float zf=1000;
+    for (Vertex v:sup.vertices) {
+        float dp=(zf-zv)/(zf-v.z);
+        v.y*=dp;
+        v.x*=dp;
+    }
+    for (Vertex v:s.vertices) {
+        xv+=v.x;
+        yv+=v.y;
+    }
+    xv/=s.vertices.size();
+    yv/=s.vertices.size();
 
     float x1 = s.vertices[0].x;
     float y1 = s.vertices[0].y;
@@ -25,17 +37,12 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
     float y3 = s.vertices[2].y;
     float z3 = s.vertices[2].z;
 
-    float A  = y1 * (z2 - z3) + y2*(z3-z1)+y3*(z1-z2);
-    float B = z1 * (x2-x3) + z2 * (x3-x1) + z3* (x1-x2);
-    float C = x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2);
-    float D = -x1*(y2*z3-y3*z2)-x2*(y3*z1-y1*z3)-x3*(y1*z2-y2*z1);
+    float A=y1*(z2-z3)+y2*(z3-z1)+y3*(z1-z2);
+    float B=z1*(x2-x3)+z2*(x3-x1)+z3*(x1-x2);
+    float C=x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2);
+    float D=-x1*(y2*z3-y3*z2)-x2*(y3*z1-y1*z3)-x3*(y1*z2-y2*z1);
 
-    float xv = 0, yv = 0, zv = 500;
 
-    for (Vertex& v: s.vertices){
-        xv += v.x;
-        yv += v.y;
-    }
 
     if (A*xv+B+yv+C*zv+D>0){
         Line *temp;

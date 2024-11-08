@@ -23,19 +23,19 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
     Vertex v2(x + width, y + height, z);      // Frente arriba derecha
     Vertex v3(x, y + height, z);              // Frente arriba izquierda
 
-    Vertex v4(x, y, z - depth);               // Atrás abajo izquierda
-    Vertex v5(x + width, y, z - depth);       // Atrás abajo derecha
-    Vertex v6(x + width, y + height, z - depth); // Atrás arriba derecha
-    Vertex v7(x, y + height, z - depth);      // Atrás arriba izquierda
+    Vertex v4(x, y, z - depth);                               // Atrás abajo izquierda
+    Vertex v5(x + width, y, z - depth);                       // Atrás abajo derecha
+    Vertex v6(x + width, y + height, z - depth);              // Atrás arriba derecha
+    Vertex v7(x, y + height, z - depth);                      // Atrás arriba izquierda
 
-    // Crear y agregar cada superficie del prisma al objeto 3D
+    // Crear y agregar cada superficie del prisma al objeto 3D con vertices en sentido antihorario
 
     // Cara frontal
     Surface* front = new Surface();
     front->addVertex(v0);
-    front->addVertex(v1);
-    front->addVertex(v2);
     front->addVertex(v3);
+    front->addVertex(v2);
+    front->addVertex(v1);
     addSurface(*front);
 
     // Cara trasera
@@ -49,9 +49,9 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
     // Cara derecha
     Surface* right = new Surface();
     right->addVertex(v1);
-    right->addVertex(v5);
-    right->addVertex(v6);
     right->addVertex(v2);
+    right->addVertex(v6);
+    right->addVertex(v5);
     addSurface(*right);
 
     // Cara izquierda
@@ -65,9 +65,9 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
     // Cara superior
     Surface* top = new Surface();
     top->addVertex(v3);
-    top->addVertex(v2);
-    top->addVertex(v6);
     top->addVertex(v7);
+    top->addVertex(v6);
+    top->addVertex(v2);
     addSurface(*top);
 
     // Cara inferior
