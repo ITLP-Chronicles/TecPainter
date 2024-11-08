@@ -23,10 +23,10 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
     Vertex v3(x + width, y + height, z);      // Frente arriba derecha
     Vertex v4(x, y + height, z);              // Frente arriba izquierda
 
-    Vertex v4(x, y, z - depth);                               // Atrás abajo izquierda
-    Vertex v5(x + width, y, z - depth);                       // Atrás abajo derecha
-    Vertex v6(x + width, y + height, z - depth);              // Atrás arriba derecha
-    Vertex v7(x, y + height, z - depth);                      // Atrás arriba izquierda
+    Vertex v5(x, y, z - depth);                               // Atrás abajo izquierda
+    Vertex v6(x + width, y, z - depth);                       // Atrás abajo derecha
+    Vertex v7(x + width, y + height, z - depth);              // Atrás arriba derecha
+    Vertex v8(x, y + height, z - depth);                      // Atrás arriba izquierda
 
     // Crear y agregar cada superficie del prisma al objeto 3D con vertices en sentido antihorario
 

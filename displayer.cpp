@@ -10,16 +10,18 @@ void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
     }
 }
 
-void Displayer::surface(QPainter* painterRef, Surface& s){
-    Surface sup = s.copy();
+void Displayer::surface(QPainter* painterRef, const Surface& surface){
+    Surface s = surface.copy();
     float xv=0, yv=0, zv=500;
     float zf=1000;
-    for (Vertex v:sup.vertices) {
+
+    for (Vertex& v:s.vertices) {
         float dp=(zf-zv)/(zf-v.z);
         v.y*=dp;
         v.x*=dp;
     }
-    for (Vertex v:s.vertices) {
+
+    for (Vertex& v: s.vertices) {
         xv+=v.x;
         yv+=v.y;
     }
@@ -42,8 +44,6 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
     float B=z1*(x2-x3)+z2*(x3-x1)+z3*(x1-x2);
     float C=x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2);
     float D=-x1*(y2*z3-y3*z2)-x2*(y3*z1-y1*z3)-x3*(y1*z2-y2*z1);
-
-
 
     if (A*xv+B+yv+C*zv+D>0){
         Line *temp;
@@ -75,7 +75,7 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
 
             path.closeSubpath();
 
-            painterRef->fillPath(path, QBrush(QColor::fromRgb(255,165,200)));
+            painterRef->fillPath(path, QBrush(s.color));
         }
     }
 }
