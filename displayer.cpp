@@ -10,6 +10,9 @@ void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
 }
 
 void Displayer::surface(QPainter* painterRef, Surface& s){
+    Surface copySurface = s.
+
+
     float x1 = s.vertices[0].x;
     float y1 = s.vertices[0].y;
     float z1 = s.vertices[0].z;
@@ -34,7 +37,7 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
         yv += v.y;
     }
 
-    if (A*xv+B*yv+C*zv+D > 0){
+    if (A*xv+B+yv+C*zv+D>0){
         Line *temp;
         for (int i = 0; i < (int)s.vertices.size() - 1; ++i) {
             Vertex* v1  = &s.vertices.at(i);

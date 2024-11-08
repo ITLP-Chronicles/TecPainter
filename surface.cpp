@@ -14,3 +14,13 @@ void Surface::transform(const Matrix& transformy){
         vertex.transform(transformy);
     }
 }
+
+Surface Surface::copy(){
+    auto toReturn = Surface();
+
+    for(Vertex& v : this->vertices){
+        toReturn.addVertex(v);
+    }
+
+    return toReturn;
+}
