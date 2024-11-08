@@ -34,7 +34,7 @@ void Displayer::surface(QPainter* painterRef, Surface& s){
         yv += v.y;
     }
 
-    if (true){
+    if (A*xv+B*yv+C*zv+D > 0){
         Line *temp;
         for (int i = 0; i < (int)s.vertices.size() - 1; ++i) {
             Vertex* v1  = &s.vertices.at(i);

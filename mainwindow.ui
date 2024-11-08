@@ -46,6 +46,45 @@
      <string>Modo actual: Normal</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btnVuelta">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>490</y>
+      <width>80</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Vuelta</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnMarometa">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>490</y>
+      <width>80</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Marometa</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnGiro">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>490</y>
+      <width>80</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Giro</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -53,7 +92,7 @@
      <x>0</x>
      <y>0</y>
      <width>801</width>
-     <height>25</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMen">

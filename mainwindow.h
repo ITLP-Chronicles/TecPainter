@@ -36,6 +36,8 @@ enum Mode {
     Curvas
 };
 
+enum Axis { X_AXIS, Y_AXIS, Z_AXIS };
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -90,6 +92,10 @@ class MainWindow : public QMainWindow
 
     public slots:
         void updateObj();
+        void setRotationAxisX();
+        void setRotationAxisY();
+        void setRotationAxisZ();
+        Matrix getRotationMatrix(Axis axis);
 
     // GUI Eventos QT Generados Automáticamente (No tocar)
     private slots:
@@ -103,6 +109,9 @@ class MainWindow : public QMainWindow
         void on_actionEscalar_triggered();
         void on_actionEspejo_Reflejar_triggered();
         void on_actionEscalar_c_direccion_arbr_triggered();
+        void on_btnVuelta_clicked();
+        void on_btnMarometa_clicked();
+        void on_btnGiro_clicked();
 };
 #endif // MAINWINDOW_H
 

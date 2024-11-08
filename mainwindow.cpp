@@ -3,13 +3,15 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QLabel>
-
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "matrix.h"
 #include "displayer.h"
 
 using namespace std;
+
+float ang = (1 * 3.14159) / 180.0;
+Axis currentAxis = Y_AXIS;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -41,15 +43,14 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     obj3D = new Object3D();
 
     obj3D->addPrism(200,100,200,100,100,100);
-    // obj3D->addPrism(215,200,185,70,200,70);
 
-    // obj3D->addPrism(195,400,205,20,40,20);
-    // obj3D->addPrism(285,400,205,20,40,20);
-    // obj3D->addPrism(195,400,115,20,40,20);
-    // obj3D->addPrism(285,400,115,20,40,20);
+    obj3D->addPrism(215,200,185,70,200,70);
+    obj3D->addPrism(195,400,205,20,40,20);
+    obj3D->addPrism(285,400,205,20,40,20);
+    obj3D->addPrism(195,400,115,20,40,20);
+    obj3D->addPrism(285,400,115,20,40,20);
 
 
-    double ang = (10 * 3.14159) / 180.0;
     Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
                                                             {1,0,0, -250},
                                                             {0,1,0, -250},
@@ -70,30 +71,48 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     this->timer->start(30);
 }
 
-void MainWindow::updateObj(){
-    float ang = (1 * 3.14159) / 180.0;
+void MainWindow::updateObj() {
     Matrix traslateToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                          {1,0,0, -250},
-                                                                          {0,1,0, -250},
-                                                                          {0,0,1, -150}
+                                                                             {1, 0, 0, -250},
+                                                                             {0, 1, 0, -250},
+                                                                             {0, 0, 1, -150}
                                                                          });
 
-    Matrix rotate = Matrix::generateGraphicableSquareMatrix(4,
-                                                            {
-                                                             {cos(ang), 0, sin(ang), 0},
-                                                             {0,		1, 0, 	     0},
-                                                             {-sin(ang),0, cos(ang), 0}
-                                                            });
+    Matrix rotate = getRotationMatrix(currentAxis); // Usa el eje seleccionado
 
-    Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4,
-                                                                          {
-                                                                           {1,0,0, 250},
-                                                                           {0,1,0, 250},
-                                                                           {0,0,1, 150}
-                                                                          });
+    Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                                 {1, 0, 0, 250},
+                                                                                 {0, 1, 0, 250},
+                                                                                 {0, 0, 1, 150}
+                                                                             });
 
     obj3D->transform(traslateBackToOrigin * (rotate * traslateToOrigin));
     repaint();
+}
+
+
+Matrix MainWindow::getRotationMatrix(Axis axis) {
+    switch (axis) {
+    case X_AXIS:
+        return Matrix::generateGraphicableSquareMatrix(4, {
+                                                           {1, 0,        0,         0},
+                                                           {0, cos(ang), -sin(ang), 0},
+                                                           {0, sin(ang), cos(ang),  0}});
+    case Y_AXIS:
+        return Matrix::generateGraphicableSquareMatrix(4, {
+                                                           {cos(ang), 0, sin(ang), 0},
+                                                           {0,        1, 0,        0},
+                                                           {-sin(ang), 0, cos(ang), 0}});
+    case Z_AXIS:
+        return Matrix::generateGraphicableSquareMatrix(4, {
+                                                           {cos(ang), -sin(ang), 0, 0},
+                                                           {sin(ang), cos(ang),  0, 0},
+                                                           {0,        0,         1, 0}});
+    }
+    return Matrix::generateGraphicableSquareMatrix(4, {
+                                                           {1, 0, 0, 0},
+                                                           {0, 1, 0, 0},
+                                                           {0, 0, 1, 0}});
 }
 
 QString GetActualModeMsg(std::string msg){
@@ -211,4 +230,32 @@ void MainWindow::on_actionEspejo_Reflejar_triggered() {
 
 void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {
     setActualMode(EscalarArbitrario);
+}
+void MainWindow::on_btnVuelta_clicked()
+{
+
+}
+
+
+void MainWindow::on_btnMarometa_clicked()
+{
+
+}
+
+
+void MainWindow::on_btnGiro_clicked()
+{
+
+}
+
+void MainWindow::setRotationAxisX() {
+    currentAxis = X_AXIS;
+}
+
+void MainWindow::setRotationAxisY() {
+    currentAxis = Y_AXIS;
+}
+
+void MainWindow::setRotationAxisZ() {
+    currentAxis = Z_AXIS;
 }
