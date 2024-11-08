@@ -11,7 +11,7 @@ Line::Line(double x1, double y1, double z1, double x2, double y2, double z2)
     : vertex1(Vertex(x1,y1,z1)), vertex2(Vertex(x2,y2,z2)), intermitentSeparationWidth(5), lineType(NormalLine){}
 
 Line Line::copy() const {
-    return Line(this->vertex1.point, this->vertex2.point);
+    return Line(this->vertex1.x, this->vertex1.y, this->vertex1.z, this->vertex2.x, this->vertex2.y, this->vertex2.z);
 }
 
 void Line::transform(const Matrix& MTransform){
