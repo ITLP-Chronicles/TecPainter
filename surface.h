@@ -13,6 +13,7 @@ public:
 
     void addVertex(const Vertex& toAdd);
     void transform(const Matrix& matrixInput);
+    Surface copy();
 };
 
 #endif // SURFACE_H
