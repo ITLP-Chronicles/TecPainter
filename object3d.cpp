@@ -79,9 +79,9 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
     addSurface(*bottom);
 }
 
-void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif){
+void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif, QColor& color){
 
-    Surface* superficieCuerpo = new Surface();
+    Surface* superficieCuerpo = new Surface(color);
     //cara principal
     superficieCuerpo->addVertex(Vertex(x, y, z));
     superficieCuerpo->addVertex(Vertex(x + xDif, y, z));
@@ -91,7 +91,7 @@ void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif){
 
 
     //cara derecha
-    superficieCuerpo = new Surface();
+    superficieCuerpo = new Surface(color);
     superficieCuerpo->addVertex(Vertex(x + xDif, y, z));
     superficieCuerpo->addVertex(Vertex(x + xDif, y, z - zDif));
     superficieCuerpo->addVertex(Vertex(x + xDif, y + yDif, z - zDif));
@@ -99,7 +99,7 @@ void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif){
     this->addSurface(*superficieCuerpo);
 
     //cara trasera
-    superficieCuerpo = new Surface();
+    superficieCuerpo = new Surface(color);
     superficieCuerpo->addVertex(Vertex(x, y, z - zDif));
     superficieCuerpo->addVertex(Vertex(x, y + yDif, z - zDif));
     superficieCuerpo->addVertex(Vertex(x + xDif, y + yDif, z - zDif));
@@ -107,7 +107,7 @@ void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif){
     this->addSurface(*superficieCuerpo);
 
     //cara izquierda
-    superficieCuerpo = new Surface();
+    superficieCuerpo = new Surface(color);
     superficieCuerpo->addVertex(Vertex(x, y, z));
     superficieCuerpo->addVertex(Vertex(x, y + yDif, z));
     superficieCuerpo->addVertex(Vertex(x, y + yDif, z - zDif));
@@ -115,7 +115,7 @@ void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif){
     this->addSurface(*superficieCuerpo);
 
     //cara superior
-    superficieCuerpo = new Surface();
+    superficieCuerpo = new Surface(color);
     superficieCuerpo->addVertex(Vertex(x, y + yDif, z));
     superficieCuerpo->addVertex(Vertex(x + xDif, y + yDif, z));
     superficieCuerpo->addVertex(Vertex(x + xDif, y + yDif, z - zDif));
@@ -123,7 +123,7 @@ void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif){
     this->addSurface(*superficieCuerpo);
 
     //cara inferior
-    superficieCuerpo = new Surface();
+    superficieCuerpo = new Surface(color);
     superficieCuerpo->addVertex(Vertex(x, y, z));
     superficieCuerpo->addVertex(Vertex(x, y, z - zDif));
     superficieCuerpo->addVertex(Vertex(x + xDif, y, z - zDif));

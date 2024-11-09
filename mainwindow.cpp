@@ -35,16 +35,19 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     actualMode = Normal;
 
     // ------------- Obj3D creation ----------------
+    QColor GreenBase = QColor::fromRgb(58, 140, 55);
+    QColor DarkGreen = QColor::fromRgb(30, 90, 29);
+    QColor LightGreen= QColor::fromRgb(113, 192, 101);//sin usar de momento, falta dibujar la carita del creeper, centrarlo y hacerlo más grande.
 
     obj3D = new Object3D();
-    obj3D->addPrism(200,100,200,100,100,100);
-    obj3D->addPrism(215,200,185,70,200,70);
-    obj3D->addPrism(195,400,205,20,40,20);
-    obj3D->addPrism(285,400,205,20,40,20);
-    obj3D->addPrism(195,400,115,20,40,20);
-    obj3D->addPrism(285,400,115,20,40,20);
+    obj3D->addPrism(200,100,200,100,100,100, GreenBase);
+    obj3D->addPrism(215,200,185,70,200,70, GreenBase);
+    obj3D->addPrism(195,400,205,20,40,20, DarkGreen);
+    obj3D->addPrism(285,400,205,20,40,20, DarkGreen);
+    obj3D->addPrism(195,400,115,20,40,20, DarkGreen);
+    obj3D->addPrism(285,400,115,20,40,20, DarkGreen);
 
-
+    /// 250 x y 250 en y es el centro del creeper???, no es muy preciso...
     Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
                                                             {1,0,0, -250},
                                                             {0,1,0, -250},

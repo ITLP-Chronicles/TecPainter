@@ -12,6 +12,7 @@ public:
     QColor color;
     std::vector<Vertex> vertices;
     Surface();
+    Surface(QColor& color);
 
     void addVertex(const Vertex& toAdd);
     void transform(const Matrix& matrixInput);
