@@ -13,6 +13,11 @@ using namespace std;
 float ang = (1 * 3.14159) / 180.0;
 Axis currentAxis = Y_AXIS;
 bool rotatingY = false, rotatingX = false, rotatingZ = false;
+Matrix transformacionAcumulada = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                           {1,0,0, 0},
+                                                                           {0,1,0, 0},
+                                                                           {0,0,1, 0}});
+Object3D* objOriginal = nullptr; // Inicializa a nullptr
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -109,7 +114,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
                                                             {0,1,0, center.y},
                                                             {0,0,1, center.z}});
 
-    obj3D->transform(t3 * (t2 * t1));
+    objOriginal = obj3D->copy();
+
+    // Realizar las operaciones de multiplicación y asignación correctamente
+    transformacionAcumulada = transformacionAcumulada * (t3 * (t2 * t1));
+    auto z = Matrix::debug(transformacionAcumulada);
+    obj3D->transform(transformacionAcumulada);
+
 
     this->timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateObj()));
@@ -121,22 +132,20 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 }
 
 void MainWindow::updateObj() {
+
     Vertex center = obj3D->calculateCentroid();
-    Matrix traslateToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, -center.x},
-                                                                             {0, 1, 0, -center.y},
-                                                                             {0, 0, 1, -center.z}
-                                                                         });
+    Matrix traslateToOrigin = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, -center.x}, {0, 1, 0, -center.y}, {0, 0, 1, -center.z}});
+    Matrix rotate = getRotationMatrix(currentAxis);
+    Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, center.x}, {0, 1, 0, center.y}, {0, 0, 1, center.z}});
 
-    Matrix rotate = getRotationMatrix(currentAxis); // Usa el eje seleccionado
+    delete obj3D;
+    obj3D = objOriginal->copy();
 
-    Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, center.x},
-                                                                                 {0, 1, 0, center.y},
-                                                                                 {0, 0, 1, center.z}
-                                                                             });
 
-    obj3D->transform(traslateBackToOrigin * (rotate * traslateToOrigin));
+    auto reult = transformacionAcumulada * (traslateBackToOrigin * (rotate * traslateToOrigin));
+    transformacionAcumulada = reult;
+    obj3D->transform(transformacionAcumulada);
+
     repaint();
 }
 
@@ -194,6 +203,7 @@ void MainWindow::paintEvent(QPaintEvent *) {
 
 MainWindow::~MainWindow(){
     delete obj3D;
+    delete objOriginal;
     delete ui;
 }
 

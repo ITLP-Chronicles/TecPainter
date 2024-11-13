@@ -122,3 +122,41 @@ std::vector<std::vector<double>*>* Matrix::debug(const Matrix& toDebug) {
 
     return v;
 }
+
+Matrix::Matrix(const Matrix& other) {
+    // Suponiendo que tu clase Matrix tiene un arreglo 2D `data`
+    this->rows = other.rows;
+    this->columns = other.columns;
+    this->data = new double*[rows];
+    for (int i = 0; i < rows; ++i) {
+        this->data[i] = new double[columns];
+        for (int j = 0; j < columns; ++j) {
+            this->data[i][j] = other.data[i][j];
+        }
+    }
+}
+
+Matrix& Matrix::operator=(const Matrix& other) {
+    // Avoid self-assignment
+    if (this != &other) {
+        // Delete the old data to avoid memory leak
+        for (int i = 0; i < this->rows; ++i) {
+            delete[] this->data[i];
+        }
+        delete[] this->data;
+
+        // Allocate new memory for the data
+        this->rows = other.rows;
+        this->columns = other.columns;
+        this->data = new double*[this->rows];
+
+        // Copy the data from the other matrix
+        for (int i = 0; i < this->rows; ++i) {
+            this->data[i] = new double[this->columns];
+            for (int j = 0; j < this->columns; ++j) {
+                this->data[i][j] = other.data[i][j];
+            }
+        }
+    }
+    return *this;
+}

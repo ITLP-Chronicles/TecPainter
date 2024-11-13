@@ -28,6 +28,7 @@ public:
     /// corchetes. Si el tamaño dado y el arreglo no concuerdan en tamaño, se dará una excepción.
     Matrix(int rows, int columns);
     Matrix(int rows, int columns, const std::vector<std::vector<double>>& rawData);
+    Matrix(const Matrix& other);
     ~Matrix();
 
 
@@ -38,6 +39,8 @@ public:
     /// Sobrecarga de operator para multiplicar fácil con un escalar
     /// Matrix myMatriz = 3 * {{1,2,3},{4,5,6}} por ejemplo
     Matrix operator*(const double& other) const;
+
+    Matrix& operator=(const Matrix& other);
 
     Matrix copy() const;
 

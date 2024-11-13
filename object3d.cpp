@@ -153,3 +153,12 @@ Vertex Object3D::calculateCentroid() const {
 
     return Vertex(sumX / vertexCount, sumY / vertexCount, sumZ / vertexCount);
 }
+
+Object3D* Object3D::copy(){
+    Object3D* toReturn = new Object3D();
+
+    for(const Surface& s : this->surfaces)
+        toReturn->addSurface(s.copy());
+
+    return toReturn;
+}
