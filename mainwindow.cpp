@@ -11,13 +11,31 @@
 using namespace std;
 
 float ang = (1 * 3.14159) / 180.0;
-Axis currentAxis = Y_AXIS;
+Axis currentAxis = NO_AXIS;
 bool rotatingY = false, rotatingX = false, rotatingZ = false;
 Matrix transformacionAcumulada = Matrix::generateGraphicableSquareMatrix(4, {
                                                                            {1,0,0, 0},
                                                                            {0,1,0, 0},
                                                                            {0,0,1, 0}});
-Object3D* objOriginal = nullptr; // Inicializa a nullptr
+Matrix transformacionAcumuladaCabeza = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                             {1,0,0, 0},
+                                                                             {0,1,0, 0},
+                                                                             {0,0,1, 0}});
+
+
+Object3D* head = new Object3D();
+Object3D* torso = new Object3D();
+Object3D* limb1 = new Object3D();
+Object3D* limb2 = new Object3D();
+Object3D* limb3 = new Object3D();
+Object3D* limb4 = new Object3D();
+
+Object3D* headOriginal = nullptr;
+Object3D* torsoOriginal = nullptr;
+Object3D* limb1Original = nullptr;
+Object3D* limb2Original = nullptr;
+Object3D* limb3Original = nullptr;
+Object3D* limb4Original = nullptr;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -45,14 +63,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     QColor DarkGreen = QColor::fromRgb(30, 90, 29);
     QColor LightGreen= QColor::fromRgb(113, 192, 101);//sin usar de momento, falta dibujar la carita del creeper, centrarlo y hacerlo más grande.// Define el color negro para la cara
     QColor BlackColor = QColor::fromRgb(0, 0, 0);
-    obj3D = new Object3D();
-
-    obj3D->addPrism(400,100,200,100,100,100, GreenBase);
-    obj3D->addPrism(415,200,185,70,200,70, GreenBase);
-    obj3D->addPrism(395,400,205,20,40,20, DarkGreen);
-    obj3D->addPrism(485,400,205,20,40,20, DarkGreen);
-    obj3D->addPrism(395,400,115,20,40,20, DarkGreen);
-    obj3D->addPrism(485,400,115,20,40,20, DarkGreen);
 
     // Crear superficies para los ojos
     Surface* ojo1 = new Surface(BlackColor);
@@ -60,7 +70,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     Surface* boca1 = new Surface(BlackColor);
     Surface* boca2 = new Surface(BlackColor);
     Surface* boca3 = new Surface(BlackColor);
-
 
     // Coordenadas de los ojos
     ojo1->addVertex(Vertex(410, 140, 201));  // Inferior izquierdo
@@ -89,18 +98,24 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     boca3->addVertex(Vertex(480, 170, 201));  // Superior derecho
     boca3->addVertex(Vertex(480, 200, 201));  // Inferior derecho
 
+    head->addPrism(400,100,200,100,100,100, GreenBase);
+    // Añadir las superficies de los ojos y la boca a la cabeza
+    head->addSurface(*ojo1);
+    head->addSurface(*ojo2);
+    head->addSurface(*boca1);
+    head->addSurface(*boca2);
+    head->addSurface(*boca3);
 
-    // Asignar color negro a las superficies y añadirlas al objeto
 
-    obj3D->addSurface(*ojo1);
-    obj3D->addSurface(*ojo2);
-    obj3D->addSurface(*boca1);
-    obj3D->addSurface(*boca2);
-    obj3D->addSurface(*boca3);
+    torso->addPrism(415,200,185,70,200,70, GreenBase);
+    limb1->addPrism(395,400,205,20,40,20, DarkGreen);
+    limb2->addPrism(485,400,205,20,40,20, DarkGreen);
+    limb3->addPrism(395,400,115,20,40,20, DarkGreen);
+    limb4->addPrism(485,400,115,20,40,20, DarkGreen);
 
 
     /// 250 x y 250 en y es el centro del creeper???, no es muy preciso...
-    Vertex center = obj3D->calculateCentroid();
+    Vertex center = torso->calculateCentroid();
     Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
                                                             {1,0,0, -center.x},
                                                             {0,1,0, -center.y},
@@ -114,13 +129,24 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
                                                             {0,1,0, center.y},
                                                             {0,0,1, center.z}});
 
-    objOriginal = obj3D->copy();
+    headOriginal = head->copy();
+    torsoOriginal = torso->copy();
+    limb1Original = limb1->copy();
+    limb2Original = limb2->copy();
+    limb3Original = limb3->copy();
+    limb4Original = limb4->copy();
 
     // Realizar las operaciones de multiplicación y asignación correctamente
     transformacionAcumulada = transformacionAcumulada * (t3 * (t2 * t1));
+    transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (t3 * (t2 * t1));
     auto z = Matrix::debug(transformacionAcumulada);
-    obj3D->transform(transformacionAcumulada);
-
+    head->transform(transformacionAcumuladaCabeza);
+    head->transform(transformacionAcumulada);
+    torso->transform(transformacionAcumulada);
+    limb1->transform(transformacionAcumulada);
+    limb2->transform(transformacionAcumulada);
+    limb3->transform(transformacionAcumulada);
+    limb4->transform(transformacionAcumulada);
 
     this->timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateObj()));
@@ -129,22 +155,71 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->btnVuelta, &QPushButton::clicked, this, &MainWindow::toggleRotationY);
     connect(ui->btnMarometa, &QPushButton::clicked, this, &MainWindow::toggleRotationX);
     connect(ui->btnGiro, &QPushButton::clicked, this, &MainWindow::toggleRotationZ);
+
+    delete ojo1;
+    delete ojo2;
+    delete boca1;
+    delete boca2;
+    delete boca3;
 }
 
 void MainWindow::updateObj() {
 
-    Vertex center = obj3D->calculateCentroid();
-    Matrix traslateToOrigin = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, -center.x}, {0, 1, 0, -center.y}, {0, 0, 1, -center.z}});
+    if (currentAxis == Z_AXIS){
+        Vertex torsoCenter = torso->calculateCentroid();
+        Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                                 {1, 0, 0, -torsoCenter.x},
+                                                                                 {0, 1, 0, -torsoCenter.y},
+                                                                                 {0, 0, 1, -torsoCenter.z}});
+
+        Matrix rotate = getRotationMatrix(Y_AXIS);
+
+        Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                             {1, 0, 0, torsoCenter.x},
+                                                                             {0, 1, 0, torsoCenter.y},
+                                                                             {0, 0, 1, torsoCenter.z}});
+
+        head = headOriginal->copy();
+
+        transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
+        head->transform(transformacionAcumulada);
+        head->transform(transformacionAcumuladaCabeza);
+        repaint();
+        return;
+    }
+    // Calcular el centro del torso
+    Vertex torsoCenter = torso->calculateCentroid();
+
+    // Generar las matrices de transformación
+    Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                             {1, 0, 0, -torsoCenter.x},
+                                                                             {0, 1, 0, -torsoCenter.y},
+                                                                             {0, 0, 1, -torsoCenter.z}});
+
     Matrix rotate = getRotationMatrix(currentAxis);
-    Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, center.x}, {0, 1, 0, center.y}, {0, 0, 1, center.z}});
 
-    delete obj3D;
-    obj3D = objOriginal->copy();
+    Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                         {1, 0, 0, torsoCenter.x},
+                                                                         {0, 1, 0, torsoCenter.y},
+                                                                         {0, 0, 1, torsoCenter.z}});
 
+    head = headOriginal->copy();
+    torso = torsoOriginal->copy();
+    limb1 = limb1Original->copy();
+    limb2 = limb2Original->copy();
+    limb3 = limb3Original->copy();
+    limb4 = limb4Original->copy();
 
-    auto reult = transformacionAcumulada * (traslateBackToOrigin * (rotate * traslateToOrigin));
-    transformacionAcumulada = reult;
-    obj3D->transform(transformacionAcumulada);
+    transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
+    //transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
+
+    head->transform(transformacionAcumulada);
+    head->transform(transformacionAcumuladaCabeza);
+    torso->transform(transformacionAcumulada);
+    limb1->transform(transformacionAcumulada);
+    limb2->transform(transformacionAcumulada);
+    limb3->transform(transformacionAcumulada);
+    limb4->transform(transformacionAcumulada);
 
     repaint();
 }
@@ -197,13 +272,29 @@ void MainWindow::paintEvent(QPaintEvent *) {
     pen.setColor(QColor(0,0,255));
     painter->setPen(pen);
 
-    Displayer::object3d(painter, *obj3D);
+    Displayer::object3d(painter, *head);
+    Displayer::object3d(painter, *torso);
+    Displayer::object3d(painter, *limb1);
+    Displayer::object3d(painter, *limb2);
+    Displayer::object3d(painter, *limb3);
+    Displayer::object3d(painter, *limb4);
     delete painter;
 }
 
 MainWindow::~MainWindow(){
+    delete head;
+    delete torso;
+    delete limb1;
+    delete limb2;
+    delete limb3;
+    delete limb4;
+    delete headOriginal;
+    delete torsoOriginal;
+    delete limb1Original;
+    delete limb2Original;
+    delete limb3Original;
+    delete limb4Original;
     delete obj3D;
-    delete objOriginal;
     delete ui;
 }
 
@@ -212,15 +303,27 @@ void MainWindow::mousePressEvent(QMouseEvent *e) {
 }
 
 void MainWindow::setRotationAxisX() {
-    currentAxis = X_AXIS;
+    if (currentAxis == X_AXIS){
+        currentAxis = NO_AXIS;
+    } else {
+        currentAxis = X_AXIS;
+    }
 }
 
 void MainWindow::setRotationAxisY() {
-    currentAxis = Y_AXIS;
+    if (currentAxis == Y_AXIS){
+        currentAxis = NO_AXIS;
+    } else {
+        currentAxis = Y_AXIS;
+    }
 }
 
 void MainWindow::setRotationAxisZ() {
-    currentAxis = Z_AXIS;
+    if (currentAxis == Z_AXIS){
+        currentAxis = NO_AXIS;
+    } else {
+        currentAxis = Z_AXIS;
+    }
 }
 
 // -------------------- Stuff ------------------------
@@ -241,17 +344,29 @@ void MainWindow::on_btnGiro_clicked(){}
 
 void MainWindow::toggleRotationY() {
     rotatingY = !rotatingY;
-    currentAxis = Y_AXIS;
+    if (currentAxis == Y_AXIS){
+        currentAxis = NO_AXIS;
+    } else {
+        currentAxis = Y_AXIS;
+    }
 }
 
 void MainWindow::toggleRotationX() {
     rotatingX = !rotatingX;
-    currentAxis = X_AXIS;
+    if (currentAxis == X_AXIS){
+        currentAxis = NO_AXIS;
+    } else {
+        currentAxis = X_AXIS;
+    }
 }
 
 void MainWindow::toggleRotationZ() {
     rotatingZ = !rotatingZ;
-    currentAxis = Z_AXIS;
+    if (currentAxis == Z_AXIS){
+        currentAxis = NO_AXIS;
+    } else {
+        currentAxis = Z_AXIS;
+    }
 }
 
 
@@ -279,4 +394,3 @@ void MainWindow::setActualMode(Mode newMode){
     this->actualMode = newMode;
     this->ui->modo_actual->setText(GetActualModeMsg(ModeToString(newMode)));
 }
-

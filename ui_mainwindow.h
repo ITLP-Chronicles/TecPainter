@@ -42,6 +42,7 @@ public:
     QPushButton *btnVuelta;
     QPushButton *btnMarometa;
     QPushButton *btnGiro;
+    QPushButton *btnGiroCabeza;
     QMenuBar *menubar;
     QMenu *menuMen;
     QMenu *menuL_nea;
@@ -99,10 +100,13 @@ public:
         btnGiro = new QPushButton(centralwidget);
         btnGiro->setObjectName("btnGiro");
         btnGiro->setGeometry(QRect(440, 490, 80, 18));
+        btnGiroCabeza = new QPushButton(centralwidget);
+        btnGiroCabeza->setObjectName("btnGiroCabeza");
+        btnGiroCabeza->setGeometry(QRect(700, 50, 80, 18));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 801, 25));
+        menubar->setGeometry(QRect(0, 0, 801, 17));
         menuMen = new QMenu(menubar);
         menuMen->setObjectName("menuMen");
         menuL_nea = new QMenu(menubar);
@@ -167,6 +171,7 @@ public:
         btnVuelta->setText(QCoreApplication::translate("MainWindow", "Vuelta", nullptr));
         btnMarometa->setText(QCoreApplication::translate("MainWindow", "Marometa", nullptr));
         btnGiro->setText(QCoreApplication::translate("MainWindow", "Giro", nullptr));
+        btnGiroCabeza->setText(QCoreApplication::translate("MainWindow", "Girar cabeza", nullptr));
         menuMen->setTitle(QCoreApplication::translate("MainWindow", "Men\303\272", nullptr));
         menuL_nea->setTitle(QCoreApplication::translate("MainWindow", "L\303\255nea", nullptr));
         menuHerramienta->setTitle(QCoreApplication::translate("MainWindow", "Herramienta", nullptr));

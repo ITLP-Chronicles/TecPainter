@@ -36,7 +36,7 @@ enum Mode {
     Curvas
 };
 
-enum Axis { X_AXIS, Y_AXIS, Z_AXIS };
+enum Axis { X_AXIS, Y_AXIS, Z_AXIS, NO_AXIS };
 
 class MainWindow : public QMainWindow
 {
