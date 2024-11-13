@@ -58,31 +58,32 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 
     // Coordenadas de los ojos
-    ojo1->addVertex(Vertex(430, 140, 201));  // Inferior derecho
-    ojo1->addVertex(Vertex(430, 120, 201));  // Superior derecho
-    ojo1->addVertex(Vertex(410, 120, 201));  // Superior izquierdo
     ojo1->addVertex(Vertex(410, 140, 201));  // Inferior izquierdo
+    ojo1->addVertex(Vertex(410, 120, 201));  // Superior izquierdo
+    ojo1->addVertex(Vertex(430, 120, 201));  // Superior derecho
+    ojo1->addVertex(Vertex(430, 140, 201));  // Inferior derecho
 
-    ojo2->addVertex(Vertex(490, 140, 201)); // Inferior derecho
-    ojo2->addVertex(Vertex(490, 120, 201)); // Superior derecho
-    ojo2->addVertex(Vertex(470, 120, 201)); // Superior izquierdo
-    ojo2->addVertex(Vertex(470, 140, 201)); // Inferior izquierdo
+    ojo2->addVertex(Vertex(470, 140, 201));  // Inferior izquierdo
+    ojo2->addVertex(Vertex(470, 120, 201));  // Superior izquierdo
+    ojo2->addVertex(Vertex(490, 120, 201));  // Superior derecho
+    ojo2->addVertex(Vertex(490, 140, 201));  // Inferior derecho
 
     // Coordenadas de la boca (tres partes)
-    boca1->addVertex(Vertex(435, 200, 201));  // Inferior derecho
-    boca1->addVertex(Vertex(435, 170, 201));  // Superior derecho
-    boca1->addVertex(Vertex(420, 170, 201));  // Superior izquierdo
     boca1->addVertex(Vertex(420, 200, 201));  // Inferior izquierdo
+    boca1->addVertex(Vertex(420, 170, 201));  // Superior izquierdo
+    boca1->addVertex(Vertex(435, 170, 201));  // Superior derecho
+    boca1->addVertex(Vertex(435, 200, 201));  // Inferior derecho
 
-    boca2->addVertex(Vertex(465, 185, 201));  // Inferior derecho
-    boca2->addVertex(Vertex(465, 155, 201));  // Superior derecho
-    boca2->addVertex(Vertex(435, 155, 201));  // Superior izquierdo
     boca2->addVertex(Vertex(435, 185, 201));  // Inferior izquierdo
+    boca2->addVertex(Vertex(435, 155, 201));  // Superior izquierdo
+    boca2->addVertex(Vertex(465, 155, 201));  // Superior derecho
+    boca2->addVertex(Vertex(465, 185, 201));  // Inferior derecho
 
-    boca3->addVertex(Vertex(480, 200, 201));  // Inferior derecho
-    boca3->addVertex(Vertex(480, 170, 201));  // Superior derecho
-    boca3->addVertex(Vertex(465, 170, 201));  // Superior izquierdo
     boca3->addVertex(Vertex(465, 200, 201));  // Inferior izquierdo
+    boca3->addVertex(Vertex(465, 170, 201));  // Superior izquierdo
+    boca3->addVertex(Vertex(480, 170, 201));  // Superior derecho
+    boca3->addVertex(Vertex(480, 200, 201));  // Inferior derecho
+
 
     // Asignar color negro a las superficies y añadirlas al objeto
 
