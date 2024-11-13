@@ -130,4 +130,26 @@ void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif, QColo
     superficieCuerpo->addVertex(Vertex(x + xDif, y, z));
     this->addSurface(*superficieCuerpo);
 }
+#include "vertex.h"
 
+Vertex Object3D::calculateCentroid() const {
+    float sumX = 0.0f;
+    float sumY = 0.0f;
+    float sumZ = 0.0f;
+    int vertexCount = 0;
+
+    for (const Surface& surface : surfaces) {
+        for (const Vertex& vertex : surface.vertices) { // Asegúrate de tener un método getVertices() en Surface
+            sumX += vertex.x;  // Usa el método correspondiente de Vertex para obtener x, y, z
+            sumY += vertex.y;
+            sumZ += vertex.z;
+            vertexCount++;
+        }
+    }
+
+    if (vertexCount == 0) {
+        return Vertex(0.0f, 0.0f, 0.0f);  // En caso de que no haya vértices
+    }
+
+    return Vertex(sumX / vertexCount, sumY / vertexCount, sumZ / vertexCount);
+}

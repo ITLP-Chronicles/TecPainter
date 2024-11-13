@@ -14,6 +14,7 @@ public:
     void transform(const Matrix& transformy);
     void addPrism(float x, float y, float z, float width, float height, float depth);
     void addPrism(int x, int y, int z, int xDif, int yDif, int zDif, QColor& color);
+    Vertex calculateCentroid() const;
 };
 
 #endif // OBJECT3D_H

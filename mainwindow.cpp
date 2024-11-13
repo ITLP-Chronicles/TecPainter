@@ -95,18 +95,19 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 
     /// 250 x y 250 en y es el centro del creeper???, no es muy preciso...
+    Vertex center = obj3D->calculateCentroid();
     Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                            {1,0,0, -400},
-                                                            {0,1,0, -305},
-                                                            {0,0,1, -150}});
+                                                            {1,0,0, -center.x},
+                                                            {0,1,0, -center.y},
+                                                            {0,0,1, -center.z}});
     Matrix t2 = Matrix::generateGraphicableSquareMatrix(4, {
                                                             {1, 0,        0,          0},
                                                             {0, cos(ang), -sin(ang),  0},
                                                             {0, sin(ang), cos(ang),   0}});
     Matrix t3 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                            {1,0,0, 400},
-                                                            {0,1,0, 305},
-                                                            {0,0,1, 150}});
+                                                            {1,0,0, center.x},
+                                                            {0,1,0, center.y},
+                                                            {0,0,1, center.z}});
 
     obj3D->transform(t3 * (t2 * t1));
 
@@ -120,18 +121,19 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 }
 
 void MainWindow::updateObj() {
+    Vertex center = obj3D->calculateCentroid();
     Matrix traslateToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, -400},
-                                                                             {0, 1, 0, -305},
-                                                                             {0, 0, 1, -250}
+                                                                             {1, 0, 0, -center.x},
+                                                                             {0, 1, 0, -center.y},
+                                                                             {0, 0, 1, -center.z}
                                                                          });
 
     Matrix rotate = getRotationMatrix(currentAxis); // Usa el eje seleccionado
 
     Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, 400},
-                                                                                 {0, 1, 0, 305},
-                                                                                 {0, 0, 1, 250}
+                                                                                 {1, 0, 0, center.x},
+                                                                                 {0, 1, 0, center.y},
+                                                                                 {0, 0, 1, center.z}
                                                                              });
 
     obj3D->transform(traslateBackToOrigin * (rotate * traslateToOrigin));
