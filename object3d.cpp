@@ -23,19 +23,19 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
     Vertex v3(x + width, y + height, z);      // Frente arriba derecha
     Vertex v4(x, y + height, z);              // Frente arriba izquierda
 
-    Vertex v5(x, y, z - depth);                               // Atrás abajo izquierda
-    Vertex v6(x + width, y, z - depth);                       // Atrás abajo derecha
-    Vertex v7(x + width, y + height, z - depth);              // Atrás arriba derecha
-    Vertex v8(x, y + height, z - depth);                      // Atrás arriba izquierda
+    Vertex v5(x, y, z + depth);                               // Atrás abajo izquierda
+    Vertex v6(x + width, y, z + depth);                       // Atrás abajo derecha
+    Vertex v7(x + width, y + height, z + depth);              // Atrás arriba derecha
+    Vertex v8(x, y + height, z + depth);                      // Atrás arriba izquierda
 
     // Crear y agregar cada superficie del prisma al objeto 3D con vertices en sentido antihorario
 
     // Cara frontal (sentido antihorario desde afuera)
     Surface* front = new Surface();
     front->addVertex(v1);
-    front->addVertex(v4);
-    front->addVertex(v3);
     front->addVertex(v2);
+    front->addVertex(v3);
+    front->addVertex(v4);
     addSurface(*front);
 
     // Cara trasera (sentido antihorario desde afuera)
@@ -49,17 +49,17 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
     // Cara derecha (sentido antihorario desde afuera)
     Surface* right = new Surface();
     right->addVertex(v2);
-    right->addVertex(v6);
-    right->addVertex(v7);
     right->addVertex(v3);
+    right->addVertex(v7);
+    right->addVertex(v6);
     addSurface(*right);
 
     // Cara izquierda (sentido antihorario desde afuera)
     Surface* left = new Surface();
-    left->addVertex(v5);
     left->addVertex(v1);
     left->addVertex(v4);
     left->addVertex(v8);
+    left->addVertex(v5);
     addSurface(*left);
 
     // Cara superior (sentido antihorario desde afuera)

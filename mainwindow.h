@@ -96,6 +96,10 @@ class MainWindow : public QMainWindow
         void setRotationAxisY();
         void setRotationAxisZ();
         Matrix getRotationMatrix(Axis axis);
+        void toggleRotationY();
+        void toggleRotationX();
+        void toggleRotationZ();
+
 
     // GUI Eventos QT Generados Automáticamente (No tocar)
     private slots:

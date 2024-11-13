@@ -12,6 +12,7 @@ using namespace std;
 
 float ang = (1 * 3.14159) / 180.0;
 Axis currentAxis = Y_AXIS;
+bool rotatingY = false, rotatingX = false, rotatingZ = false;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -37,28 +38,73 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     // ------------- Obj3D creation ----------------
     QColor GreenBase = QColor::fromRgb(58, 140, 55);
     QColor DarkGreen = QColor::fromRgb(30, 90, 29);
-    QColor LightGreen= QColor::fromRgb(113, 192, 101);//sin usar de momento, falta dibujar la carita del creeper, centrarlo y hacerlo más grande.
-
+    QColor LightGreen= QColor::fromRgb(113, 192, 101);//sin usar de momento, falta dibujar la carita del creeper, centrarlo y hacerlo más grande.// Define el color negro para la cara
+    QColor BlackColor = QColor::fromRgb(0, 0, 0);
     obj3D = new Object3D();
-    obj3D->addPrism(200,100,200,100,100,100, GreenBase);
-    obj3D->addPrism(215,200,185,70,200,70, GreenBase);
-    obj3D->addPrism(195,400,205,20,40,20, DarkGreen);
-    obj3D->addPrism(285,400,205,20,40,20, DarkGreen);
-    obj3D->addPrism(195,400,115,20,40,20, DarkGreen);
-    obj3D->addPrism(285,400,115,20,40,20, DarkGreen);
+
+    obj3D->addPrism(400,100,200,100,100,100, GreenBase);
+    obj3D->addPrism(415,200,185,70,200,70, GreenBase);
+    obj3D->addPrism(395,400,205,20,40,20, DarkGreen);
+    obj3D->addPrism(485,400,205,20,40,20, DarkGreen);
+    obj3D->addPrism(395,400,115,20,40,20, DarkGreen);
+    obj3D->addPrism(485,400,115,20,40,20, DarkGreen);
+
+    // Crear superficies para los ojos
+    Surface* ojo1 = new Surface(BlackColor);
+    Surface* ojo2 = new Surface(BlackColor);
+    Surface* boca1 = new Surface(BlackColor);
+    Surface* boca2 = new Surface(BlackColor);
+    Surface* boca3 = new Surface(BlackColor);
+
+
+    // Coordenadas de los ojos
+    ojo1->addVertex(Vertex(430, 140, 201));  // Inferior derecho
+    ojo1->addVertex(Vertex(430, 120, 201));  // Superior derecho
+    ojo1->addVertex(Vertex(410, 120, 201));  // Superior izquierdo
+    ojo1->addVertex(Vertex(410, 140, 201));  // Inferior izquierdo
+
+    ojo2->addVertex(Vertex(490, 140, 201)); // Inferior derecho
+    ojo2->addVertex(Vertex(490, 120, 201)); // Superior derecho
+    ojo2->addVertex(Vertex(470, 120, 201)); // Superior izquierdo
+    ojo2->addVertex(Vertex(470, 140, 201)); // Inferior izquierdo
+
+    // Coordenadas de la boca (tres partes)
+    boca1->addVertex(Vertex(435, 200, 201));  // Inferior derecho
+    boca1->addVertex(Vertex(435, 170, 201));  // Superior derecho
+    boca1->addVertex(Vertex(420, 170, 201));  // Superior izquierdo
+    boca1->addVertex(Vertex(420, 200, 201));  // Inferior izquierdo
+
+    boca2->addVertex(Vertex(465, 185, 201));  // Inferior derecho
+    boca2->addVertex(Vertex(465, 155, 201));  // Superior derecho
+    boca2->addVertex(Vertex(435, 155, 201));  // Superior izquierdo
+    boca2->addVertex(Vertex(435, 185, 201));  // Inferior izquierdo
+
+    boca3->addVertex(Vertex(480, 200, 201));  // Inferior derecho
+    boca3->addVertex(Vertex(480, 170, 201));  // Superior derecho
+    boca3->addVertex(Vertex(465, 170, 201));  // Superior izquierdo
+    boca3->addVertex(Vertex(465, 200, 201));  // Inferior izquierdo
+
+    // Asignar color negro a las superficies y añadirlas al objeto
+
+    obj3D->addSurface(*ojo1);
+    obj3D->addSurface(*ojo2);
+    obj3D->addSurface(*boca1);
+    obj3D->addSurface(*boca2);
+    obj3D->addSurface(*boca3);
+
 
     /// 250 x y 250 en y es el centro del creeper???, no es muy preciso...
     Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                            {1,0,0, -250},
-                                                            {0,1,0, -250},
+                                                            {1,0,0, -400},
+                                                            {0,1,0, -305},
                                                             {0,0,1, -150}});
     Matrix t2 = Matrix::generateGraphicableSquareMatrix(4, {
                                                             {1, 0,        0,          0},
                                                             {0, cos(ang), -sin(ang),  0},
                                                             {0, sin(ang), cos(ang),   0}});
     Matrix t3 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                            {1,0,0, 250},
-                                                            {0,1,0, 250},
+                                                            {1,0,0, 400},
+                                                            {0,1,0, 305},
                                                             {0,0,1, 150}});
 
     obj3D->transform(t3 * (t2 * t1));
@@ -66,21 +112,25 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     this->timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateObj()));
     this->timer->start(30);
+
+    connect(ui->btnVuelta, &QPushButton::clicked, this, &MainWindow::toggleRotationY);
+    connect(ui->btnMarometa, &QPushButton::clicked, this, &MainWindow::toggleRotationX);
+    connect(ui->btnGiro, &QPushButton::clicked, this, &MainWindow::toggleRotationZ);
 }
 
 void MainWindow::updateObj() {
     Matrix traslateToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, -250},
-                                                                             {0, 1, 0, -250},
-                                                                             {0, 0, 1, -150}
+                                                                             {1, 0, 0, -400},
+                                                                             {0, 1, 0, -305},
+                                                                             {0, 0, 1, -250}
                                                                          });
 
     Matrix rotate = getRotationMatrix(currentAxis); // Usa el eje seleccionado
 
     Matrix traslateBackToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, 250},
-                                                                                 {0, 1, 0, 250},
-                                                                                 {0, 0, 1, 150}
+                                                                                 {1, 0, 0, 400},
+                                                                                 {0, 1, 0, 305},
+                                                                                 {0, 0, 1, 250}
                                                                              });
 
     obj3D->transform(traslateBackToOrigin * (rotate * traslateToOrigin));
@@ -174,6 +224,22 @@ void MainWindow::on_actionEscalar_c_direccion_arbr_triggered() {}
 void MainWindow::on_btnVuelta_clicked(){}
 void MainWindow::on_btnMarometa_clicked(){}
 void MainWindow::on_btnGiro_clicked(){}
+
+
+void MainWindow::toggleRotationY() {
+    rotatingY = !rotatingY;
+    currentAxis = Y_AXIS;
+}
+
+void MainWindow::toggleRotationX() {
+    rotatingX = !rotatingX;
+    currentAxis = X_AXIS;
+}
+
+void MainWindow::toggleRotationZ() {
+    rotatingZ = !rotatingZ;
+    currentAxis = Z_AXIS;
+}
 
 
 QString GetActualModeMsg(std::string msg){
