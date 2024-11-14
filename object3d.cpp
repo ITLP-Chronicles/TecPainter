@@ -173,38 +173,33 @@ Object3D* Object3D::copy(){
 
 void Object3D::rotate(float angle, Axis axis, Vertex center) {
     if (axis == NO_AXIS) return;
+
+    // 1. Translation to origin
     Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
                                                                                 {1, 0, 0, -center.x},
                                                                                 {0, 1, 0, -center.y},
                                                                                 {0, 0, 1, -center.z}
                                                                             });
 
-    Matrix undoRotationX = Matrix::getRotationMatrix(-degreesX, X_AXIS);
-    Matrix undoRotationY = Matrix::getRotationMatrix(-degreesY, Y_AXIS);
-    Matrix undoRotationZ = Matrix::getRotationMatrix(-degreesZ, Z_AXIS);
-    Matrix undoRotation = undoRotationX * (undoRotationY * undoRotationZ);
+    // 2. Apply new rotation directly without undoing previous rotations
+    Matrix newRotation = Matrix::getRotationMatrix(angle, axis);
 
-    Matrix rotate = Matrix::getRotationMatrix(angle, axis);
-
-    Matrix redoRotationX = Matrix::getRotationMatrix(degreesX, X_AXIS);
-    Matrix redoRotationY = Matrix::getRotationMatrix(degreesY, Y_AXIS);
-    Matrix redoRotationZ = Matrix::getRotationMatrix(degreesZ, Z_AXIS);
-    Matrix redoRotation = redoRotationX * (redoRotationY * redoRotationZ);
-
+    // 3. Translation back to original position
     Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
                                                                             {1, 0, 0, center.x},
                                                                             {0, 1, 0, center.y},
                                                                             {0, 0, 1, center.z}
                                                                         });
 
-    transform(translationBack * (redoRotation * (rotate * (undoRotation * translationToOrigin))));
+    // 4. Apply transformations in correct order
+    transform(translationBack * newRotation * translationToOrigin);
 
-    // Actualización de los ángulos
+    // 5. Update angles
     if (axis == X_AXIS) degreesX += angle;
     if (axis == Y_AXIS) degreesY += angle;
     if (axis == Z_AXIS) degreesZ += angle;
 
-    // Normalizar ángulos a rango [0, 2*M_PI)
+    // 6. Normalize angles to range [0, 2π)
     degreesX = fmod(degreesX + 2 * M_PI, 2 * M_PI);
     degreesY = fmod(degreesY + 2 * M_PI, 2 * M_PI);
     degreesZ = fmod(degreesZ + 2 * M_PI, 2 * M_PI);
