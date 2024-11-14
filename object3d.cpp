@@ -190,9 +190,11 @@ void Object3D::rotate(float angle, Axis axis, Vertex center) {
 
     // 3. Create new rotation matrix for the requested rotation
     Matrix newRotation = Matrix::getRotationMatrix(angle, axis);
-
-    // 4. Transform the new rotation by the current rotation to make it local
-    Matrix localRotation = currentRotation * newRotation;
+    auto r = Matrix::debug(newRotation);
+    Matrix undoRotationX = Matrix::getRotationMatrix(-degreesX, X_AXIS);
+    Matrix undoRotationY = Matrix::getRotationMatrix(-degreesY, Y_AXIS);
+    Matrix undoRotationZ = Matrix::getRotationMatrix(-degreesZ, Z_AXIS);
+    Matrix undoRotation = undoRotationZ * (undoRotationY * undoRotationX);
 
     // 5. Translation back
     Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
@@ -202,7 +204,7 @@ void Object3D::rotate(float angle, Axis axis, Vertex center) {
                                                                         });
 
     // 6. Apply transformations in correct order
-    transform(translationBack * localRotation * translationToOrigin);
+    transform(translationBack * (undoRotation * (newRotation * (currentRotation * translationToOrigin))));
 
     // 7. Update angles
     if (axis == X_AXIS) degreesX += angle;
