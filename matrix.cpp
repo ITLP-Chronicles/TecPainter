@@ -1,5 +1,6 @@
 #include "matrix.h"
 #include <stdexcept>
+#include <math.h>
 
 /// Private
 /// Create a quick matrix without validate anything Possible DANGEROUS
@@ -107,6 +108,23 @@ Matrix Matrix::generateGraphicableSquareMatrix(int cuadraticSize, const std::vec
     return Matrix(cuadraticSize, cuadraticSize, copy);
 }
 
+Matrix Matrix::generateIdentityMatrix(int cuadraticSize) {
+    if (cuadraticSize <= 1)
+        throw std::invalid_argument("Invalid cuadratic size");
+
+    std::vector<std::vector<double>> data;
+    for (int i = 0; i < cuadraticSize; ++i) {
+        std::vector<double> row;
+        data.push_back(row);
+        for (int j = 0; j < cuadraticSize; ++j) {
+            if (i == j) data.at(i).push_back(1);
+            else data.at(i).push_back(0);
+        }
+    }
+
+    return Matrix(cuadraticSize, cuadraticSize, data);
+}
+
 std::vector<std::vector<double>*>* Matrix::debug(const Matrix& toDebug) {
     auto v = new std::vector<std::vector<double>*>();
 
@@ -159,4 +177,29 @@ Matrix& Matrix::operator=(const Matrix& other) {
         }
     }
     return *this;
+}
+
+Matrix Matrix::getRotationMatrix(float angle, Axis axis) {
+    switch (axis) {
+    case X_AXIS:
+
+        return Matrix::generateGraphicableSquareMatrix(4, {
+                                                           {1, 0,        0,         0},
+                                                           {0, cos(angle), -sin(angle), 0},
+                                                           {0, sin(angle), cos(angle),  0}});
+    case Y_AXIS:
+
+        return Matrix::generateGraphicableSquareMatrix(4, {
+                                                           {cos(angle), 0, sin(angle), 0},
+                                                           {0,        1, 0,        0},
+                                                           {-sin(angle), 0, cos(angle), 0}});
+    case Z_AXIS:
+
+        return Matrix::generateGraphicableSquareMatrix(4, {
+                                                           {cos(angle), -sin(angle), 0, 0},
+                                                           {sin(angle), cos(angle),  0, 0},
+                                                           {0,        0,         1, 0}});
+    case NO_AXIS:
+        return Matrix::generateIdentityMatrix(4);
+    }
 }

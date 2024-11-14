@@ -10,6 +10,12 @@ Surface::Surface(QColor& color) : color(color){}
 void Surface::addVertex(const Vertex& toAdd){
     this->vertices.push_back(toAdd);
 }
+void Surface::addRectangleOnXY(float x, float y, float z, float sizex, float sizey){
+    this->vertices.push_back((new Vertex(x,y,z))->copy());
+    this->vertices.push_back((new Vertex(x+sizex,y,z))->copy());
+    this->vertices.push_back((new Vertex(x+sizex,y+sizey,z))->copy());
+    this->vertices.push_back((new Vertex(x,y+sizey,z))->copy());
+}
 
 void Surface::transform(const Matrix& transformy){
     for (Vertex& vertex : this->vertices) {

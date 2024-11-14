@@ -41,10 +41,6 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "setRotationAxisX",
     "setRotationAxisY",
     "setRotationAxisZ",
-    "getRotationMatrix",
-    "Matrix",
-    "Axis",
-    "axis",
     "toggleRotationY",
     "toggleRotationX",
     "toggleRotationZ",
@@ -73,7 +69,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      21,   14, // methods
+      20,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -81,34 +77,32 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  140,    2, 0x0a,    1 /* Public */,
-       3,    0,  141,    2, 0x0a,    2 /* Public */,
-       4,    0,  142,    2, 0x0a,    3 /* Public */,
-       5,    0,  143,    2, 0x0a,    4 /* Public */,
-       6,    1,  144,    2, 0x0a,    5 /* Public */,
-      10,    0,  147,    2, 0x0a,    7 /* Public */,
-      11,    0,  148,    2, 0x0a,    8 /* Public */,
-      12,    0,  149,    2, 0x0a,    9 /* Public */,
-      13,    0,  150,    2, 0x08,   10 /* Private */,
-      14,    0,  151,    2, 0x08,   11 /* Private */,
-      15,    0,  152,    2, 0x08,   12 /* Private */,
-      16,    0,  153,    2, 0x08,   13 /* Private */,
-      17,    0,  154,    2, 0x08,   14 /* Private */,
-      18,    0,  155,    2, 0x08,   15 /* Private */,
-      19,    0,  156,    2, 0x08,   16 /* Private */,
-      20,    0,  157,    2, 0x08,   17 /* Private */,
-      21,    0,  158,    2, 0x08,   18 /* Private */,
-      22,    0,  159,    2, 0x08,   19 /* Private */,
-      23,    0,  160,    2, 0x08,   20 /* Private */,
-      24,    0,  161,    2, 0x08,   21 /* Private */,
-      25,    0,  162,    2, 0x08,   22 /* Private */,
+       1,    0,  134,    2, 0x0a,    1 /* Public */,
+       3,    0,  135,    2, 0x0a,    2 /* Public */,
+       4,    0,  136,    2, 0x0a,    3 /* Public */,
+       5,    0,  137,    2, 0x0a,    4 /* Public */,
+       6,    0,  138,    2, 0x0a,    5 /* Public */,
+       7,    0,  139,    2, 0x0a,    6 /* Public */,
+       8,    0,  140,    2, 0x0a,    7 /* Public */,
+       9,    0,  141,    2, 0x08,    8 /* Private */,
+      10,    0,  142,    2, 0x08,    9 /* Private */,
+      11,    0,  143,    2, 0x08,   10 /* Private */,
+      12,    0,  144,    2, 0x08,   11 /* Private */,
+      13,    0,  145,    2, 0x08,   12 /* Private */,
+      14,    0,  146,    2, 0x08,   13 /* Private */,
+      15,    0,  147,    2, 0x08,   14 /* Private */,
+      16,    0,  148,    2, 0x08,   15 /* Private */,
+      17,    0,  149,    2, 0x08,   16 /* Private */,
+      18,    0,  150,    2, 0x08,   17 /* Private */,
+      19,    0,  151,    2, 0x08,   18 /* Private */,
+      20,    0,  152,    2, 0x08,   19 /* Private */,
+      21,    0,  153,    2, 0x08,   20 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    0x80000000 | 7, 0x80000000 | 8,    9,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -146,9 +140,6 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'setRotationAxisZ'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'getRotationMatrix'
-        QtPrivate::TypeAndForceComplete<Matrix, std::false_type>,
-        QtPrivate::TypeAndForceComplete<Axis, std::false_type>,
         // method 'toggleRotationY'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'toggleRotationX'
@@ -195,27 +186,26 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 1: _t->setRotationAxisX(); break;
         case 2: _t->setRotationAxisY(); break;
         case 3: _t->setRotationAxisZ(); break;
-        case 4: { Matrix _r = _t->getRotationMatrix((*reinterpret_cast< std::add_pointer_t<Axis>>(_a[1])));
-            if (_a[0]) *reinterpret_cast< Matrix*>(_a[0]) = std::move(_r); }  break;
-        case 5: _t->toggleRotationY(); break;
-        case 6: _t->toggleRotationX(); break;
-        case 7: _t->toggleRotationZ(); break;
-        case 8: _t->on_actionGuardar_triggered(); break;
-        case 9: _t->on_actionLeer_triggered(); break;
-        case 10: _t->on_actionNormal_triggered(); break;
-        case 11: _t->on_actionInterlineado_triggered(); break;
-        case 12: _t->on_actionDibujar_triggered(); break;
-        case 13: _t->on_actionTrasladar_triggered(); break;
-        case 14: _t->on_actionRotar_triggered(); break;
-        case 15: _t->on_actionEscalar_triggered(); break;
-        case 16: _t->on_actionEspejo_Reflejar_triggered(); break;
-        case 17: _t->on_actionEscalar_c_direccion_arbr_triggered(); break;
-        case 18: _t->on_btnVuelta_clicked(); break;
-        case 19: _t->on_btnMarometa_clicked(); break;
-        case 20: _t->on_btnGiro_clicked(); break;
+        case 4: _t->toggleRotationY(); break;
+        case 5: _t->toggleRotationX(); break;
+        case 6: _t->toggleRotationZ(); break;
+        case 7: _t->on_actionGuardar_triggered(); break;
+        case 8: _t->on_actionLeer_triggered(); break;
+        case 9: _t->on_actionNormal_triggered(); break;
+        case 10: _t->on_actionInterlineado_triggered(); break;
+        case 11: _t->on_actionDibujar_triggered(); break;
+        case 12: _t->on_actionTrasladar_triggered(); break;
+        case 13: _t->on_actionRotar_triggered(); break;
+        case 14: _t->on_actionEscalar_triggered(); break;
+        case 15: _t->on_actionEspejo_Reflejar_triggered(); break;
+        case 16: _t->on_actionEscalar_c_direccion_arbr_triggered(); break;
+        case 17: _t->on_btnVuelta_clicked(); break;
+        case 18: _t->on_btnMarometa_clicked(); break;
+        case 19: _t->on_btnGiro_clicked(); break;
         default: ;
         }
     }
+    (void)_a;
 }
 
 const QMetaObject *MainWindow::metaObject() const
@@ -237,13 +227,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 21)
+        if (_id < 20)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 21;
+        _id -= 20;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 21)
+        if (_id < 20)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 21;
+        _id -= 20;
     }
     return _id;
 }

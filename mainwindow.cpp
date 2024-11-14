@@ -13,15 +13,9 @@ using namespace std;
 float ang = (1 * 3.14159) / 180.0;
 Axis currentAxis = NO_AXIS;
 bool rotatingY = false, rotatingX = false, rotatingZ = false;
-Matrix transformacionAcumulada = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                           {1,0,0, 0},
-                                                                           {0,1,0, 0},
-                                                                           {0,0,1, 0}});
-Matrix transformacionAcumuladaCabeza = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1,0,0, 0},
-                                                                             {0,1,0, 0},
-                                                                             {0,0,1, 0}});
 
+Matrix transformacionAcumulada = Matrix::generateIdentityMatrix(4);
+Matrix transformacionAcumuladaCabeza = Matrix::generateIdentityMatrix(4);
 
 Object3D* head = new Object3D();
 Object3D* torso = new Object3D();
@@ -72,40 +66,21 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     Surface* boca3 = new Surface(BlackColor);
 
     // Coordenadas de los ojos
-    ojo1->addVertex(Vertex(410, 140, 201));  // Inferior izquierdo
-    ojo1->addVertex(Vertex(410, 120, 201));  // Superior izquierdo
-    ojo1->addVertex(Vertex(430, 120, 201));  // Superior derecho
-    ojo1->addVertex(Vertex(430, 140, 201));  // Inferior derecho
-
-    ojo2->addVertex(Vertex(470, 140, 201));  // Inferior izquierdo
-    ojo2->addVertex(Vertex(470, 120, 201));  // Superior izquierdo
-    ojo2->addVertex(Vertex(490, 120, 201));  // Superior derecho
-    ojo2->addVertex(Vertex(490, 140, 201));  // Inferior derecho
+    ojo1->addRectangleOnXY(410,120,201,20,20);
+    ojo2->addRectangleOnXY(470,120,201,20,20);
 
     // Coordenadas de la boca (tres partes)
-    boca1->addVertex(Vertex(420, 200, 201));  // Inferior izquierdo
-    boca1->addVertex(Vertex(420, 170, 201));  // Superior izquierdo
-    boca1->addVertex(Vertex(435, 170, 201));  // Superior derecho
-    boca1->addVertex(Vertex(435, 200, 201));  // Inferior derecho
+    boca1->addRectangleOnXY(420,170,201,15,30);
+    boca2->addRectangleOnXY(435,155,201,30,30);
+    boca3->addRectangleOnXY(465,170,201,15,30);
 
-    boca2->addVertex(Vertex(435, 185, 201));  // Inferior izquierdo
-    boca2->addVertex(Vertex(435, 155, 201));  // Superior izquierdo
-    boca2->addVertex(Vertex(465, 155, 201));  // Superior derecho
-    boca2->addVertex(Vertex(465, 185, 201));  // Inferior derecho
-
-    boca3->addVertex(Vertex(465, 200, 201));  // Inferior izquierdo
-    boca3->addVertex(Vertex(465, 170, 201));  // Superior izquierdo
-    boca3->addVertex(Vertex(480, 170, 201));  // Superior derecho
-    boca3->addVertex(Vertex(480, 200, 201));  // Inferior derecho
-
-    head->addPrism(400,100,200,100,100,100, GreenBase);
     // Añadir las superficies de los ojos y la boca a la cabeza
+    head->addPrism(400,100,200,100,100,100, GreenBase);
     head->addSurface(*ojo1);
     head->addSurface(*ojo2);
     head->addSurface(*boca1);
     head->addSurface(*boca2);
     head->addSurface(*boca3);
-
 
     torso->addPrism(415,200,185,70,200,70, GreenBase);
     limb1->addPrism(395,400,205,20,40,20, DarkGreen);
@@ -113,40 +88,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     limb3->addPrism(395,400,115,20,40,20, DarkGreen);
     limb4->addPrism(485,400,115,20,40,20, DarkGreen);
 
-
-    /// 250 x y 250 en y es el centro del creeper???, no es muy preciso...
     Vertex center = torso->calculateCentroid();
-    Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                            {1,0,0, -center.x},
-                                                            {0,1,0, -center.y},
-                                                            {0,0,1, -center.z}});
-    Matrix t2 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                            {1, 0,        0,          0},
-                                                            {0, cos(ang), -sin(ang),  0},
-                                                            {0, sin(ang), cos(ang),   0}});
-    Matrix t3 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                            {1,0,0, center.x},
-                                                            {0,1,0, center.y},
-                                                            {0,0,1, center.z}});
-
-    headOriginal = head->copy();
-    torsoOriginal = torso->copy();
-    limb1Original = limb1->copy();
-    limb2Original = limb2->copy();
-    limb3Original = limb3->copy();
-    limb4Original = limb4->copy();
-
-    // Realizar las operaciones de multiplicación y asignación correctamente
-    transformacionAcumulada = transformacionAcumulada * (t3 * (t2 * t1));
-    transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (t3 * (t2 * t1));
-    auto z = Matrix::debug(transformacionAcumulada);
-    head->transform(transformacionAcumuladaCabeza);
-    head->transform(transformacionAcumulada);
-    torso->transform(transformacionAcumulada);
-    limb1->transform(transformacionAcumulada);
-    limb2->transform(transformacionAcumulada);
-    limb3->transform(transformacionAcumulada);
-    limb4->transform(transformacionAcumulada);
+    head->rotate(ang,currentAxis,center);
+    torso->rotate(ang,currentAxis,center);
+    limb1->rotate(ang,currentAxis,center);
+    limb2->rotate(ang,currentAxis,center);
+    limb3->rotate(ang,currentAxis,center);
+    limb4->rotate(ang,currentAxis,center);
 
     this->timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateObj()));
@@ -165,88 +113,15 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 void MainWindow::updateObj() {
 
-    if (currentAxis == Z_AXIS){
-        Vertex torsoCenter = torso->calculateCentroid();
-        Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, -torsoCenter.x},
-                                                                                 {0, 1, 0, -torsoCenter.y},
-                                                                                 {0, 0, 1, -torsoCenter.z}});
-
-        Matrix rotate = getRotationMatrix(Y_AXIS);
-
-        Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, torsoCenter.x},
-                                                                             {0, 1, 0, torsoCenter.y},
-                                                                             {0, 0, 1, torsoCenter.z}});
-
-        head = headOriginal->copy();
-
-        transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
-        head->transform(transformacionAcumulada);
-        head->transform(transformacionAcumuladaCabeza);
-        repaint();
-        return;
-    }
-    // Calcular el centro del torso
-    Vertex torsoCenter = torso->calculateCentroid();
-
-    // Generar las matrices de transformación
-    Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, -torsoCenter.x},
-                                                                             {0, 1, 0, -torsoCenter.y},
-                                                                             {0, 0, 1, -torsoCenter.z}});
-
-    Matrix rotate = getRotationMatrix(currentAxis);
-
-    Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                         {1, 0, 0, torsoCenter.x},
-                                                                         {0, 1, 0, torsoCenter.y},
-                                                                         {0, 0, 1, torsoCenter.z}});
-
-    head = headOriginal->copy();
-    torso = torsoOriginal->copy();
-    limb1 = limb1Original->copy();
-    limb2 = limb2Original->copy();
-    limb3 = limb3Original->copy();
-    limb4 = limb4Original->copy();
-
-    transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
-    //transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
-
-    head->transform(transformacionAcumulada);
-    head->transform(transformacionAcumuladaCabeza);
-    torso->transform(transformacionAcumulada);
-    limb1->transform(transformacionAcumulada);
-    limb2->transform(transformacionAcumulada);
-    limb3->transform(transformacionAcumulada);
-    limb4->transform(transformacionAcumulada);
+    Vertex center = torso->calculateCentroid();
+    head->rotate(ang,currentAxis,center);
+    torso->rotate(ang,currentAxis,center);
+    limb1->rotate(ang,currentAxis,center);
+    limb2->rotate(ang,currentAxis,center);
+    limb3->rotate(ang,currentAxis,center);
+    limb4->rotate(ang,currentAxis,center);
 
     repaint();
-}
-
-
-Matrix MainWindow::getRotationMatrix(Axis axis) {
-    switch (axis) {
-    case X_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {1, 0,        0,         0},
-                                                           {0, cos(ang), -sin(ang), 0},
-                                                           {0, sin(ang), cos(ang),  0}});
-    case Y_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(ang), 0, sin(ang), 0},
-                                                           {0,        1, 0,        0},
-                                                           {-sin(ang), 0, cos(ang), 0}});
-    case Z_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(ang), -sin(ang), 0, 0},
-                                                           {sin(ang), cos(ang),  0, 0},
-                                                           {0,        0,         1, 0}});
-    }
-    return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {1, 0, 0, 0},
-                                                           {0, 1, 0, 0},
-                                                           {0, 0, 1, 0}});
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* _) {}
@@ -294,7 +169,6 @@ MainWindow::~MainWindow(){
     delete limb2Original;
     delete limb3Original;
     delete limb4Original;
-    delete obj3D;
     delete ui;
 }
 
@@ -368,7 +242,6 @@ void MainWindow::toggleRotationZ() {
         currentAxis = Z_AXIS;
     }
 }
-
 
 QString GetActualModeMsg(std::string msg){
     std::string beginning = "Modo actual: ";

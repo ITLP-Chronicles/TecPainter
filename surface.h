@@ -15,6 +15,7 @@ public:
     Surface(QColor& color);
 
     void addVertex(const Vertex& toAdd);
+    void addRectangleOnXY(float x, float y, float z, float sizex, float sizey);
     void transform(const Matrix& matrixInput);
     Surface copy() const;
 };

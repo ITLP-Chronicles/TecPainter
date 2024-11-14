@@ -36,8 +36,6 @@ enum Mode {
     Curvas
 };
 
-enum Axis { X_AXIS, Y_AXIS, Z_AXIS, NO_AXIS };
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -95,7 +93,6 @@ class MainWindow : public QMainWindow
         void setRotationAxisX();
         void setRotationAxisY();
         void setRotationAxisZ();
-        Matrix getRotationMatrix(Axis axis);
         void toggleRotationY();
         void toggleRotationX();
         void toggleRotationZ();
