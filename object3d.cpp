@@ -182,14 +182,17 @@ void Object3D::rotate(float angle, Axis axis, Vertex center) {
     Matrix undoRotationX = Matrix::getRotationMatrix(-degreesX, X_AXIS);
     Matrix undoRotationY = Matrix::getRotationMatrix(-degreesY, Y_AXIS);
     Matrix undoRotationZ = Matrix::getRotationMatrix(-degreesZ, Z_AXIS);
-    Matrix undoRotation = undoRotationX * (undoRotationY * undoRotationZ);
+    Matrix undoRotation = undoRotationZ * (undoRotationY * undoRotationX);
+    auto ur = Matrix::debug(undoRotation);
 
     Matrix rotate = Matrix::getRotationMatrix(angle, axis);
+    auto r = Matrix::debug(rotate);
 
     Matrix redoRotationX = Matrix::getRotationMatrix(degreesX, X_AXIS);
     Matrix redoRotationY = Matrix::getRotationMatrix(degreesY, Y_AXIS);
     Matrix redoRotationZ = Matrix::getRotationMatrix(degreesZ, Z_AXIS);
     Matrix redoRotation = redoRotationX * (redoRotationY * redoRotationZ);
+    auto rr = Matrix::debug(redoRotation);
 
     Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
                                                                             {1, 0, 0, center.x},

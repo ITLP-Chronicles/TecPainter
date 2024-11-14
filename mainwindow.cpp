@@ -7,10 +7,11 @@
 #include "ui_mainwindow.h"
 #include "matrix.h"
 #include "displayer.h"
+#include "math.h"
 
 using namespace std;
 
-float ang = (1 * 3.14159) / 180.0;
+float ang = M_PI / 180.0;
 Axis currentAxis = NO_AXIS;
 bool rotatingY = false, rotatingX = false, rotatingZ = false;
 

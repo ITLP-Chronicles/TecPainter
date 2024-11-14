@@ -76,7 +76,6 @@ Matrix Matrix::operator*(const double& scalar) const {
             result.data[i][j] *= scalar;
         }
     }
-
     return result;
 }
 
@@ -178,26 +177,31 @@ Matrix& Matrix::operator=(const Matrix& other) {
     }
     return *this;
 }
+float sanitizeTrigonometricValue(float value) {
+    if (value > 0.999) return 1.0f;
+    if (abs(value) < 0.001) return 0;
+    else return value;
+}
 
 Matrix Matrix::getRotationMatrix(float angle, Axis axis) {
+    float cosAngle = sanitizeTrigonometricValue(cos(angle));
+    float sinAngle = sanitizeTrigonometricValue(sin(angle));
+
     switch (axis) {
     case X_AXIS:
-
         return Matrix::generateGraphicableSquareMatrix(4, {
                                                            {1, 0,        0,         0},
-                                                           {0, cos(angle), -sin(angle), 0},
-                                                           {0, sin(angle), cos(angle),  0}});
+                                                           {0, cosAngle, -sinAngle, 0},
+                                                           {0, sinAngle, cosAngle,  0}});
     case Y_AXIS:
-
         return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(angle), 0, sin(angle), 0},
+                                                           {cosAngle, 0, sinAngle, 0},
                                                            {0,        1, 0,        0},
-                                                           {-sin(angle), 0, cos(angle), 0}});
+                                                           {-sinAngle, 0, cosAngle, 0}});
     case Z_AXIS:
-
         return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(angle), -sin(angle), 0, 0},
-                                                           {sin(angle), cos(angle),  0, 0},
+                                                           {cosAngle, -sinAngle, 0, 0},
+                                                           {sinAngle, cosAngle,  0, 0},
                                                            {0,        0,         1, 0}});
     case NO_AXIS:
         return Matrix::generateIdentityMatrix(4);
