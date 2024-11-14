@@ -45,6 +45,10 @@ public:
     Matrix& operator=(const Matrix& other);
 
     Matrix copy() const;
+    Matrix inverse() const;
+
+    Matrix getMinor(int row, int col) const;
+    float determinant() const;
 
     /// Genera una matriz de tamaño cuadrático de cualquier tamaño incluyendo en la última fila
     /// los valores 0,0,..,1

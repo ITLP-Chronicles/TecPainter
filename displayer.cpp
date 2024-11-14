@@ -4,9 +4,83 @@
 #include "object3d.h"
 #include "qpainterpath.h"
 
-void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
-    for (Surface surface : obj.surfaces){
+// In displayer.cpp
+void Displayer::object3d(QPainter* painterRef, const Object3D& obj) {
+    // First draw all surfaces as before
+    for (Surface surface : obj.surfaces) {
         Displayer::surface(painterRef, surface);
+    }
+
+    // If axes should be shown, draw them
+    if (obj.showAxes) {
+        // Save current pen
+        QPen originalPen = painterRef->pen();
+
+        // Get object's center or origin point
+        auto center = obj.calculateCentroid();
+        float originX = center.x, originY = center.y, originZ = center.z;
+
+
+        // Make axes longer
+        float axisLength = 100.0f;  // Increased length
+
+        // Calculate rotated endpoints using the object's rotation angles
+        float cosX = cos(obj.degreesX);
+        float sinX = sin(obj.degreesX);
+        float cosY = cos(obj.degreesY);
+        float sinY = sin(obj.degreesY);
+        float cosZ = cos(obj.degreesZ);
+        float sinZ = sin(obj.degreesZ);
+
+        // Calculate rotated endpoint for X axis
+        float xEndX = originX + axisLength * (cosY * cosZ);
+        float xEndY = originY + axisLength * (cosY * sinZ);
+        float xEndZ = originZ - axisLength * sinY;
+
+        // Calculate rotated endpoint for Y axis
+        float yEndX = originX + axisLength * (sinX * sinY * cosZ - cosX * sinZ);
+        float yEndY = originY + axisLength * (sinX * sinY * sinZ + cosX * cosZ);
+        float yEndZ = originZ + axisLength * sinX * cosY;
+
+        // Calculate rotated endpoint for Z axis
+        float zEndX = originX + axisLength * (cosX * sinY * cosZ + sinX * sinZ);
+        float zEndY = originY + axisLength * (cosX * sinY * sinZ - sinX * cosZ);
+        float zEndZ = originZ + axisLength * cosX * cosY;
+
+        // Apply perspective projection
+        float zv = 10000;
+        float zf = 100000;
+
+        // Function to apply perspective to points
+        auto applyPerspective = [zf, zv](float& x, float& y, float z) {
+            float dp = (zf-zv)/(zf-z);
+            x *= dp;
+            y *= dp;
+        };
+
+        // Apply perspective to endpoints
+        applyPerspective(xEndX, xEndY, xEndZ);
+        applyPerspective(yEndX, yEndY, yEndZ);
+        applyPerspective(zEndX, zEndY, zEndZ);
+        applyPerspective(originX, originY, originZ);
+
+        // X axis - Red
+        painterRef->setPen(QPen(Qt::red, 2));
+        Line xAxis(originX, originY, originZ, xEndX, xEndY, xEndZ);
+        Displayer::line(painterRef, xAxis);
+
+        // Y axis - Green
+        painterRef->setPen(QPen(Qt::green, 2));
+        Line yAxis(originX, originY, originZ, yEndX, yEndY, yEndZ);
+        Displayer::line(painterRef, yAxis);
+
+        // Z axis - Blue
+        painterRef->setPen(QPen(Qt::blue, 2));
+        Line zAxis(originX, originY, originZ, zEndX, zEndY, zEndZ);
+        Displayer::line(painterRef, zAxis);
+
+        // Restore original pen
+        painterRef->setPen(originalPen);
     }
 }
 
@@ -113,4 +187,3 @@ void Displayer::line(QPainter* painterRef, const Line& line){
 void Displayer::vertex(QPainter* painterRef, const Vertex& v){
     painterRef->drawPoint(v.x, v.y);
 }
-

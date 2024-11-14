@@ -7,6 +7,7 @@
 class Object3D
 {
 public:
+    bool showAxes;
     float degreesX;
     float degreesY;
     float degreesZ;
@@ -20,6 +21,9 @@ public:
     void rotate(float angle, Axis axis, Vertex center);
 
     Object3D* copy();
+
+    ///Just a method helper to display axes
+    Matrix getCurrentTransformMatrix() const;
 };
 
 #endif // OBJECT3D_H

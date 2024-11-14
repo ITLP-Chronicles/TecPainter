@@ -203,3 +203,115 @@ Matrix Matrix::getRotationMatrix(float angle, Axis axis) {
         return Matrix::generateIdentityMatrix(4);
     }
 }
+
+// Returns the determinant of the matrix
+float Matrix::determinant() const {
+    if (rows != columns) return 0;
+
+    if (rows == 1) return data[0][0];
+    if (rows == 2) {
+        return data[0][0] * data[1][1] - data[0][1] * data[1][0];
+    }
+
+    float det = 0;
+    for (int i = 0; i < columns; i++) {
+        Matrix minor = getMinor(0, i);
+        det += data[0][i] * pow(-1, i) * minor.determinant();
+    }
+    return det;
+}
+
+
+// Helper method to get minor matrix
+Matrix Matrix::getMinor(int row, int col) const {
+    Matrix minor(rows - 1, columns - 1);
+    int r = 0, c = 0;
+
+    for (int i = 0; i < rows; i++) {
+        if (i == row) continue;
+        c = 0;
+        for (int j = 0; j < columns; j++) {
+            if (j == col) continue;
+            minor.data[r][c] = data[i][j];
+            c++;
+        }
+        r++;
+    }
+    return minor;
+}
+
+// Returns the inverse of the matrix or throws an exception if not possible
+Matrix Matrix::inverse() const {
+    if (rows != columns) {
+        throw std::runtime_error("Cannot invert non-square matrix");
+    }
+
+    float det = determinant();
+    constexpr float EPSILON = 1e-10;  // Threshold for zero determinant
+
+    if (std::abs(det) < EPSILON) {
+        throw std::runtime_error("Matrix is not invertible (determinant is zero)");
+    }
+
+    // Create the augmented matrix [A|I]
+    Matrix augmented(rows, columns * 2);
+
+    // Fill the left side with the original matrix
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            augmented.data[i][j] = data[i][j];
+        }
+    }
+
+    // Fill the right side with the identity matrix
+    for (int i = 0; i < rows; i++) {
+        augmented.data[i][i + columns] = 1.0f;
+    }
+
+    // Gaussian elimination with partial pivoting
+    for (int i = 0; i < rows; i++) {
+        // Find pivot
+        int pivotRow = i;
+        float pivotValue = std::abs(augmented.data[i][i]);
+
+        for (int row = i + 1; row < rows; row++) {
+            if (std::abs(augmented.data[row][i]) > pivotValue) {
+                pivotValue = std::abs(augmented.data[row][i]);
+                pivotRow = row;
+            }
+        }
+
+        // Swap rows if necessary
+        if (pivotRow != i) {
+            for (int j = 0; j < augmented.columns; j++) {
+                std::swap(augmented.data[i][j], augmented.data[pivotRow][j]);
+            }
+        }
+
+        // Scale pivot row
+        float pivot = augmented.data[i][i];
+        for (int j = 0; j < augmented.columns; j++) {
+            augmented.data[i][j] /= pivot;
+        }
+
+        // Eliminate column
+        for (int row = 0; row < rows; row++) {
+            if (row != i) {
+                float factor = augmented.data[row][i];
+                for (int j = 0; j < augmented.columns; j++) {
+                    augmented.data[row][j] -= factor * augmented.data[i][j];
+                }
+            }
+        }
+    }
+
+    // Extract the inverse from the right half of the augmented matrix
+    Matrix inverse(rows, columns);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            inverse.data[i][j] = augmented.data[i][j + columns];
+        }
+    }
+
+    return inverse;
+}
