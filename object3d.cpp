@@ -4,10 +4,11 @@
 #include "matrix.h"
 #include "vertex.h"
 
-Object3D::Object3D():surfaces(std::vector<Surface>()) {}
+Object3D::Object3D():surfaces(std::vector<Surface>()), originalSurfaces(std::vector<Surface>())  {}
 
 void Object3D::addSurface(const Surface& toAdd){
     this->surfaces.push_back(toAdd);
+    this->originalSurfaces.push_back(toAdd);
 }
 
 void Object3D::transform(const Matrix& transformy){
@@ -161,4 +162,11 @@ Object3D* Object3D::copy(){
         toReturn->addSurface(s.copy());
 
     return toReturn;
+}
+
+void Object3D::reset(){
+    this->surfaces.clear();
+
+    for(const Surface& originalSurface: this->originalSurfaces)
+        this->surfaces.push_back(originalSurface.copy());
 }
