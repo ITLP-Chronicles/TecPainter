@@ -10,7 +10,7 @@
 
 using namespace std;
 
-float ang = (1 * 3.14159) / 180.0;
+float ang = (2 * 3.14159) / 180.0;
 Axis currentAxis = NO_AXIS;
 bool rotatingHead = false, walking = false;
 Matrix transformacionAcumulada = Matrix::generateGraphicableSquareMatrix(4, {
@@ -45,6 +45,27 @@ Object3D* limb1 = new Object3D();
 Object3D* limb2 = new Object3D();
 Object3D* limb3 = new Object3D();
 Object3D* limb4 = new Object3D();
+
+Object3D* head2 = new Object3D();
+Object3D* torso2 = new Object3D();
+Object3D* limb12 = new Object3D();
+Object3D* limb22 = new Object3D();
+Object3D* limb32 = new Object3D();
+Object3D* limb42 = new Object3D();
+
+Object3D* head3 = new Object3D();
+Object3D* torso3 = new Object3D();
+Object3D* limb13 = new Object3D();
+Object3D* limb23 = new Object3D();
+Object3D* limb33 = new Object3D();
+Object3D* limb43 = new Object3D();
+
+Object3D* head4 = new Object3D();
+Object3D* torso4 = new Object3D();
+Object3D* limb14 = new Object3D();
+Object3D* limb24 = new Object3D();
+Object3D* limb34 = new Object3D();
+Object3D* limb44 = new Object3D();
 
 Vertex center;
 
@@ -152,7 +173,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     this->timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateObj()));
-    this->timer->start(30);
+    this->timer->start(60);
 
     connect(ui->btnVuelta, &QPushButton::clicked, this, &MainWindow::toggleRotationY);
     connect(ui->btnMarometa, &QPushButton::clicked, this, &MainWindow::toggleRotationX);
@@ -200,6 +221,9 @@ void MainWindow::updateObj() {
         independantRotation(limb4, X_AXIS, transformacionAcumuladaPierna4, intersection4, -angleLimb);
     }
 
+    repaint();
+    if (currentAxis == NO_AXIS) return;
+
     // Generar las matrices de transformación para el torso
     Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
                                                                              {1, 0, 0, -center.x},
@@ -233,6 +257,26 @@ void MainWindow::updateObj() {
     limb4->transform(transformacionAcumuladaPierna4);
     limb4->transform(transformacionAcumulada);
 
+    // Generar las matrices de transformación para el torso
+    Matrix translationToOrigin2 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                             {1, 0, 0, -center.x},
+                                                                             {0, 1, 0, -center.y},
+                                                                             {0, 0, 1, -center.z}});
+    Matrix rotate2 = getRotationMatrix(X_AXIS, M_PI/2);
+    Matrix translationBack2 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                         {1, 0, 0, center.x},
+                                                                         {0, 1, 0, center.y},
+                                                                         {0, 0, 1, center.z}});
+
+    Matrix rotation = (translationBack * (rotate * translationToOrigin));
+
+    head->transform(rotation);
+    torso->transform(rotation);
+
+    limb1->transform(rotation);
+    limb2->transform(rotation);
+    limb3->transform(rotation);
+    limb4->transform(rotation);
 
     repaint();
 }
@@ -388,7 +432,7 @@ void MainWindow::on_btnUpView_clicked()
                                                                              {1, 0, 0, -center.x},
                                                                              {0, 1, 0, -center.y},
                                                                              {0, 0, 1, -center.z}});
-    Matrix rotate = getRotationMatrix(X_AXIS, M_PI/2);
+    Matrix rotate = getRotationMatrix(X_AXIS, -M_PI/2);
     Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
                                                                          {1, 0, 0, center.x},
                                                                          {0, 1, 0, center.y},
@@ -445,7 +489,7 @@ void MainWindow::on_btnBottomView_clicked()
                                                                              {1, 0, 0, -center.x},
                                                                              {0, 1, 0, -center.y},
                                                                              {0, 0, 1, -center.z}});
-    Matrix rotate = getRotationMatrix(X_AXIS, -M_PI/2);
+    Matrix rotate = getRotationMatrix(X_AXIS, M_PI/2);
     Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
                                                                          {1, 0, 0, center.x},
                                                                          {0, 1, 0, center.y},
