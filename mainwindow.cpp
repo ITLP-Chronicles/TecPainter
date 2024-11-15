@@ -166,22 +166,22 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 void MainWindow::updateObj() {
 
     if (currentAxis == Z_AXIS){
-        Vertex torsoCenter = torso->calculateCentroid();
+        Vertex headCenter = head->calculateCentroid();
         Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, -torsoCenter.x},
-                                                                                 {0, 1, 0, -torsoCenter.y},
-                                                                                 {0, 0, 1, -torsoCenter.z}});
-
+                                                                                 {1, 0, 0, -headCenter.x},
+                                                                                 {0, 1, 0, -headCenter.y},
+                                                                                 {0, 0, 1, -headCenter.z}});
         Matrix rotate = getRotationMatrix(Y_AXIS);
 
         Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, torsoCenter.x},
-                                                                             {0, 1, 0, torsoCenter.y},
-                                                                             {0, 0, 1, torsoCenter.z}});
+                                                                             {1, 0, 0, headCenter.x},
+                                                                             {0, 1, 0, headCenter.y},
+                                                                             {0, 0, 1, headCenter.z}});
 
         head = headOriginal->copy();
 
-        transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
+        auto r = Matrix::debug(rotate);
+        transformacionAcumuladaCabeza = translationBack * (transformacionAcumuladaCabeza * (rotate * translationToOrigin));
         head->transform(transformacionAcumulada);
         head->transform(transformacionAcumuladaCabeza);
         repaint();
@@ -294,7 +294,6 @@ MainWindow::~MainWindow(){
     delete limb2Original;
     delete limb3Original;
     delete limb4Original;
-    delete obj3D;
     delete ui;
 }
 
