@@ -165,16 +165,9 @@ void MainWindow::updateObj() {
                                                                              {0, 0, 1, torsoCenter.z}});
 
         head->reset();
-        // Reiniciar la cabeza y acumular transformaciones en contexto del torso
-        head = headOriginal->copy();
         transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
         head->transform(transformacionAcumuladaCabeza);  // Aplicar la transformación acumulada local de la cabeza
         head->transform(transformacionAcumulada);        // Aplicar la transformación acumulada global
-
-        auto r = Matrix::debug(rotate);
-        transformacionAcumuladaCabeza = translationBack * (transformacionAcumuladaCabeza * (rotate * translationToOrigin));
-        head->transform(transformacionAcumulada);
-        head->transform(transformacionAcumuladaCabeza);
         repaint();
         //return;
     }
