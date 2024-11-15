@@ -30,13 +30,6 @@ Object3D* limb2 = new Object3D();
 Object3D* limb3 = new Object3D();
 Object3D* limb4 = new Object3D();
 
-Object3D* headOriginal = nullptr;
-Object3D* torsoOriginal = nullptr;
-Object3D* limb1Original = nullptr;
-Object3D* limb2Original = nullptr;
-Object3D* limb3Original = nullptr;
-Object3D* limb4Original = nullptr;
-
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     // ------------------------- Setting colors ------------------------------
@@ -129,17 +122,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
                                                             {0,1,0, center.y},
                                                             {0,0,1, center.z}});
 
-    headOriginal = head->copy();
-    torsoOriginal = torso->copy();
-    limb1Original = limb1->copy();
-    limb2Original = limb2->copy();
-    limb3Original = limb3->copy();
-    limb4Original = limb4->copy();
 
     // Realizar las operaciones de multiplicación y asignación correctamente
     transformacionAcumulada = transformacionAcumulada * (t3 * (t2 * t1));
     transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (t3 * (t2 * t1));
-    auto z = Matrix::debug(transformacionAcumulada);
     head->transform(transformacionAcumuladaCabeza);
     head->transform(transformacionAcumulada);
     torso->transform(transformacionAcumulada);
@@ -178,9 +164,8 @@ void MainWindow::updateObj() {
                                                                              {0, 1, 0, headCenter.y},
                                                                              {0, 0, 1, headCenter.z}});
 
-        head = headOriginal->copy();
+        head->reset();
 
-        auto r = Matrix::debug(rotate);
         transformacionAcumuladaCabeza = translationBack * (transformacionAcumuladaCabeza * (rotate * translationToOrigin));
         head->transform(transformacionAcumulada);
         head->transform(transformacionAcumuladaCabeza);
@@ -203,12 +188,12 @@ void MainWindow::updateObj() {
                                                                          {0, 1, 0, torsoCenter.y},
                                                                          {0, 0, 1, torsoCenter.z}});
 
-    head = headOriginal->copy();
-    torso = torsoOriginal->copy();
-    limb1 = limb1Original->copy();
-    limb2 = limb2Original->copy();
-    limb3 = limb3Original->copy();
-    limb4 = limb4Original->copy();
+    head->reset();
+    torso->reset();
+    limb1->reset();
+    limb2->reset();
+    limb3->reset();
+    limb4->reset();
 
     transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
     //transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
@@ -242,11 +227,13 @@ Matrix MainWindow::getRotationMatrix(Axis axis) {
                                                            {cos(ang), -sin(ang), 0, 0},
                                                            {sin(ang), cos(ang),  0, 0},
                                                            {0,        0,         1, 0}});
-    }
-    return Matrix::generateGraphicableSquareMatrix(4, {
+    case NO_AXIS:
+        return Matrix::generateGraphicableSquareMatrix(4, {
                                                            {1, 0, 0, 0},
                                                            {0, 1, 0, 0},
                                                            {0, 0, 1, 0}});
+
+    }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* _) {}
@@ -288,12 +275,6 @@ MainWindow::~MainWindow(){
     delete limb2;
     delete limb3;
     delete limb4;
-    delete headOriginal;
-    delete torsoOriginal;
-    delete limb1Original;
-    delete limb2Original;
-    delete limb3Original;
-    delete limb4Original;
     delete ui;
 }
 

@@ -21,8 +21,8 @@ Surface Surface::copy() const{
     auto toReturn = Surface();
     toReturn.color = this->color;
 
-    for(Vertex v : this->vertices){
-        toReturn.addVertex(v);
+    for(const Vertex& v : this->vertices){
+        toReturn.addVertex(v.copy());
     }
 
     return toReturn;
