@@ -253,11 +253,11 @@ void MainWindow::updateObj() {
     limb4->transform(transformacionAcumuladaPierna4);
     limb4->transform(transformacionAcumulada);
 
-    rotate = getRotationMatrix(X_AXIS, M_PI/2);
+    rotate = getRotationMatrix(X_AXIS, -M_PI/2);
     Matrix rotation = (translationBack * (rotate * translationToOrigin));
     Matrix traslate1 = Matrix::generateGraphicableSquareMatrix(4, {
                                                                    {0.35, 0, 0, 450},
-                                                                   {0, 0.35, 0, -60},
+                                                                   {0, 0.35, 0, -70},
                                                                    {0, 0, 0.35, 0}});
     Matrix previewTransformation = (translationBack * (traslate1 * translationToOrigin));
 
@@ -287,7 +287,7 @@ void MainWindow::updateObj() {
     rotation = (translationBack * (rotate * translationToOrigin));
     traslate1 = Matrix::generateGraphicableSquareMatrix(4, {
                                                                    {0.35, 0, 0, 450},
-                                                                   {0, 0.35, 0, 100},
+                                                                   {0, 0.35, 0, 120},
                                                                    {0, 0, 0.35, 0}});
     previewTransformation = (translationBack * (traslate1 * translationToOrigin));
 
@@ -313,11 +313,11 @@ void MainWindow::updateObj() {
     limb33->transform(previewTransformation);
     limb43->transform(previewTransformation);
 
-    rotate = getRotationMatrix(X_AXIS, -M_PI/2);
+    rotate = getRotationMatrix(X_AXIS, M_PI/2);
     rotation = (translationBack * (rotate * translationToOrigin));
     traslate1 = Matrix::generateGraphicableSquareMatrix(4, {
                                                                    {0.35, 0, 0, 450},
-                                                                   {0, 0.35, 0, 280},
+                                                                   {0, 0.35, 0, 300},
                                                                    {0, 0, 0.35, 0}});
     previewTransformation = (translationBack * (traslate1 * translationToOrigin));
 
