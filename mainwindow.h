@@ -83,7 +83,6 @@ class MainWindow : public QMainWindow
     public:
         MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
-        void mousePressEvent(QMouseEvent *);
         void mouseMoveEvent(QMouseEvent *);
         void mouseReleaseEvent(QMouseEvent *);
         void paintEvent(QPaintEvent *);
@@ -92,9 +91,6 @@ class MainWindow : public QMainWindow
 
     public slots:
         void updateObj();
-        void setRotationAxisX();
-        void setRotationAxisY();
-        void setRotationAxisZ();
         Matrix getRotationMatrix(Axis axis);
         void toggleRotationY();
         void toggleRotationX();
@@ -116,6 +112,7 @@ class MainWindow : public QMainWindow
         void on_btnVuelta_clicked();
         void on_btnMarometa_clicked();
         void on_btnGiro_clicked();
+        void on_btnGiroCabeza_clicked();
 };
 #endif // MAINWINDOW_H
 

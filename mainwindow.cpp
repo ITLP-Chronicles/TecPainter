@@ -12,7 +12,7 @@ using namespace std;
 
 float ang = (1 * 3.14159) / 180.0;
 Axis currentAxis = NO_AXIS;
-bool rotatingY = false, rotatingX = false, rotatingZ = false;
+bool rotatingHead = false;;
 Matrix transformacionAcumulada = Matrix::generateGraphicableSquareMatrix(4, {
                                                                            {1,0,0, 0},
                                                                            {0,1,0, 0},
@@ -106,13 +106,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     head->addSurface(*boca2);
     head->addSurface(*boca3);
 
-
     torso->addPrism(415,200,185,70,200,70, GreenBase);
     limb1->addPrism(395,400,205,20,40,20, DarkGreen);
     limb2->addPrism(485,400,205,20,40,20, DarkGreen);
     limb3->addPrism(395,400,115,20,40,20, DarkGreen);
     limb4->addPrism(485,400,115,20,40,20, DarkGreen);
-
 
     /// 250 x y 250 en y es el centro del creeper???, no es muy preciso...
     Vertex center = torso->calculateCentroid();
@@ -165,27 +163,29 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 void MainWindow::updateObj() {
 
-    if (currentAxis == Z_AXIS){
-        Vertex headCenter = head->calculateCentroid();
+    if (rotatingHead) {
+        // Utilizar el centro del torso como referencia para la acumulación
+        Vertex torsoCenter = torso->calculateCentroid();
+
+        // Matrices de traslación basadas en el centro del torso
         Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, -headCenter.x},
-                                                                                 {0, 1, 0, -headCenter.y},
-                                                                                 {0, 0, 1, -headCenter.z}});
+                                                                                 {1, 0, 0, -torsoCenter.x},
+                                                                                 {0, 1, 0, -torsoCenter.y},
+                                                                                 {0, 0, 1, -torsoCenter.z}});
         Matrix rotate = getRotationMatrix(Y_AXIS);
-
         Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, headCenter.x},
-                                                                             {0, 1, 0, headCenter.y},
-                                                                             {0, 0, 1, headCenter.z}});
+                                                                             {1, 0, 0, torsoCenter.x},
+                                                                             {0, 1, 0, torsoCenter.y},
+                                                                             {0, 0, 1, torsoCenter.z}});
 
+        // Reiniciar la cabeza y acumular transformaciones en contexto del torso
         head = headOriginal->copy();
+        transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
+        head->transform(transformacionAcumuladaCabeza);  // Aplicar la transformación acumulada local de la cabeza
+        head->transform(transformacionAcumulada);        // Aplicar la transformación acumulada global
 
-        auto r = Matrix::debug(rotate);
-        transformacionAcumuladaCabeza = translationBack * (transformacionAcumuladaCabeza * (rotate * translationToOrigin));
-        head->transform(transformacionAcumulada);
-        head->transform(transformacionAcumuladaCabeza);
         repaint();
-        return;
+        //return;
     }
     // Calcular el centro del torso
     Vertex torsoCenter = torso->calculateCentroid();
@@ -213,8 +213,8 @@ void MainWindow::updateObj() {
     transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
     //transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
 
-    head->transform(transformacionAcumulada);
     head->transform(transformacionAcumuladaCabeza);
+    head->transform(transformacionAcumulada);
     torso->transform(transformacionAcumulada);
     limb1->transform(transformacionAcumulada);
     limb2->transform(transformacionAcumulada);
@@ -297,34 +297,6 @@ MainWindow::~MainWindow(){
     delete ui;
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *e) {
-    QMainWindow::mousePressEvent(e);
-}
-
-void MainWindow::setRotationAxisX() {
-    if (currentAxis == X_AXIS){
-        currentAxis = NO_AXIS;
-    } else {
-        currentAxis = X_AXIS;
-    }
-}
-
-void MainWindow::setRotationAxisY() {
-    if (currentAxis == Y_AXIS){
-        currentAxis = NO_AXIS;
-    } else {
-        currentAxis = Y_AXIS;
-    }
-}
-
-void MainWindow::setRotationAxisZ() {
-    if (currentAxis == Z_AXIS){
-        currentAxis = NO_AXIS;
-    } else {
-        currentAxis = Z_AXIS;
-    }
-}
-
 // -------------------- Stuff ------------------------
 void MainWindow::on_actionLeer_triggered(){}
 void MainWindow::on_actionGuardar_triggered(){}
@@ -342,7 +314,7 @@ void MainWindow::on_btnGiro_clicked(){}
 
 
 void MainWindow::toggleRotationY() {
-    rotatingY = !rotatingY;
+    //rotatingHead = false;
     if (currentAxis == Y_AXIS){
         currentAxis = NO_AXIS;
     } else {
@@ -351,7 +323,7 @@ void MainWindow::toggleRotationY() {
 }
 
 void MainWindow::toggleRotationX() {
-    rotatingX = !rotatingX;
+    //rotatingHead = false;
     if (currentAxis == X_AXIS){
         currentAxis = NO_AXIS;
     } else {
@@ -360,7 +332,7 @@ void MainWindow::toggleRotationX() {
 }
 
 void MainWindow::toggleRotationZ() {
-    rotatingZ = !rotatingZ;
+    //rotatingHead = false;
     if (currentAxis == Z_AXIS){
         currentAxis = NO_AXIS;
     } else {
@@ -393,3 +365,10 @@ void MainWindow::setActualMode(Mode newMode){
     this->actualMode = newMode;
     this->ui->modo_actual->setText(GetActualModeMsg(ModeToString(newMode)));
 }
+
+void MainWindow::on_btnGiroCabeza_clicked()
+{
+    //currentAxis = NO_AXIS;
+    rotatingHead = !rotatingHead;
+}
+
