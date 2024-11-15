@@ -188,18 +188,30 @@ void MainWindow::updateObj() {
 
 
     // Get complete rotation matrix from accumulated angles
-    Matrix R = RotationUtils::eulerAnglesToRotationMatrix(accumulatedAngles);
 
-    // Convert to 4x4 and apply your transformations
-    Matrix transform = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                   {R.data[0][0], R.data[0][1], R.data[0][2], 0},
-                                                                   {R.data[1][0], R.data[1][1], R.data[1][2], 0},
-                                                                   {R.data[2][0], R.data[2][1], R.data[2][2], 0}});
 
-    // Apply transformations as before...
     Vertex center = torso->calculateCentroid();
+
+    ///1. Go to origin
     Matrix translationToOrigin = getTranslationMatrix(-center.x, -center.y, -center.z);
-    Matrix rotate = transform;
+
+
+    ///2. Cancel rotation
+    Vertex negatedRotation = Vertex(-accumulatedAngles.x, -accumulatedAngles.y, -accumulatedAngles.z);
+    Matrix negatedMatrixRotation = RotationUtils::eulerAnglesToRotationMatrix(negatedRotation);
+    Matrix negatedMatrixRotationGraphicable = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                   {negatedMatrixRotation.data[0][0], negatedMatrixRotation.data[0][1], negatedMatrixRotation.data[0][2], 0},
+                                                                   {negatedMatrixRotation.data[1][0], negatedMatrixRotation.data[1][1], negatedMatrixRotation.data[1][2], 0},
+                                                                   {negatedMatrixRotation.data[2][0], negatedMatrixRotation.data[2][1], negatedMatrixRotation.data[2][2], 0}});
+
+    ///3. Applicate new rotation
+    Matrix rotation = RotationUtils::eulerAnglesToRotationMatrix(accumulatedAngles);
+    Matrix rotationGraphicable = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                   {rotation.data[0][0], rotation.data[0][1], rotation.data[0][2], 0},
+                                                                   {rotation.data[1][0], rotation.data[1][1], rotation.data[1][2], 0},
+                                                                   {rotation.data[2][0], rotation.data[2][1], rotation.data[2][2], 0}});
+
+    ///4. Put the obj back to its original pos
     Matrix translationBack = getTranslationMatrix(center.x, center.y, center.z);
 
     head->reset();
@@ -209,8 +221,7 @@ void MainWindow::updateObj() {
     limb3->reset();
     limb4->reset();
 
-    transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
-    //transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
+    transformacionAcumulada = transformacionAcumulada * (translationBack * (rotationGraphicable * (negatedMatrixRotationGraphicable * translationToOrigin)));
 
     head->transform(transformacionAcumulada);
     head->transform(transformacionAcumuladaCabeza);
