@@ -91,10 +91,11 @@ class MainWindow : public QMainWindow
 
     public slots:
         void updateObj();
-        Matrix getRotationMatrix(Axis axis);
+        Matrix getRotationMatrix(Axis axis,float);
         void toggleRotationY();
         void toggleRotationX();
         void toggleRotationZ();
+        void independantRotation(Object3D*,Axis,Matrix&,Vertex,float);
 
 
     // GUI Eventos QT Generados Automáticamente (No tocar)
@@ -113,6 +114,10 @@ class MainWindow : public QMainWindow
         void on_btnMarometa_clicked();
         void on_btnGiro_clicked();
         void on_btnGiroCabeza_clicked();
+        void on_btnCaminar_clicked();
+        void on_btnUpView_clicked();
+        void on_btnSideView_clicked();
+        void on_btnBottomView_clicked();
 };
 #endif // MAINWINDOW_H
 

@@ -4,7 +4,14 @@
 #include "matrix.h"
 #include "vertex.h"
 
-Object3D::Object3D():surfaces(std::vector<Surface>()), originalSurfaces(std::vector<Surface>())  {}
+Object3D::Object3D():surfaces(std::vector<Surface>()), originalSurfaces(std::vector<Surface>())  {
+    x = 0;
+    y = 0;
+    z = 0;
+    sizex = 0;
+    sizey = 0;
+    sizez = 0;
+}
 
 void Object3D::addSurface(const Surface& toAdd){
     this->surfaces.push_back(toAdd);
@@ -18,6 +25,12 @@ void Object3D::transform(const Matrix& transformy){
 }
 
 void Object3D::addPrism(float x, float y, float z, float width, float height, float depth) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->sizex = width;
+    this->sizey = height;
+    this->sizez = depth;
     // Define las 8 esquinas del prisma
     Vertex v1(x, y, z);                      // Frente abajo izquierda
     Vertex v2(x + width, y, z);               // Frente abajo derecha
@@ -81,6 +94,12 @@ void Object3D::addPrism(float x, float y, float z, float width, float height, fl
 }
 
 void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif, QColor& color){
+    this->x = x;
+    this->y = y;
+    this->z = z;
+    this->sizex = xDif;
+    this->sizey = yDif;
+    this->sizez = zDif;
 
     Surface* superficieCuerpo = new Surface(color);
     //cara principal

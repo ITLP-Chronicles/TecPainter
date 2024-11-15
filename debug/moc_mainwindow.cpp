@@ -45,6 +45,10 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "toggleRotationY",
     "toggleRotationX",
     "toggleRotationZ",
+    "independantRotation",
+    "Object3D*",
+    "Matrix&",
+    "Vertex",
     "on_actionGuardar_triggered",
     "on_actionLeer_triggered",
     "on_actionNormal_triggered",
@@ -58,7 +62,11 @@ constexpr auto qt_meta_stringdata_CLASSMainWindowENDCLASS = QtMocHelpers::string
     "on_btnVuelta_clicked",
     "on_btnMarometa_clicked",
     "on_btnGiro_clicked",
-    "on_btnGiroCabeza_clicked"
+    "on_btnGiroCabeza_clicked",
+    "on_btnCaminar_clicked",
+    "on_btnUpView_clicked",
+    "on_btnSideView_clicked",
+    "on_btnBottomView_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -71,7 +79,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      19,   14, // methods
+      24,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -79,29 +87,39 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSMainWindowENDCLASS[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,  128,    2, 0x0a,    1 /* Public */,
-       3,    1,  129,    2, 0x0a,    2 /* Public */,
-       7,    0,  132,    2, 0x0a,    4 /* Public */,
-       8,    0,  133,    2, 0x0a,    5 /* Public */,
-       9,    0,  134,    2, 0x0a,    6 /* Public */,
-      10,    0,  135,    2, 0x08,    7 /* Private */,
-      11,    0,  136,    2, 0x08,    8 /* Private */,
-      12,    0,  137,    2, 0x08,    9 /* Private */,
-      13,    0,  138,    2, 0x08,   10 /* Private */,
-      14,    0,  139,    2, 0x08,   11 /* Private */,
-      15,    0,  140,    2, 0x08,   12 /* Private */,
-      16,    0,  141,    2, 0x08,   13 /* Private */,
-      17,    0,  142,    2, 0x08,   14 /* Private */,
-      18,    0,  143,    2, 0x08,   15 /* Private */,
-      19,    0,  144,    2, 0x08,   16 /* Private */,
-      20,    0,  145,    2, 0x08,   17 /* Private */,
-      21,    0,  146,    2, 0x08,   18 /* Private */,
-      22,    0,  147,    2, 0x08,   19 /* Private */,
-      23,    0,  148,    2, 0x08,   20 /* Private */,
+       1,    0,  158,    2, 0x0a,    1 /* Public */,
+       3,    2,  159,    2, 0x0a,    2 /* Public */,
+       7,    0,  164,    2, 0x0a,    5 /* Public */,
+       8,    0,  165,    2, 0x0a,    6 /* Public */,
+       9,    0,  166,    2, 0x0a,    7 /* Public */,
+      10,    5,  167,    2, 0x0a,    8 /* Public */,
+      14,    0,  178,    2, 0x08,   14 /* Private */,
+      15,    0,  179,    2, 0x08,   15 /* Private */,
+      16,    0,  180,    2, 0x08,   16 /* Private */,
+      17,    0,  181,    2, 0x08,   17 /* Private */,
+      18,    0,  182,    2, 0x08,   18 /* Private */,
+      19,    0,  183,    2, 0x08,   19 /* Private */,
+      20,    0,  184,    2, 0x08,   20 /* Private */,
+      21,    0,  185,    2, 0x08,   21 /* Private */,
+      22,    0,  186,    2, 0x08,   22 /* Private */,
+      23,    0,  187,    2, 0x08,   23 /* Private */,
+      24,    0,  188,    2, 0x08,   24 /* Private */,
+      25,    0,  189,    2, 0x08,   25 /* Private */,
+      26,    0,  190,    2, 0x08,   26 /* Private */,
+      27,    0,  191,    2, 0x08,   27 /* Private */,
+      28,    0,  192,    2, 0x08,   28 /* Private */,
+      29,    0,  193,    2, 0x08,   29 /* Private */,
+      30,    0,  194,    2, 0x08,   30 /* Private */,
+      31,    0,  195,    2, 0x08,   31 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
-    0x80000000 | 4, 0x80000000 | 5,    6,
+    0x80000000 | 4, 0x80000000 | 5, QMetaType::Float,    6,    2,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 11, 0x80000000 | 5, 0x80000000 | 12, 0x80000000 | 13, QMetaType::Float,    2,    2,    2,    2,    2,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -137,12 +155,20 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         // method 'getRotationMatrix'
         QtPrivate::TypeAndForceComplete<Matrix, std::false_type>,
         QtPrivate::TypeAndForceComplete<Axis, std::false_type>,
+        QtPrivate::TypeAndForceComplete<float, std::false_type>,
         // method 'toggleRotationY'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'toggleRotationX'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'toggleRotationZ'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'independantRotation'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<Object3D *, std::false_type>,
+        QtPrivate::TypeAndForceComplete<Axis, std::false_type>,
+        QtPrivate::TypeAndForceComplete<Matrix &, std::false_type>,
+        QtPrivate::TypeAndForceComplete<Vertex, std::false_type>,
+        QtPrivate::TypeAndForceComplete<float, std::false_type>,
         // method 'on_actionGuardar_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_actionLeer_triggered'
@@ -170,6 +196,14 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         // method 'on_btnGiro_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_btnGiroCabeza_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnCaminar_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnUpView_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnSideView_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnBottomView_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -182,25 +216,30 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         (void)_t;
         switch (_id) {
         case 0: _t->updateObj(); break;
-        case 1: { Matrix _r = _t->getRotationMatrix((*reinterpret_cast< std::add_pointer_t<Axis>>(_a[1])));
+        case 1: { Matrix _r = _t->getRotationMatrix((*reinterpret_cast< std::add_pointer_t<Axis>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<float>>(_a[2])));
             if (_a[0]) *reinterpret_cast< Matrix*>(_a[0]) = std::move(_r); }  break;
         case 2: _t->toggleRotationY(); break;
         case 3: _t->toggleRotationX(); break;
         case 4: _t->toggleRotationZ(); break;
-        case 5: _t->on_actionGuardar_triggered(); break;
-        case 6: _t->on_actionLeer_triggered(); break;
-        case 7: _t->on_actionNormal_triggered(); break;
-        case 8: _t->on_actionInterlineado_triggered(); break;
-        case 9: _t->on_actionDibujar_triggered(); break;
-        case 10: _t->on_actionTrasladar_triggered(); break;
-        case 11: _t->on_actionRotar_triggered(); break;
-        case 12: _t->on_actionEscalar_triggered(); break;
-        case 13: _t->on_actionEspejo_Reflejar_triggered(); break;
-        case 14: _t->on_actionEscalar_c_direccion_arbr_triggered(); break;
-        case 15: _t->on_btnVuelta_clicked(); break;
-        case 16: _t->on_btnMarometa_clicked(); break;
-        case 17: _t->on_btnGiro_clicked(); break;
-        case 18: _t->on_btnGiroCabeza_clicked(); break;
+        case 5: _t->independantRotation((*reinterpret_cast< std::add_pointer_t<Object3D*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<Axis>>(_a[2])),(*reinterpret_cast< std::add_pointer_t<Matrix&>>(_a[3])),(*reinterpret_cast< std::add_pointer_t<Vertex>>(_a[4])),(*reinterpret_cast< std::add_pointer_t<float>>(_a[5]))); break;
+        case 6: _t->on_actionGuardar_triggered(); break;
+        case 7: _t->on_actionLeer_triggered(); break;
+        case 8: _t->on_actionNormal_triggered(); break;
+        case 9: _t->on_actionInterlineado_triggered(); break;
+        case 10: _t->on_actionDibujar_triggered(); break;
+        case 11: _t->on_actionTrasladar_triggered(); break;
+        case 12: _t->on_actionRotar_triggered(); break;
+        case 13: _t->on_actionEscalar_triggered(); break;
+        case 14: _t->on_actionEspejo_Reflejar_triggered(); break;
+        case 15: _t->on_actionEscalar_c_direccion_arbr_triggered(); break;
+        case 16: _t->on_btnVuelta_clicked(); break;
+        case 17: _t->on_btnMarometa_clicked(); break;
+        case 18: _t->on_btnGiro_clicked(); break;
+        case 19: _t->on_btnGiroCabeza_clicked(); break;
+        case 20: _t->on_btnCaminar_clicked(); break;
+        case 21: _t->on_btnUpView_clicked(); break;
+        case 22: _t->on_btnSideView_clicked(); break;
+        case 23: _t->on_btnBottomView_clicked(); break;
         default: ;
         }
     }
@@ -225,13 +264,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 19)
+        if (_id < 24)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 19;
+        _id -= 24;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 19)
+        if (_id < 24)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 19;
+        _id -= 24;
     }
     return _id;
 }

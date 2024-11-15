@@ -12,7 +12,7 @@ using namespace std;
 
 float ang = (1 * 3.14159) / 180.0;
 Axis currentAxis = NO_AXIS;
-bool rotatingHead = false;;
+bool rotatingHead = false, walking = false;
 Matrix transformacionAcumulada = Matrix::generateGraphicableSquareMatrix(4, {
                                                                            {1,0,0, 0},
                                                                            {0,1,0, 0},
@@ -21,6 +21,22 @@ Matrix transformacionAcumuladaCabeza = Matrix::generateGraphicableSquareMatrix(4
                                                                              {1,0,0, 0},
                                                                              {0,1,0, 0},
                                                                              {0,0,1, 0}});
+Matrix transformacionAcumuladaPierna1 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                                   {1,0,0, 0},
+                                                                                   {0,1,0, 0},
+                                                                                   {0,0,1, 0}});
+Matrix transformacionAcumuladaPierna2 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                                    {1,0,0, 0},
+                                                                                    {0,1,0, 0},
+                                                                                    {0,0,1, 0}});
+Matrix transformacionAcumuladaPierna3 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                                    {1,0,0, 0},
+                                                                                    {0,1,0, 0},
+                                                                                    {0,0,1, 0}});
+Matrix transformacionAcumuladaPierna4 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                                    {1,0,0, 0},
+                                                                                    {0,1,0, 0},
+                                                                                    {0,0,1, 0}});
 
 
 Object3D* head = new Object3D();
@@ -29,6 +45,8 @@ Object3D* limb1 = new Object3D();
 Object3D* limb2 = new Object3D();
 Object3D* limb3 = new Object3D();
 Object3D* limb4 = new Object3D();
+
+Vertex center;
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -106,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     limb4->addPrism(485,400,115,20,40,20, DarkGreen);
 
     /// 250 x y 250 en y es el centro del creeper???, no es muy preciso...
-    Vertex center = torso->calculateCentroid();
+    center = torso->calculateCentroid();
     Matrix t1 = Matrix::generateGraphicableSquareMatrix(4, {
                                                             {1,0,0, -center.x},
                                                             {0,1,0, -center.y},
@@ -147,45 +165,51 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     delete boca3;
 }
 
+// Variables de control para la rotación de las piernas
+float angleLimb = 0.0f;         // Ángulo actual de las piernas
+float angleIncrement = ang;    // Incremento de ángulo para cada actualización
+bool increasingAngle = true;    // Dirección de rotación: true si aumenta, false si disminuye
+// Cambia el parámetro de angulación para cada pierna
+
 void MainWindow::updateObj() {
+    center = torso->calculateCentroid();
 
     if (rotatingHead) {
-        // Utilizar el centro del torso como referencia para la acumulación
-        Vertex torsoCenter = torso->calculateCentroid();
-
-        // Matrices de traslación basadas en el centro del torso
-        Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, -torsoCenter.x},
-                                                                                 {0, 1, 0, -torsoCenter.y},
-                                                                                 {0, 0, 1, -torsoCenter.z}});
-        Matrix rotate = getRotationMatrix(Y_AXIS);
-        Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, torsoCenter.x},
-                                                                             {0, 1, 0, torsoCenter.y},
-                                                                             {0, 0, 1, torsoCenter.z}});
-
-        head->reset();
-        transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
-        head->transform(transformacionAcumuladaCabeza);  // Aplicar la transformación acumulada local de la cabeza
-        head->transform(transformacionAcumulada);        // Aplicar la transformación acumulada global
-        repaint();
-        //return;
+        independantRotation(head, Y_AXIS, transformacionAcumuladaCabeza, center, ang); // Usar 'ang' para la cabeza
     }
-    // Calcular el centro del torso
-    Vertex torsoCenter = torso->calculateCentroid();
 
-    // Generar las matrices de transformación
+    if (walking) {
+        if (increasingAngle) {
+            angleLimb += angleIncrement;
+            if (angleLimb >= 6 * M_PI / 180) increasingAngle = false;
+        } else {
+            angleLimb -= angleIncrement;
+            if (angleLimb <= -6 * M_PI / 180) increasingAngle = true;
+        }
+
+        Vertex intersection1(limb1->x, limb1->y, limb1->z - limb1->sizez);
+        independantRotation(limb1, X_AXIS, transformacionAcumuladaPierna1, intersection1, angleLimb);
+
+        Vertex intersection2(limb2->x, limb2->y, limb2->z - limb2->sizez);
+        independantRotation(limb2, X_AXIS, transformacionAcumuladaPierna2, intersection2, -angleLimb);
+
+        Vertex intersection3(limb3->x, limb3->y, limb3->z);
+        independantRotation(limb3, X_AXIS, transformacionAcumuladaPierna3, intersection3, angleLimb);
+
+        Vertex intersection4(limb4->x, limb4->y, limb4->z);
+        independantRotation(limb4, X_AXIS, transformacionAcumuladaPierna4, intersection4, -angleLimb);
+    }
+
+    // Generar las matrices de transformación para el torso
     Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, -torsoCenter.x},
-                                                                             {0, 1, 0, -torsoCenter.y},
-                                                                             {0, 0, 1, -torsoCenter.z}});
-
-    Matrix rotate = getRotationMatrix(currentAxis);
-
+                                                                             {1, 0, 0, -center.x},
+                                                                             {0, 1, 0, -center.y},
+                                                                             {0, 0, 1, -center.z}});
+    Matrix rotate = getRotationMatrix(currentAxis, ang);
     Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                         {1, 0, 0, torsoCenter.x},
-                                                                         {0, 1, 0, torsoCenter.y},
-                                                                         {0, 0, 1, torsoCenter.z}});
+                                                                         {1, 0, 0, center.x},
+                                                                         {0, 1, 0, center.y},
+                                                                         {0, 0, 1, center.z}});
 
     head->reset();
     torso->reset();
@@ -195,43 +219,45 @@ void MainWindow::updateObj() {
     limb4->reset();
 
     transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
-    //transformacionAcumuladaCabeza = transformacionAcumuladaCabeza * (translationBack * (rotate * translationToOrigin));
 
     head->transform(transformacionAcumuladaCabeza);
     head->transform(transformacionAcumulada);
     torso->transform(transformacionAcumulada);
+
+    limb1->transform(transformacionAcumuladaPierna1);
     limb1->transform(transformacionAcumulada);
+    limb2->transform(transformacionAcumuladaPierna2);
     limb2->transform(transformacionAcumulada);
+    limb3->transform(transformacionAcumuladaPierna3);
     limb3->transform(transformacionAcumulada);
+    limb4->transform(transformacionAcumuladaPierna4);
     limb4->transform(transformacionAcumulada);
+
 
     repaint();
 }
 
+void MainWindow::independantRotation(Object3D* objeto, Axis eje, Matrix& transformacionAcumuladaObjeto, Vertex centro, float anguloPersonalizado) {
+    Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, -centro.x}, {0, 1, 0, -centro.y}, {0, 0, 1, -centro.z}});
+    Matrix rotate = getRotationMatrix(eje, anguloPersonalizado); // Se usa el ángulo personalizado
+    Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, centro.x}, {0, 1, 0, centro.y}, {0, 0, 1, centro.z}});
 
-Matrix MainWindow::getRotationMatrix(Axis axis) {
+    objeto->reset();
+    transformacionAcumuladaObjeto = transformacionAcumuladaObjeto * (translationBack * (rotate * translationToOrigin));
+    objeto->transform(transformacionAcumuladaObjeto); // Aplica transformación local
+    objeto->transform(transformacionAcumulada);       // Aplica transformación global
+}
+
+Matrix MainWindow::getRotationMatrix(Axis axis, float angle) {
     switch (axis) {
     case X_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {1, 0,        0,         0},
-                                                           {0, cos(ang), -sin(ang), 0},
-                                                           {0, sin(ang), cos(ang),  0}});
+        return Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, 0}, {0, cos(angle), -sin(angle), 0}, {0, sin(angle), cos(angle), 0}});
     case Y_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(ang), 0, sin(ang), 0},
-                                                           {0,        1, 0,        0},
-                                                           {-sin(ang), 0, cos(ang), 0}});
+        return Matrix::generateGraphicableSquareMatrix(4, {{cos(angle), 0, sin(angle), 0}, {0, 1, 0, 0}, {-sin(angle), 0, cos(angle), 0}});
     case Z_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(ang), -sin(ang), 0, 0},
-                                                           {sin(ang), cos(ang),  0, 0},
-                                                           {0,        0,         1, 0}});
-    case NO_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {1, 0, 0, 0},
-                                                           {0, 1, 0, 0},
-                                                           {0, 0, 1, 0}});
-
+        return Matrix::generateGraphicableSquareMatrix(4, {{cos(angle), -sin(angle), 0, 0}, {sin(angle), cos(angle), 0, 0}, {0, 0, 1, 0}});
+    default:
+        return Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}});
     }
 }
 
@@ -294,7 +320,6 @@ void MainWindow::on_btnGiro_clicked(){}
 
 
 void MainWindow::toggleRotationY() {
-    //rotatingHead = false;
     if (currentAxis == Y_AXIS){
         currentAxis = NO_AXIS;
     } else {
@@ -303,7 +328,6 @@ void MainWindow::toggleRotationY() {
 }
 
 void MainWindow::toggleRotationX() {
-    //rotatingHead = false;
     if (currentAxis == X_AXIS){
         currentAxis = NO_AXIS;
     } else {
@@ -312,7 +336,6 @@ void MainWindow::toggleRotationX() {
 }
 
 void MainWindow::toggleRotationZ() {
-    //rotatingHead = false;
     if (currentAxis == Z_AXIS){
         currentAxis = NO_AXIS;
     } else {
@@ -348,7 +371,98 @@ void MainWindow::setActualMode(Mode newMode){
 
 void MainWindow::on_btnGiroCabeza_clicked()
 {
-    //currentAxis = NO_AXIS;
     rotatingHead = !rotatingHead;
+}
+
+
+void MainWindow::on_btnCaminar_clicked()
+{
+    walking = !walking;
+}
+
+
+void MainWindow::on_btnUpView_clicked()
+{
+    // Generar las matrices de transformación para el torso
+    Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                             {1, 0, 0, -center.x},
+                                                                             {0, 1, 0, -center.y},
+                                                                             {0, 0, 1, -center.z}});
+    Matrix rotate = getRotationMatrix(X_AXIS, M_PI/2);
+    Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                         {1, 0, 0, center.x},
+                                                                         {0, 1, 0, center.y},
+                                                                         {0, 0, 1, center.z}});
+
+    transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
+    Matrix rotation = (translationBack * (rotate * translationToOrigin));
+
+    head->transform(rotation);
+    torso->transform(rotation);
+
+    limb1->transform(rotation);
+    limb2->transform(rotation);
+    limb3->transform(rotation);
+    limb4->transform(rotation);
+
+    repaint();
+}
+
+
+void MainWindow::on_btnSideView_clicked()
+{
+    // Generar las matrices de transformación para el torso
+    Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                             {1, 0, 0, -center.x},
+                                                                             {0, 1, 0, -center.y},
+                                                                             {0, 0, 1, -center.z}});
+    Matrix rotate = getRotationMatrix(Y_AXIS, M_PI/2);
+    Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                         {1, 0, 0, center.x},
+                                                                         {0, 1, 0, center.y},
+                                                                         {0, 0, 1, center.z}});
+
+    transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
+
+    Matrix rotation = (translationBack * (rotate * translationToOrigin));
+
+    head->transform(rotation);
+    torso->transform(rotation);
+
+    limb1->transform(rotation);
+    limb2->transform(rotation);
+    limb3->transform(rotation);
+    limb4->transform(rotation);
+
+    repaint();
+}
+
+
+void MainWindow::on_btnBottomView_clicked()
+{
+    // Generar las matrices de transformación para el torso
+    Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                             {1, 0, 0, -center.x},
+                                                                             {0, 1, 0, -center.y},
+                                                                             {0, 0, 1, -center.z}});
+    Matrix rotate = getRotationMatrix(X_AXIS, -M_PI/2);
+    Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                         {1, 0, 0, center.x},
+                                                                         {0, 1, 0, center.y},
+                                                                         {0, 0, 1, center.z}});
+
+    transformacionAcumulada = transformacionAcumulada * (translationBack * (rotate * translationToOrigin));
+
+    Matrix rotation = (translationBack * (rotate * translationToOrigin));
+
+    head->transform(rotation);
+    torso->transform(rotation);
+
+    limb1->transform(rotation);
+    limb2->transform(rotation);
+    limb3->transform(rotation);
+    limb4->transform(rotation);
+
+    repaint();
 }
 

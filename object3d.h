@@ -9,6 +9,8 @@ class Object3D
 {
 public:
     Object3D();
+    float x, y, z;
+    float sizex, sizey, sizez;
     std::vector<Surface> surfaces;
     std::vector<Surface> originalSurfaces;
     void addSurface(const Surface& toAdd);
