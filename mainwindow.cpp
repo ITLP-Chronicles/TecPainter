@@ -7,6 +7,7 @@
 #include "ui_mainwindow.h"
 #include "matrix.h"
 #include "displayer.h"
+#include "rotationutils.h"
 
 using namespace std;
 
@@ -21,6 +22,8 @@ Matrix transformacionAcumuladaCabeza = Matrix::generateGraphicableSquareMatrix(4
                                                                              {1,0,0, 0},
                                                                              {0,1,0, 0},
                                                                              {0,0,1, 0}});
+
+Vertex accumulatedAngles = Vertex(0, 0, 0);
 
 
 Object3D* head = new Object3D();
@@ -50,6 +53,14 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     // -------------------- Constructor ---------------------
     ui->setupUi(this);
     actualMode = Normal;
+
+    Vertex angles(M_PI/4, M_PI/3, M_PI/6); // Your angles in radians
+
+    Matrix R = RotationUtils::eulerAnglesToRotationMatrix(angles);
+    auto debugR = Matrix::debug(R);
+
+    Vertex resultAngles = RotationUtils::rotationMatrixToEulerAngles(R);
+
 
     // ------------- Obj3D creation ----------------
     QColor GreenBase = QColor::fromRgb(58, 140, 55);
@@ -92,6 +103,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     boca3->addVertex(Vertex(480, 200, 201));  // Inferior derecho
 
     head->addPrism(400,100,200,100,100,100, GreenBase);
+
     // Añadir las superficies de los ojos y la boca a la cabeza
     head->addSurface(*ojo1);
     head->addSurface(*ojo2);
@@ -149,44 +161,46 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     delete boca3;
 }
 
+Matrix getTranslationMatrix(double x, double y, double z) {
+    return Matrix::generateGraphicableSquareMatrix(4, {
+                                                       {1, 0, 0, x},
+                                                       {0, 1, 0, y},
+                                                       {0, 0, 1, z}});
+}
+
 void MainWindow::updateObj() {
+    if (currentAxis == NO_AXIS) return;
 
-    if (currentAxis == Z_AXIS){
-        Vertex headCenter = head->calculateCentroid();
-        Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                                 {1, 0, 0, -headCenter.x},
-                                                                                 {0, 1, 0, -headCenter.y},
-                                                                                 {0, 0, 1, -headCenter.z}});
-        Matrix rotate = getRotationMatrix(Y_AXIS);
-
-        Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, headCenter.x},
-                                                                             {0, 1, 0, headCenter.y},
-                                                                             {0, 0, 1, headCenter.z}});
-
-        head->reset();
-
-        transformacionAcumuladaCabeza = translationBack * (transformacionAcumuladaCabeza * (rotate * translationToOrigin));
-        head->transform(transformacionAcumulada);
-        head->transform(transformacionAcumuladaCabeza);
-        repaint();
-        return;
+    switch(currentAxis) {
+    case X_AXIS:
+        accumulatedAngles.x += ang;
+        break;
+    case Y_AXIS:
+        accumulatedAngles.y += ang;
+        break;
+    case Z_AXIS:
+        accumulatedAngles.z += ang;
+        break;
     }
-    // Calcular el centro del torso
-    Vertex torsoCenter = torso->calculateCentroid();
 
-    // Generar las matrices de transformación
-    Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, -torsoCenter.x},
-                                                                             {0, 1, 0, -torsoCenter.y},
-                                                                             {0, 0, 1, -torsoCenter.z}});
+    ang = fmod(ang, M_PI*2); ///angle % 2pi
+    if (ang < 0) ang += 360.0;
 
-    Matrix rotate = getRotationMatrix(currentAxis);
 
-    Matrix translationBack = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                         {1, 0, 0, torsoCenter.x},
-                                                                         {0, 1, 0, torsoCenter.y},
-                                                                         {0, 0, 1, torsoCenter.z}});
+    // Get complete rotation matrix from accumulated angles
+    Matrix R = RotationUtils::eulerAnglesToRotationMatrix(accumulatedAngles);
+
+    // Convert to 4x4 and apply your transformations
+    Matrix transform = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                   {R.data[0][0], R.data[0][1], R.data[0][2], 0},
+                                                                   {R.data[1][0], R.data[1][1], R.data[1][2], 0},
+                                                                   {R.data[2][0], R.data[2][1], R.data[2][2], 0}});
+
+    // Apply transformations as before...
+    Vertex center = torso->calculateCentroid();
+    Matrix translationToOrigin = getTranslationMatrix(-center.x, -center.y, -center.z);
+    Matrix rotate = transform;
+    Matrix translationBack = getTranslationMatrix(center.x, center.y, center.z);
 
     head->reset();
     torso->reset();
@@ -210,30 +224,34 @@ void MainWindow::updateObj() {
 }
 
 
-Matrix MainWindow::getRotationMatrix(Axis axis) {
+Matrix getRotationMatrix(Axis axis, double desiredAngle){
+    Vertex angles(0, 0, 0);
+
     switch (axis) {
     case X_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {1, 0,        0,         0},
-                                                           {0, cos(ang), -sin(ang), 0},
-                                                           {0, sin(ang), cos(ang),  0}});
+        angles = Vertex(desiredAngle, 0, 0);  // Rotation around X
+        break;
     case Y_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(ang), 0, sin(ang), 0},
-                                                           {0,        1, 0,        0},
-                                                           {-sin(ang), 0, cos(ang), 0}});
+        angles = Vertex(0, desiredAngle, 0);  // Rotation around Y
+        break;
     case Z_AXIS:
-        return Matrix::generateGraphicableSquareMatrix(4, {
-                                                           {cos(ang), -sin(ang), 0, 0},
-                                                           {sin(ang), cos(ang),  0, 0},
-                                                           {0,        0,         1, 0}});
+        angles = Vertex(0, 0, desiredAngle);  // Rotation around Z
+        break;
     case NO_AXIS:
         return Matrix::generateGraphicableSquareMatrix(4, {
                                                            {1, 0, 0, 0},
                                                            {0, 1, 0, 0},
                                                            {0, 0, 1, 0}});
-
     }
+
+    // Get 3x3 rotation matrix
+    Matrix R = RotationUtils::eulerAnglesToRotationMatrix(angles);
+
+    // Convert to 4x4 matrix for your transformations
+    return Matrix::generateGraphicableSquareMatrix(4, {
+                                                       {R.data[0][0], R.data[0][1], R.data[0][2], 0},
+                                                       {R.data[1][0], R.data[1][1], R.data[1][2], 0},
+                                                       {R.data[2][0], R.data[2][1], R.data[2][2], 0}});
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* _) {}

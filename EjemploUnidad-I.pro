@@ -17,6 +17,7 @@ SOURCES += \
     matrix.cpp \
     object3d.cpp \
     point.cpp \
+    rotationutils.cpp \
     surface.cpp \
     utils.cpp \
     vertex.cpp
@@ -28,6 +29,7 @@ HEADERS += \
     matrix.h \
     object3d.h \
     point.h \
+    rotationutils.h \
     surface.h \
     utils.h \
     vertex.h

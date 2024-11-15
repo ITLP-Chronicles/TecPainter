@@ -95,7 +95,6 @@ class MainWindow : public QMainWindow
         void setRotationAxisX();
         void setRotationAxisY();
         void setRotationAxisZ();
-        Matrix getRotationMatrix(Axis axis);
         void toggleRotationY();
         void toggleRotationX();
         void toggleRotationZ();
