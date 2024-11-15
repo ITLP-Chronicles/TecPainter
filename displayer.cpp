@@ -13,7 +13,7 @@ void Displayer::object3d(QPainter* painterRef, const Object3D& obj){
 void Displayer::surface(QPainter* painterRef, const Surface& surface){
     Surface s = surface.copy();
     float xv=0, yv=0, zv=10000;
-    float zf=100000;
+    float zf=50000;
 
     for (Vertex& v:s.vertices) {
         float dp=(zf-zv)/(zf-v.z);

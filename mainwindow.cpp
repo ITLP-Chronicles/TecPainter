@@ -221,9 +221,6 @@ void MainWindow::updateObj() {
         independantRotation(limb4, X_AXIS, transformacionAcumuladaPierna4, intersection4, -angleLimb);
     }
 
-    repaint();
-    if (currentAxis == NO_AXIS) return;
-
     // Generar las matrices de transformación para el torso
     Matrix translationToOrigin = Matrix::generateGraphicableSquareMatrix(4, {
                                                                              {1, 0, 0, -center.x},
@@ -247,7 +244,6 @@ void MainWindow::updateObj() {
     head->transform(transformacionAcumuladaCabeza);
     head->transform(transformacionAcumulada);
     torso->transform(transformacionAcumulada);
-
     limb1->transform(transformacionAcumuladaPierna1);
     limb1->transform(transformacionAcumulada);
     limb2->transform(transformacionAcumuladaPierna2);
@@ -257,26 +253,94 @@ void MainWindow::updateObj() {
     limb4->transform(transformacionAcumuladaPierna4);
     limb4->transform(transformacionAcumulada);
 
-    // Generar las matrices de transformación para el torso
-    Matrix translationToOrigin2 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                             {1, 0, 0, -center.x},
-                                                                             {0, 1, 0, -center.y},
-                                                                             {0, 0, 1, -center.z}});
-    Matrix rotate2 = getRotationMatrix(X_AXIS, M_PI/2);
-    Matrix translationBack2 = Matrix::generateGraphicableSquareMatrix(4, {
-                                                                         {1, 0, 0, center.x},
-                                                                         {0, 1, 0, center.y},
-                                                                         {0, 0, 1, center.z}});
-
+    rotate = getRotationMatrix(X_AXIS, M_PI/2);
     Matrix rotation = (translationBack * (rotate * translationToOrigin));
+    Matrix traslate1 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                   {0.35, 0, 0, 450},
+                                                                   {0, 0.35, 0, -60},
+                                                                   {0, 0, 0.35, 0}});
+    Matrix previewTransformation = (translationBack * (traslate1 * translationToOrigin));
 
-    head->transform(rotation);
-    torso->transform(rotation);
+    head2 = head->copy();
+    torso2 = torso->copy();
 
-    limb1->transform(rotation);
-    limb2->transform(rotation);
-    limb3->transform(rotation);
-    limb4->transform(rotation);
+    limb12 = limb1->copy();
+    limb22 = limb2->copy();
+    limb32 = limb3->copy();
+    limb42 = limb4->copy();
+
+    head2->transform(rotation);
+    torso2->transform(rotation);
+    limb12->transform(rotation);
+    limb22->transform(rotation);
+    limb32->transform(rotation);
+    limb42->transform(rotation);
+
+    head2->transform(previewTransformation);
+    torso2->transform(previewTransformation);
+    limb12->transform(previewTransformation);
+    limb22->transform(previewTransformation);
+    limb32->transform(previewTransformation);
+    limb42->transform(previewTransformation);
+
+    rotate = getRotationMatrix(Y_AXIS, M_PI/2);
+    rotation = (translationBack * (rotate * translationToOrigin));
+    traslate1 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                   {0.35, 0, 0, 450},
+                                                                   {0, 0.35, 0, 100},
+                                                                   {0, 0, 0.35, 0}});
+    previewTransformation = (translationBack * (traslate1 * translationToOrigin));
+
+    head3 = head->copy();
+    torso3 = torso->copy();
+
+    limb13 = limb1->copy();
+    limb23 = limb2->copy();
+    limb33 = limb3->copy();
+    limb43 = limb4->copy();
+
+    head3->transform(rotation);
+    torso3->transform(rotation);
+    limb13->transform(rotation);
+    limb23->transform(rotation);
+    limb33->transform(rotation);
+    limb43->transform(rotation);
+
+    head3->transform(previewTransformation);
+    torso3->transform(previewTransformation);
+    limb13->transform(previewTransformation);
+    limb23->transform(previewTransformation);
+    limb33->transform(previewTransformation);
+    limb43->transform(previewTransformation);
+
+    rotate = getRotationMatrix(X_AXIS, -M_PI/2);
+    rotation = (translationBack * (rotate * translationToOrigin));
+    traslate1 = Matrix::generateGraphicableSquareMatrix(4, {
+                                                                   {0.35, 0, 0, 450},
+                                                                   {0, 0.35, 0, 280},
+                                                                   {0, 0, 0.35, 0}});
+    previewTransformation = (translationBack * (traslate1 * translationToOrigin));
+
+    head4 = head->copy();
+    torso4 = torso->copy();
+    limb14 = limb1->copy();
+    limb24 = limb2->copy();
+    limb34 = limb3->copy();
+    limb44 = limb4->copy();
+
+    head4->transform(rotation);
+    torso4->transform(rotation);
+    limb14->transform(rotation);
+    limb24->transform(rotation);
+    limb34->transform(rotation);
+    limb44->transform(rotation);
+
+    head4->transform(previewTransformation);
+    torso4->transform(previewTransformation);
+    limb14->transform(previewTransformation);
+    limb24->transform(previewTransformation);
+    limb34->transform(previewTransformation);
+    limb44->transform(previewTransformation);
 
     repaint();
 }
@@ -334,6 +398,24 @@ void MainWindow::paintEvent(QPaintEvent *) {
     Displayer::object3d(painter, *limb2);
     Displayer::object3d(painter, *limb3);
     Displayer::object3d(painter, *limb4);
+    Displayer::object3d(painter, *head2);
+    Displayer::object3d(painter, *torso2);
+    Displayer::object3d(painter, *limb12);
+    Displayer::object3d(painter, *limb22);
+    Displayer::object3d(painter, *limb32);
+    Displayer::object3d(painter, *limb42);
+    Displayer::object3d(painter, *head3);
+    Displayer::object3d(painter, *torso3);
+    Displayer::object3d(painter, *limb13);
+    Displayer::object3d(painter, *limb23);
+    Displayer::object3d(painter, *limb33);
+    Displayer::object3d(painter, *limb43);
+    Displayer::object3d(painter, *head4);
+    Displayer::object3d(painter, *torso4);
+    Displayer::object3d(painter, *limb14);
+    Displayer::object3d(painter, *limb24);
+    Displayer::object3d(painter, *limb34);
+    Displayer::object3d(painter, *limb44);
     delete painter;
 }
 
