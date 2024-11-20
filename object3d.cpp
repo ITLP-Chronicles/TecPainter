@@ -11,7 +11,12 @@ Object3D::Object3D():surfaces(std::vector<Surface>()), originalSurfaces(std::vec
     sizex = 0;
     sizey = 0;
     sizez = 0;
+    ejex=new Line(250,250,150,300,250,150);
+    ejey=new Line(250,250,150,250,300,150);
+    ejez=new Line(250,250,150,250,250,200);
 }
+
+
 
 void Object3D::addSurface(const Surface& toAdd){
     this->surfaces.push_back(toAdd);
@@ -21,6 +26,15 @@ void Object3D::addSurface(const Surface& toAdd){
 void Object3D::transform(const Matrix& transformy){
     for (Surface& s : this->surfaces){
         s.transform(transformy);
+    }
+}
+
+Object3D::~Object3D() {
+    delete ejex;
+    delete ejey;
+    delete ejez;
+    for (Surface& surface : surfaces) {
+        delete &surface;
     }
 }
 
@@ -150,6 +164,44 @@ void Object3D::addPrism(int x, int y, int z, int xDif, int yDif, int zDif, QColo
     superficieCuerpo->addVertex(Vertex(x + xDif, y, z));
     this->addSurface(*superficieCuerpo);
 }
+void Object3D::rotar(float theta, Line* eje) {
+    float a = eje->vertex2.x - eje->vertex1.x;
+    float b = eje->vertex2.y - eje->vertex1.y;
+    float c = eje->vertex2.z - eje->vertex1.z;
+    float alpha = atan2(b, c);
+    float d = sqrt(pow(b, 2) + pow(c, 2));
+    float beta = atan2(a, d);
+
+    Matrix T1 = Matrix::generateGraphicableSquareMatrix(4, {{1,0,0, -eje->vertex1.x},
+                                                       {0,1,0, -eje->vertex1.y},
+                                                       {0,0,1, -eje->vertex1.x}});
+    Matrix R1x = Matrix::generateGraphicableSquareMatrix(4, {{1,0,0, 0},
+                                                            {0, cos(alpha), -sin(alpha), 0},
+                                                            {0, sin(alpha), cos(alpha), 0}});
+    Matrix R1y = Matrix::generateGraphicableSquareMatrix(4, {{cos(-beta), 0, sin(-beta), 0},
+                                                             {0, 1, 0, 0},
+                                                             {cos(theta), -sin(theta), 0, 0}});
+    Matrix Rz = Matrix::generateGraphicableSquareMatrix(4, {{cos(-beta), 0, sin(-beta), 0},
+                                                             {sin(theta), cos(theta), 0, 0},
+                                                             {0, 0, 1, 0}});
+    Matrix R2y = Matrix::generateGraphicableSquareMatrix(4, {{cos(beta), 0, sin(beta), 0},
+                                                            {0, 1, 0, 0},
+                                                            {-sin(beta), 0, cos(beta), 0}});
+    Matrix R2x = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, 0},
+                                                             {0, cos(-alpha), -sin(-alpha), 0},
+                                                             {0, sin(-alpha), cos(-alpha), 0}});
+    Matrix T2 = Matrix::generateGraphicableSquareMatrix(4, {{1, 0, 0, eje->vertex1.x},
+                                                             {0, 1, 0, eje->vertex1.y},
+                                                             {0, 0, 1, eje->vertex1.z}});
+
+    Matrix M = T2 * (R2x * (R2y * (Rz * (R1y * (R1x *T1)))));
+    transform(M);
+
+    // También transformar los ejes
+    ejex->transform(M);
+    ejey->transform(M);
+    ejez->transform(M);
+}
 #include "vertex.h"
 
 Vertex Object3D::calculateCentroid() const {
@@ -188,4 +240,17 @@ void Object3D::reset(){
 
     for(const Surface& originalSurface: this->originalSurfaces)
         this->surfaces.push_back(originalSurface.copy());
+}
+
+Line* Object3D::getCurrentAxis(Axis axis){
+    switch (axis) {
+    case X_AXIS:
+        return ejex;
+    case Y_AXIS:
+        return ejey;;
+    case Z_AXIS:
+        return ejez;
+    default:
+        return nullptr;
+    }
 }

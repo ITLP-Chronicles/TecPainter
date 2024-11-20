@@ -3,6 +3,7 @@
 
 #include <vector>
 
+enum Axis { X_AXIS, Y_AXIS, Z_AXIS, NO_AXIS };
 /// Clase genérica, auto-administrable en memoria y flexible para todos los casos de uso para
 /// matrices con números y fácil de usar
 class Matrix {
